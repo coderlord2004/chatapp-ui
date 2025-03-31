@@ -7,7 +7,7 @@ type ButtonProps = {
 }
 
 function Button({ text }: ButtonProps) {
-    const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0);
 
     return (
         <div>
