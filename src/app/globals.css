@@ -14,6 +14,7 @@
 		typing 2s steps(16), cursor 0.4s step-end infinite alternate;
 	--animate-typing-effect-9:
 		typing 1.5s steps(9) 2s forwards, cursor 0.4s step-end infinite alternate;
+	--animate-fade-in-to-right: fadeInToRight 0.8s ease-out;
 
 	@keyframes cursor {
 		50% {
@@ -30,6 +31,18 @@
 			width: 100%;
 		}
 	}
+
+	@keyframes fadeInToRight {
+		0% {
+			opacity: 0;
+			transform: translateX(-40px);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translateX(0);
+		}
+	}
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +55,8 @@
 body {
 	background: var(--background);
 	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
-	/* background-position-y: ;  */
+}
+
+.globalButtonStyle {
+	cursor: pointer;
 }
