@@ -1,48 +1,19 @@
 @import 'tailwindcss';
 
+@import '@fontsource-variable/roboto';
+@import '@fontsource-variable/fira-code';
+
 :root {
 	--background: #ffffff;
 	--foreground: #171717;
 }
 
 @theme inline {
+	--font-sans: 'Roboto', sans-serif;
+	--font-mono: 'Fira Code Variable', monospace;
+
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
-	--animate-typing-effect-16:
-		typing 2s steps(16), cursor 0.4s step-end infinite alternate;
-	--animate-typing-effect-9:
-		typing 1.5s steps(9) 2s forwards, cursor 0.4s step-end infinite alternate;
-	--animate-fade-in-to-right: fadeInToRight 0.8s ease-out;
-
-	@keyframes cursor {
-		50% {
-			border-color: transparent;
-		}
-	}
-
-	@keyframes typing {
-		from {
-			width: 0;
-		}
-
-		to {
-			width: 100%;
-		}
-	}
-
-	@keyframes fadeInToRight {
-		0% {
-			opacity: 0;
-			transform: translateX(-40px);
-		}
-
-		100% {
-			opacity: 1;
-			transform: translateX(0);
-		}
-	}
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,8 +26,4 @@
 body {
 	background: var(--background);
 	color: var(--foreground);
-}
-
-.globalButtonStyle {
-	cursor: pointer;
 }
