@@ -2,9 +2,7 @@ import React from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
 
-type loginProps = {};
-
-export default function Login({}: loginProps) {
+export default function Login() {
 	return (
 		<div className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-black/30">
 			<div className="flex h-[60%] w-[55%] items-center justify-center rounded-[10px] border-[1px] border-solid border-white p-[10px]">
@@ -36,7 +34,7 @@ export default function Login({}: loginProps) {
 						error=""
 					/>
 					<div className="flex items-center justify-between px-[10px]">
-						<p>Don't have an account?</p>
+						<p>Don&apos;t have an account?</p>
 						<Link href="/signup">Sign up</Link>
 					</div>
 					<button

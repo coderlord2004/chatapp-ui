@@ -1,10 +1,6 @@
-import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
-type HeaderProps = {};
-
-function Header() {
+export default function Header() {
 	return (
 		<header className="fixed top-[5px] right-[5px] left-[5px] z-10 flex h-[50px] items-center rounded-[10px] bg-black/50 p-[5px] px-[10px]">
 			<img
@@ -26,5 +22,3 @@ function Header() {
 		</header>
 	);
 }
-
-export default Header;

@@ -1,7 +1,8 @@
 'use client';
-import React, { Ref, useState } from 'react';
 
-type inputProps = {
+import { Ref, useState } from 'react';
+
+type InputProps = {
 	id: string;
 	type: string;
 	label: string;
@@ -10,7 +11,9 @@ type inputProps = {
 	error: string;
 };
 
-function Input({ id, type, label, refElement, validation, error }: inputProps) {
+export default function Input(props: InputProps) {
+	const { id, type, label, refElement } = props;
+
 	const [showPassword, setShowPassword] = useState(false);
 
 	return (
@@ -40,5 +43,3 @@ function Input({ id, type, label, refElement, validation, error }: inputProps) {
 		</div>
 	);
 }
-
-export default Input;

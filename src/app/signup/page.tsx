@@ -2,9 +2,7 @@ import React from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
 
-type signupProps = {};
-
-export default function Signup({}: signupProps) {
+export default function Signup() {
 	return (
 		<div className="fixed top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-black/30">
 			<div className="flex h-auto w-[55%] items-center justify-center rounded-[10px] border-[1px] border-solid border-white p-[10px]">
