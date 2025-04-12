@@ -1,4 +1,10 @@
-import { type ReactNode, useCallback, useEffect, useRef } from 'react';
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 import { Client } from '@stomp/stompjs';
 import { decodeJwt } from 'jose';
 
@@ -10,19 +16,19 @@ interface Props {
 }
 
 export default function WebSocketContextProvider({ children, token }: Props) {
-	const stompClientRef = useRef<Client | undefined>(undefined);
+	const [stompClient, setStompClient] = useState<Client | undefined>(undefined);
 	const jwtIssuer = useRef<string | undefined>(undefined);
 
 	const updateStompClient = useCallback(async () => {
-		const { iss } = decodeJwt(token);
-		if (iss === jwtIssuer.current) {
+		const { sub } = decodeJwt(token);
+
+		if (sub === jwtIssuer.current) {
 			return;
 		}
 
 		const stompClient = await getStompClient(token);
-		stompClientRef.current = stompClient;
-
-		jwtIssuer.current = iss;
+		setStompClient(stompClient);
+		jwtIssuer.current = sub;
 	}, [token]);
 
 	useEffect(() => {
@@ -31,12 +37,12 @@ export default function WebSocketContextProvider({ children, token }: Props) {
 
 	useEffect(() => {
 		return () => {
-			stompClientRef.current?.deactivate({ force: true });
+			stompClient?.deactivate({ force: true });
 		};
-	}, [stompClientRef]);
+	}, [stompClient]);
 
 	return (
-		<WebSocketContext.Provider value={stompClientRef}>
+		<WebSocketContext.Provider value={stompClient}>
 			{children}
 		</WebSocketContext.Provider>
 	);

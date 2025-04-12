@@ -1,8 +1,7 @@
-import { createContext, type RefObject, useContext, useEffect } from 'react';
-import { Client, messageCallbackType } from '@stomp/stompjs';
+import { createContext } from 'react';
+import { Client } from '@stomp/stompjs';
 
-type RefClient = RefObject<Client | undefined>;
-const WebSocketContext = createContext<RefClient | undefined>(undefined);
+const WebSocketContext = createContext<Client | undefined>(undefined);
 
 async function getStompClient(token: string): Promise<Client> {
 	const client = new Client({
@@ -26,20 +25,4 @@ async function getStompClient(token: string): Promise<Client> {
 	});
 }
 
-function useWebSocket(destination: string, callback: messageCallbackType) {
-	const stompClientRef = useContext(WebSocketContext);
-
-	useEffect(() => {
-		const stompClient = stompClientRef?.current;
-		if (stompClient == undefined) {
-			return;
-		}
-
-		const subscription = stompClient.subscribe(destination, callback);
-		return () => {
-			subscription.unsubscribe();
-		};
-	}, [stompClientRef, destination, callback]);
-}
-
-export { getStompClient, useWebSocket, WebSocketContext };
+export { getStompClient, WebSocketContext };
