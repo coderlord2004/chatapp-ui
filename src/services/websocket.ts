@@ -1,7 +1,4 @@
-import { createContext } from 'react';
 import { Client } from '@stomp/stompjs';
-
-const WebSocketContext = createContext<Client | undefined>(undefined);
 
 async function getStompClient(token: string): Promise<Client> {
 	const client = new Client({
@@ -25,4 +22,4 @@ async function getStompClient(token: string): Promise<Client> {
 	});
 }
 
-export { getStompClient, WebSocketContext };
+export default getStompClient;
