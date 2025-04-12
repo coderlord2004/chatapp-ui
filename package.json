@@ -12,6 +12,8 @@
 	"dependencies": {
 		"@fontsource-variable/fira-code": "^5.2.5",
 		"@fontsource-variable/roboto": "^5.2.5",
+		"@stomp/stompjs": "^7.1.1",
+		"jose": "^6.0.10",
 		"next": "15.2.4",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
