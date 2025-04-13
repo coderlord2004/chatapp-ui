@@ -7,12 +7,12 @@ import {
 	useRef,
 	useState,
 } from 'react';
-import { type Client, messageCallbackType } from '@stomp/stompjs';
+import { type Client } from '@stomp/stompjs';
 import { decodeJwt } from 'jose';
 
 import getStompClient from '@/services/websocket';
 
-const WebSocketContext = createContext<Client | null | undefined>(undefined);
+const WebSocketContext = createContext<Client | undefined>(undefined);
 
 interface Props {
 	token: string;
@@ -20,7 +20,7 @@ interface Props {
 }
 
 function WebSocketContextProvider({ children, token }: Props) {
-	const [stompClient, setStompClient] = useState<Client | null>(null);
+	const [stompClient, setStompClient] = useState<Client | undefined>(undefined);
 	const jwtIssuer = useRef<string | undefined>(undefined);
 
 	// TODO: handle exception when decodeJwt and connect to client
@@ -54,22 +54,21 @@ function WebSocketContextProvider({ children, token }: Props) {
 	);
 }
 
-function useWebSocket(destination: string, callback: messageCallbackType) {
+type Callback = (messageBody: unknown) => void;
+
+function useWebSocket(destination: string, callback: Callback) {
 	const stompClient = useContext(WebSocketContext);
-
-	const useOutsideContext = stompClient === undefined;
-	const isDevEnvironment = process.env.NODE_ENV === 'development';
-
-	if (useOutsideContext && isDevEnvironment) {
-		throw new Error('You are using useWebSocket outside context provider.');
-	}
 
 	useEffect(() => {
 		if (!stompClient) {
 			return;
 		}
 
-		const subscription = stompClient.subscribe(destination, callback);
+		const subscription = stompClient.subscribe(destination, (message) => {
+			const messageBody = JSON.parse(message.body);
+			callback(messageBody);
+		});
+
 		return () => {
 			subscription.unsubscribe();
 		};

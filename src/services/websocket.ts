@@ -1,8 +1,12 @@
 import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
 async function getStompClient(token: string): Promise<Client> {
+	const brokerURL = process.env.NEXT_PUBLIC_WS_BROKERURL!;
+	const socket = new SockJS(brokerURL);
+
 	const client = new Client({
-		brokerURL: process.env.NEXT_PUBLIC_WS_BROKERURL,
+		webSocketFactory: () => socket,
 		connectHeaders: {
 			Authorization: `Bearer ${token}`,
 		},
