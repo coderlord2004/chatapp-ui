@@ -2,6 +2,9 @@
 
 import { TypeAnimation } from 'react-type-animation';
 import Link from 'next/link';
+import Logo from '@/components/Logo';
+import { IoIosSunny } from "react-icons/io";
+import { FaMoon } from "react-icons/fa6";
 
 const entries = [
 	{
@@ -25,15 +28,7 @@ export default function Page() {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center p-4">
 			<header className="flex w-full max-w-4xl items-center justify-between">
-				<div className="relative h-auto w-auto">
-					<img
-						src="https://video-public.canva.com/VAFCQz1zbhs/v/fc502b099a.gif"
-						className="h-[70px] w-auto"
-					/>
-					<h1 className="absolute top-[50%] left-[80px] translate-y-[-60%] transform bg-gradient-to-r from-[#D86587] to-[#54ABF4] bg-clip-text text-2xl font-bold text-transparent">
-						NextChat
-					</h1>
-				</div>
+				<Logo />
 				<div className="flex space-x-4">
 					<Link
 						href="/login"
@@ -48,10 +43,12 @@ export default function Page() {
 						Đăng ký
 					</Link>
 				</div>
+						<div></div>
+
 			</header>
 
-			<main className="mt-8 flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row">
-				<div className="flex-1 space-y-6">
+			<main className="mt-8 flex w-full max-w-6xl flex-col items-center justify-center md:flex-row">
+				<div className="flex-1 space-y-6 ml-[10px]">
 					<h2 className="text-4xl font-bold text-white md:text-5xl">
 						Kết nối mọi lúc, <br />
 						<span className="text-blue-600">
@@ -86,7 +83,7 @@ export default function Page() {
 					</div>
 				</div>
 
-				<div className="animate-fade-in-to-right flex flex-1 justify-center">
+				<div className="animate-fade-in-to-right flex flex-1 justify-end">
 					<img
 						src="/bg_image.jpg"
 						alt="Chat App Illustration"
@@ -95,7 +92,6 @@ export default function Page() {
 				</div>
 			</main>
 
-			{/* Features Section */}
 			<section className="mt-16 mb-12 w-full max-w-4xl">
 				<h3 className="mb-8 text-center text-2xl font-bold">
 					Tính năng nổi bật
