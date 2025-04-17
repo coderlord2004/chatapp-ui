@@ -1,13 +1,13 @@
 import {
 	createContext,
 	type ReactNode,
-	useCallback,
 	useContext,
 	useEffect,
 	useRef,
 	useState,
 } from 'react';
 import { type Client } from '@stomp/stompjs';
+import { Mutex } from 'async-mutex';
 import { decodeJwt } from 'jose';
 
 import getStompClient from '@/services/websocket';
@@ -23,23 +23,28 @@ function WebSocketContextProvider({ children, token }: Props) {
 	const [stompClient, setStompClient] = useState<Client | undefined>(undefined);
 	const jwtIssuer = useRef<string | undefined>(undefined);
 
-	// TODO: handle exception when decodeJwt and connect to client
-	const updateStompClient = useCallback(async () => {
-		const { sub } = decodeJwt(token);
-		const isNewUser = sub !== jwtIssuer.current;
-
-		if (!isNewUser) {
-			return;
-		}
-
-		const stompClient = await getStompClient(token);
-		setStompClient(stompClient);
-		jwtIssuer.current = sub;
-	}, [token]);
+	const mutex = useRef(new Mutex());
 
 	useEffect(() => {
-		updateStompClient();
-	}, [updateStompClient]);
+		const abortController = new AbortController();
+		const signal = abortController.signal;
+
+		// TODO: handle exception when decodeJwt and connect to client
+		mutex.current.runExclusive(async () => {
+			const { sub } = decodeJwt(token);
+			const isNewUser = sub !== jwtIssuer.current;
+
+			if (!isNewUser) {
+				return;
+			}
+
+			const stompClient = await getStompClient(token, signal);
+			setStompClient(stompClient);
+			jwtIssuer.current = sub;
+		});
+
+		return () => abortController.abort();
+	}, [token]);
 
 	useEffect(() => {
 		return () => {
