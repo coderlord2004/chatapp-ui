@@ -1,7 +1,7 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
-async function getStompClient(token: string): Promise<Client> {
+async function getStompClient(token: string, signal: AbortSignal) {
 	const brokerURL = process.env.NEXT_PUBLIC_WS_BROKERURL!;
 	const socket = new SockJS(brokerURL);
 
@@ -12,7 +12,11 @@ async function getStompClient(token: string): Promise<Client> {
 		},
 	});
 
-	return new Promise((resolve, reject) => {
+	return new Promise<Client | undefined>((resolve, reject) => {
+		signal.addEventListener('abort', () => {
+			resolve(client);
+		});
+
 		client.onConnect = (frame) => {
 			console.log(frame);
 			resolve(client);
