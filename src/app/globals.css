@@ -1,8 +1,5 @@
 @import 'tailwindcss';
 
-@import '@fontsource-variable/roboto';
-@import '@fontsource-variable/fira-code';
-
 :root {
 	--background: #ffffff;
 	--foreground: #171717;

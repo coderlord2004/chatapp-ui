@@ -1,5 +1,9 @@
-import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
+import type { Metadata } from 'next';
+
+import '@fontsource-variable/roboto';
+import '@fontsource-variable/fira-code';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 import './globals.css';
 
@@ -11,9 +15,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
 	return (
 		<html lang="en">
-			<head>
-				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-v8QQ0YQ3H4K6Ic3PJkym91KoeNT5S3PnDKvqnwqFD1oiqIl653crGZplPdU5KKtHjO0QKcQ2aUlQZYjHczkmGw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
-			</head>
 			<body className="antialiased">{children}</body>
 		</html>
 	);
