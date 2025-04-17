@@ -9,6 +9,11 @@
 		"lint": "next lint",
 		"format": "prettier --write ."
 	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"sharp"
+		]
+	},
 	"dependencies": {
 		"@fontsource-variable/fira-code": "^5.2.5",
 		"@fontsource-variable/roboto": "^5.2.5",
@@ -24,17 +29,17 @@
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.3.1",
 		"@next/eslint-plugin-next": "^15.3.0",
-		"@tailwindcss/postcss": "^4.1.3",
+		"@tailwindcss/postcss": "^4.1.4",
 		"@types/node": "^20.17.30",
-		"@types/react": "^19.1.1",
+		"@types/react": "^19.1.2",
 		"@types/react-dom": "^19.1.2",
 		"@types/sockjs-client": "^1.5.4",
 		"eslint": "^9.24.0",
-		"eslint-config-next": "15.2.4",
+		"eslint-config-next": "15.3.0",
 		"eslint-plugin-react-hooks": "^5.2.0",
 		"prettier": "^3.5.3",
 		"prettier-plugin-tailwindcss": "^0.6.11",
-		"tailwindcss": "^4.1.3",
+		"tailwindcss": "^4.1.4",
 		"typescript": "^5.8.3"
 	}
 }
