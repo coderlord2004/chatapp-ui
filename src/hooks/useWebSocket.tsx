@@ -56,11 +56,11 @@ function WebSocketContextProvider({ children, token }: Props) {
 
 type Callback = (messageBody: unknown) => void;
 
-function useWebSocket(destination: string, callback: Callback) {
+function useWebSocket(destination: string | undefined, callback: Callback) {
 	const stompClient = useContext(WebSocketContext);
 
 	useEffect(() => {
-		if (!stompClient) {
+		if (!stompClient || destination === undefined) {
 			return;
 		}
 

@@ -3,8 +3,6 @@
 import { TypeAnimation } from 'react-type-animation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-import { IoIosSunny } from "react-icons/io";
-import { FaMoon } from "react-icons/fa6";
 
 const entries = [
 	{
@@ -43,12 +41,11 @@ export default function Page() {
 						Đăng ký
 					</Link>
 				</div>
-						<div></div>
-
+				<div></div>
 			</header>
 
 			<main className="mt-8 flex w-full max-w-6xl flex-col items-center justify-center md:flex-row">
-				<div className="flex-1 space-y-6 ml-[10px]">
+				<div className="ml-[10px] flex-1 space-y-6">
 					<h2 className="text-4xl font-bold text-white md:text-5xl">
 						Kết nối mọi lúc, <br />
 						<span className="text-blue-600">
