@@ -1,6 +1,10 @@
-import type { Metadata } from 'next';
 import type { PropsWithChildren } from 'react';
 import Providers from './providers';
+import type { Metadata } from 'next';
+
+import '@fontsource-variable/roboto';
+import '@fontsource-variable/fira-code';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 import './globals.css';
 
@@ -17,6 +21,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 					{children}
 				</Providers>
 			</body>
+			<body className="antialiased">{children}</body>
 		</html>
 	);
 }
