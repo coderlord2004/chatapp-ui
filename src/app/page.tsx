@@ -3,8 +3,8 @@
 import { TypeAnimation } from 'react-type-animation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
-import { IoIosSunny } from "react-icons/io";
-import { FaMoon } from "react-icons/fa6";
+import ThemeToggle from '@/components/ThemeToggle';
+import { useTheme } from '@/hooks/useTheme';
 
 const entries = [
 	{
@@ -25,31 +25,34 @@ const entries = [
 ];
 
 export default function Page() {
-	return (
-		<div className="flex min-h-screen flex-col items-center justify-center p-4">
-			<header className="flex w-full max-w-4xl items-center justify-between">
-				<Logo />
-				<div className="flex space-x-4">
-					<Link
-						href="/login"
-						className="px-4 py-2 font-medium text-blue-600 hover:underline"
-					>
-						Đăng nhập
-					</Link>
-					<Link
-						href="/signup"
-						className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
-					>
-						Đăng ký
-					</Link>
-				</div>
-						<div></div>
+	const { theme } = useTheme();
 
+	return (
+		<div className={`flex min-h-screen flex-col items-center justify-center p-4 ${(theme === 'dark') ? 'dark:bg-black dark:text-white' : 'dark:bg-white dark:text-black'}`}>
+			<header className={`flex w-full items-center justify-between pl-[70px] pr-[10px] rounded-[10px] ${(theme === 'dark') ? '' : 'dark:bg-black/80 dark:text-white'}`}>
+				<Logo />
+				<div className="flex items-center justify-between space-x-4">
+					<div className="flex space-x-4">
+						<Link
+							href="/login"
+							className="px-4 py-2 font-medium text-blue-600 hover:underline"
+						>
+							Đăng nhập
+						</Link>
+						<Link
+							href="/signup"
+							className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+						>
+							Đăng ký
+						</Link>
+					</div>
+					<ThemeToggle />
+				</div>
 			</header>
 
-			<main className="mt-8 flex w-full max-w-6xl flex-col items-center justify-center md:flex-row">
+			<main className="mt-8 flex gap-y-[10px] w-full max-w-6xl flex-col items-center justify-center md:flex-row">
 				<div className="flex-1 space-y-6 ml-[10px]">
-					<h2 className="text-4xl font-bold text-white md:text-5xl">
+					<h2 className="text-4xl font-bold md:text-5xl">
 						Kết nối mọi lúc, <br />
 						<span className="text-blue-600">
 							<TypeAnimation
