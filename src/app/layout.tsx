@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from 'react';
+import Providers from './providers';
 import type { Metadata } from 'next';
 
 import '@fontsource-variable/roboto';
@@ -15,6 +16,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
 	return (
 		<html lang="en">
+			<body className="antialiased">
+				<Providers>
+					{children}
+				</Providers>
+			</body>
 			<body className="antialiased">{children}</body>
 		</html>
 	);
