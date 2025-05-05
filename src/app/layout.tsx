@@ -21,7 +21,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
 					{children}
 				</Providers>
 			</body>
-			<body className="antialiased">{children}</body>
 		</html>
 	);
 }
