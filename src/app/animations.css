@@ -4,6 +4,7 @@
 	--animate-typing-effect-9:
 		typing 1.5s steps(9) 2s forwards, cursor 0.4s step-end infinite alternate;
 	--animate-fade-in-to-right: fadeInToRight 0.8s ease-out;
+	--animate-spinner: spinner 0.7s ease-out infinite;
 
 	@keyframes cursor {
 		50% {
@@ -30,6 +31,12 @@
 		100% {
 			opacity: 1;
 			transform: translateX(0);
+		}
+	}
+
+	@keyframes spinner {
+		to {
+			transform: rotate(360deg);
 		}
 	}
 }

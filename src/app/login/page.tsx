@@ -1,8 +1,62 @@
-import React from 'react';
+'use client'
+
+import React, { useState } from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form'
+import axios from 'axios';
+import { post } from '@/utils/request';
+import { useRouter } from 'next/navigation'
+import { useNotification } from '@/hooks/useNotification';
+import { useAuth } from '@/contexts/AuthContext';
+import Spinner from '@/components/Spinner';
+
+type FormData = {
+	username: string,
+	password: string
+}
 
 export default function Login() {
+	const { login } = useAuth()
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<FormData>()
+	const { showNotification } = useNotification()
+	const router = useRouter()
+	const [loading, setLoading] = useState<boolean>(true)
+
+	const handleLogin = async (formData: FormData) => {
+		setLoading(true)
+		try {
+			const result = await post('users/token/', {
+				username: formData.username,
+				password: formData.password,
+			})
+			login(result.accessToken, result.refreshToken)
+			showNotification({
+				type: 'success',
+				message: result.data || 'Đăng nhập thành công!'
+			})
+			setLoading(false)
+			router.push('/chat')
+		} catch (error) {
+			setLoading(false)
+			if (axios.isAxiosError(error)) {
+				showNotification({
+					type: 'error',
+					message: error.response?.data?.message || 'Đăng ký thất bại!'
+				})
+			} else {
+				showNotification({
+					type: 'error',
+					message: 'Đăng ký thất bại!'
+				})
+			}
+		}
+	}
+
 	return (
 		<div className="w-full min-h-screen flex items-center justify-center bg-[url('/image.jpg')] bg-center bg-no-repeat bg-cover p-[10px]">
 			<div className="flex flex-col sm:flex-row h-auto w-auto items-center justify-center rounded-[10px] border-[1px] border-solid border-white p-[10px] bg-black/70">
@@ -18,22 +72,31 @@ export default function Login() {
 						Log in connect with your friend!
 					</h1>
 				</div>
-				<form className="h-full max-w-[300px] sm:w-[300px] rounded-[10px] border-[1px] border-solid border-white p-[10px] shadow-[2px_2px_2px_grey] flex flex-col items-center justify-center space-y-[10px]">
+				<form
+					className="h-full max-w-[300px] sm:w-[300px] rounded-[10px] border-[1px] border-solid border-white p-[10px] shadow-[2px_2px_2px_grey] flex flex-col items-center justify-center space-y-[10px]"
+					onSubmit={handleSubmit(handleLogin)}
+				>
 					<Input
 						id="username"
 						type="text"
 						label="username"
 						refElement={undefined}
-						validation=""
-						error=""
+						validation={register('username', {
+							required: 'Tên đăng nhập bắt buộc',
+							minLength: { value: 3, message: 'Tối thiểu 3 ký tự' },
+						})}
+						error={errors.username?.message}
 					/>
 					<Input
 						id="password"
 						type="password"
 						label="password"
 						refElement={undefined}
-						validation=""
-						error=""
+						validation={register('password', {
+							required: 'Mật khẩu bắt buộc',
+							minLength: { value: 3, message: 'Tối thiểu 3 ký tự' },
+						})}
+						error={errors.password?.message}
 					/>
 					<div className='w-full px-[10px] flex items-center justify-between'>
 						Forgot password?
@@ -44,10 +107,13 @@ export default function Login() {
 					</div>
 
 					<button
-						className="h-[30px] w-full cursor-pointer rounded-[8px] bg-blue-600"
+						className="h-[30px] w-full cursor-pointer rounded-[8px] bg-blue-600 flex justify-center items-center"
+						disabled={loading}
 						type="submit"
 					>
-						Log in
+						{loading ? (
+							<Spinner />
+						) : 'Log in'}
 					</button>
 
 					<div className='w-full h-[1px] bg-slate-500 flex items-center justify-center relative my-[10px]'>
