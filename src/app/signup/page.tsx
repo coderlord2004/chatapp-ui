@@ -3,10 +3,11 @@
 import React from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
-import axios from 'axios';
+import axios from 'axios'
+import { post } from '@/utils/request'
 import { useForm } from 'react-hook-form'
-
-const webchat_base_url = process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL
+import { useNotification } from '@/hooks/useNotification';
+import { useRouter } from 'next/navigation'
 
 type FormData = {
 	username: string
@@ -15,29 +16,44 @@ type FormData = {
 }
 
 export default function Signup() {
+	const { showNotification } = useNotification()
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors },
 	} = useForm<FormData>()
+	const router = useRouter()
 
-	const handleRegister = async (data: FormData) => {
-		if (data.password !== data.rePassword) {
+	const handleRegister = async (formData: FormData) => {
+		if (formData.password !== formData.rePassword) {
 			alert('Mật khẩu nhập lại không khớp!')
 			return
 		}
 
 		try {
-			const response = await axios.post(`${webchat_base_url}api/v1/users/register/`, {
-				username: data.username,
-				password: data.password,
+			const result = await post('users/register/', {
+				username: formData.username,
+				password: formData.password
 			})
-			console.log('Đăng ký thành công:', response.data)
+			showNotification({
+				type: 'success',
+				message: result.data || 'Đăng ký thành công!'
+			})
+			router.push('/login')
 
 		} catch (error) {
-			console.error('Lỗi đăng ký:', error)
-			alert('Đăng ký thất bại!')
+			if (axios.isAxiosError(error)) {
+				showNotification({
+					type: 'error',
+					message: error.response?.data?.message || 'Đăng nhập thất bại!'
+				})
+			} else {
+				showNotification({
+					type: 'error',
+					message: 'Đăng nhập thất bại!'
+				})
+			}
 		}
 	}
 

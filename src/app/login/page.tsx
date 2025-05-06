@@ -5,8 +5,9 @@ import Input from '@/components/Input';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form'
 import axios from 'axios';
-
-const webchat_base_url = process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL
+import { post } from '@/utils/request';
+import { useRouter } from 'next/navigation'
+import { useNotification } from '@/hooks/useNotification';
 
 type FormData = {
 	username: string,
@@ -19,18 +20,32 @@ export default function Login() {
 		handleSubmit,
 		formState: { errors },
 	} = useForm<FormData>()
+	const { showNotification } = useNotification()
+	const router = useRouter()
 
-	const handleLogin = async (data: FormData) => {
+	const handleLogin = async (formData: FormData) => {
 		try {
-			const response = await axios.post(`${webchat_base_url}api/v1/users/token/`, {
-				username: data.username,
-				password: data.password,
+			const result = await post('users/token/', {
+				username: formData.username,
+				password: formData.password,
 			})
-			console.log('Đăng nhập thành công:', response.data)
-
+			showNotification({
+				type: 'success',
+				message: result.data || 'Đăng nhập thành công!'
+			})
+			router.push('/chat')
 		} catch (error) {
-			console.error('Lỗi đăng nhập:', error)
-			alert('Đăng nhập thất bại!')
+			if (axios.isAxiosError(error)) {
+				showNotification({
+					type: 'error',
+					message: error.response?.data?.message || 'Đăng ký thất bại!'
+				})
+			} else {
+				showNotification({
+					type: 'error',
+					message: 'Đăng ký thất bại!'
+				})
+			}
 		}
 	}
 
