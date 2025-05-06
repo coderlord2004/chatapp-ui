@@ -1,12 +1,15 @@
 import type { PropsWithChildren } from 'react';
-import Providers from './providers';
 import type { Metadata } from 'next';
+import { ThemeContextProvider } from '@/hooks/useTheme'
+import { NotificationProvider } from '@/hooks/useNotification'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 import '@fontsource-variable/roboto';
 import '@fontsource-variable/fira-code';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 import './globals.css';
+import './animation.css';
 
 export const metadata: Metadata = {
 	title: 'Chatting app',
@@ -17,9 +20,13 @@ export default function RootLayout({ children }: PropsWithChildren) {
 	return (
 		<html lang="en">
 			<body className="antialiased">
-				<Providers>
-					{children}
-				</Providers>
+				<AuthProvider>
+					<NotificationProvider>
+						<ThemeContextProvider>
+							{children}
+						</ThemeContextProvider>
+					</NotificationProvider>
+				</AuthProvider>
 			</body>
 		</html>
 	);
