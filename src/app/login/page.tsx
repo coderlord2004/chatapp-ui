@@ -25,7 +25,7 @@ export default function Login() {
 	} = useForm<FormData>()
 	const { showNotification } = useNotification()
 	const router = useRouter()
-	const [loading, setLoading] = useState<boolean>(true)
+	const [loading, setLoading] = useState<boolean>(false)
 
 	const handleLogin = async (formData: FormData) => {
 		setLoading(true)
@@ -34,19 +34,17 @@ export default function Login() {
 				username: formData.username,
 				password: formData.password,
 			})
-			login(result.accessToken, result.refreshToken)
+			login(result.access, result.refresh)
 			showNotification({
 				type: 'success',
 				message: result.data || 'Đăng nhập thành công!'
 			})
-			setLoading(false)
 			router.push('/chat')
 		} catch (error) {
-			setLoading(false)
 			if (axios.isAxiosError(error)) {
 				showNotification({
 					type: 'error',
-					message: error.response?.data?.message || 'Đăng ký thất bại!'
+					message: error.response?.data?.message || 'Đăng nhập thất bại!'
 				})
 			} else {
 				showNotification({
@@ -54,6 +52,8 @@ export default function Login() {
 					message: 'Đăng ký thất bại!'
 				})
 			}
+		} finally {
+			setLoading(false)
 		}
 	}
 

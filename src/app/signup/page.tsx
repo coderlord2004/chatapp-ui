@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useState } from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
 import axios from 'axios'
@@ -8,6 +8,7 @@ import { post } from '@/utils/request'
 import { useForm } from 'react-hook-form'
 import { useNotification } from '@/hooks/useNotification';
 import { useRouter } from 'next/navigation'
+import Spinner from '@/components/Spinner'
 
 type FormData = {
 	username: string
@@ -24,13 +25,14 @@ export default function Signup() {
 		formState: { errors },
 	} = useForm<FormData>()
 	const router = useRouter()
+	const [loading, setLoading] = useState<boolean>(false)
 
 	const handleRegister = async (formData: FormData) => {
 		if (formData.password !== formData.rePassword) {
 			alert('Mật khẩu nhập lại không khớp!')
 			return
 		}
-
+		setLoading(true)
 		try {
 			const result = await post('users/register/', {
 				username: formData.username,
@@ -54,6 +56,8 @@ export default function Signup() {
 					message: 'Đăng nhập thất bại!'
 				})
 			}
+		} finally {
+			setLoading(false)
 		}
 	}
 
@@ -122,7 +126,11 @@ export default function Signup() {
 						className="h-[30px] w-full cursor-pointer rounded-[8px] bg-blue-600 text-white"
 						type="submit"
 					>
-						Đăng ký
+						{loading ? (
+							<Spinner />
+						) : (
+							'Đăng kí'
+						)}
 					</button>
 
 					<div className='w-full h-[1px] bg-slate-500 flex items-center justify-center relative my-[10px]'>
