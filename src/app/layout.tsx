@@ -7,6 +7,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import '@fontsource-variable/roboto';
 import '@fontsource-variable/fira-code';
 import '@fortawesome/fontawesome-free/css/all.css';
+import RouteProgress from '@/components/RouteProgress';
 
 import './globals.css';
 
@@ -21,7 +22,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
 			<body className="antialiased">
 				<AuthProvider>
 					<NotificationProvider>
-						<ThemeContextProvider>{children}</ThemeContextProvider>
+						<ThemeContextProvider>
+							<RouteProgress />
+							{children}
+						</ThemeContextProvider>
 					</NotificationProvider>
 				</AuthProvider>
 			</body>

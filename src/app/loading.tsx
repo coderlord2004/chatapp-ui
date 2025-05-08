@@ -1,3 +1,4 @@
+
 export default function Loading() {
-	return <div></div>;
+	return <p className='text-red-500'>Đang tải trang ...</p>;
 }

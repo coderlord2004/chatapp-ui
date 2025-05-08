@@ -1,32 +1,29 @@
-'use client';
+// utils/request.ts
+'use client'
 
-import axios from 'axios';
+import axios from 'axios'
 
-let accessToken = null;
-
-if (global?.window !== undefined) {
-	accessToken = localStorage.getItem('accessToken');
+const getAccessToken = () => {
+	if (typeof window !== 'undefined') {
+		return localStorage.getItem('accessToken')
+	}
+	return null
 }
 
 const request = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL,
-});
+	timeout: 15000,
+})
 
-export const post = async (path: string, data = {}, config = {}) => {
-	const response = await request.post(path, data, config);
-	return response.data;
-};
-
-export const get = async (
-	path: string,
-	config = {
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
+request.interceptors.request.use(
+	(config) => {
+		const token = getAccessToken()
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`
+		}
+		return config
 	},
-) => {
-	const response = await request.get(path, config);
-	return response.data;
-};
+	(error) => Promise.reject(error)
+)
 
-export default request;
+export default request

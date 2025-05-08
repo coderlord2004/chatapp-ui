@@ -38,7 +38,7 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
 
 			setTimeout(() => {
 				setNotifications((prev) => prev.filter((n) => n.id !== id));
-			}, 3000);
+			}, 4000);
 		},
 		[],
 	);

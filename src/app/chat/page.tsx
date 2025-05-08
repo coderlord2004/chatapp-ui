@@ -1,73 +1,66 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import { post } from '@/utils/request';
-import { useAuth } from '@/contexts/AuthContext';
-import { decodeJwt } from 'jose';
-import useMessages from '@/hooks/useMessages';
+import { useState, useEffect } from 'react';
+import { useRequest } from '@/hooks/useRequest';
+import ChatRoom from '@/components/ChatRoom';
+import { FaUserCircle } from "react-icons/fa";
 
-function useWebSocketPath() {
-	const searchParams = useSearchParams();
-
-	let id = searchParams.get('room');
-	if (!id) id = '1'; // fallback
-
-	return id;
+type ChatRoomInfo = {
+	id: number,
+	name: string,
+	avatar: undefined | string | Blob,
+	membersUsername: [],
+	type: string,
+	createdOn: Date
 }
 
 export default function Page() {
-	const { accessToken } = useAuth();
-	const roomId = useWebSocketPath();
+	const { get } = useRequest()
+	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([])
+	const [chatRoomActive, setChatRoomActive] = useState<ChatRoomInfo | null>(null)
 
-	const [newMessage, setNewMessage] = useState('');
-	const decodedJwt = accessToken && decodeJwt(accessToken);
-
-	const messages = useMessages(roomId);
-
-	const sendMessage = async () => {
-		if (!newMessage.trim()) {
-			// TODO: disable button
-			return;
+	useEffect(() => {
+		const getChatRoom = async () => {
+			const result = await get('chatrooms/')
+			console.log(result)
+			setChatRooms(result)
+			setChatRoomActive(result[0])
 		}
-
-		await post(
-			`messages/${roomId}`,
-			{ message: newMessage },
-			{ headers: { Authorization: `Bearer ${accessToken}` } },
-		);
-
-		setNewMessage('');
-	};
+		getChatRoom()
+	}, [])
 
 	return (
-		<div className="flex h-screen flex-col p-4">
-			<div className="mb-4 flex-1 overflow-y-auto rounded-md border bg-white p-4 text-black shadow">
-				{messages.map((msg, idx) => (
+		<div className="flex h-screen flex-col p-4 relative">
+			<div className='side-bar fixed top-0 left-0 bottom-0 w-[20%] min-w-[200px] bg-black'>
+				{chatRooms.length ? chatRooms.map((chatRoom, index) => (
 					<div
-						key={idx}
-						className={`mb-2 ${decodedJwt && decodedJwt.sub === msg.sender ? 'text-right' : 'text-left'}`}
+						key={chatRoom.id}
+						onClick={() => setChatRoomActive(chatRoom)}
+						style={chatRoom === chatRoomActive ? {
+							color: 'green'
+						} : {
+							color: 'black'
+						}}
+						className='bg-slate-700 rounded-[5px] flex gap-x-[7px] p-[8px] cursor-pointer'
 					>
-						<strong>{msg.sender}:</strong> {msg.message}
+						{chatRoom.avatar ? (
+							<img src={chatRoom.avatar} alt="" />
+						) : (
+							<div>
+								<FaUserCircle style={{
+									width: '25px',
+									height: '25px'
+								}} />
+							</div>
+						)}
+
+						<p>{chatRoom.name}</p>
 					</div>
-				))}
+				)) : (
+					<div></div>
+				)}
 			</div>
-			<div className="flex gap-2">
-				<input
-					type="text"
-					value={newMessage}
-					onChange={(e) => setNewMessage(e.target.value)}
-					onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-					placeholder="Nhập tin nhắn..."
-					className="flex-1 rounded border px-3 py-2"
-				/>
-				<button
-					onClick={sendMessage}
-					className="rounded bg-blue-500 px-4 py-2 text-white"
-				>
-					Gửi
-				</button>
-			</div>
+			{chatRoomActive && <ChatRoom chatRoomInfo={chatRoomActive} />}
 		</div>
 	);
 }

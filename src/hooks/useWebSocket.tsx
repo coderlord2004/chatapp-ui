@@ -71,7 +71,6 @@ function useWebSocket(destination: string | undefined, callback: Callback) {
 
 		const subscription = stompClient.subscribe(destination, (message) => {
 			const messageBody = JSON.parse(message.body);
-			console.log('messageBody:', messageBody);
 			callback(messageBody);
 		});
 
