@@ -27,14 +27,20 @@ body {
 	color: var(--foreground);
 }
 
-/* nprogress custom */
+.gradientColor {
+	background: linear-gradient(to right, #D86587, #54ABF4);
+	background-clip: text;
+	font-weight: bold;
+	font-size: 120%;
+	color: transparent;
+}
+
 #nprogress {
 	pointer-events: none;
 }
 
 #nprogress .bar {
 	background: #3b82f6;
-	/* xanh dương Tailwind: bg-blue-500 */
 	position: fixed;
 	z-index: 9999;
 	top: 0;
