@@ -1,8 +1,8 @@
 import type { PropsWithChildren } from 'react';
 import type { Metadata } from 'next';
-import { ThemeContextProvider } from '@/hooks/useTheme'
-import { NotificationProvider } from '@/hooks/useNotification'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { ThemeContextProvider } from '@/hooks/useTheme';
+import { NotificationProvider } from '@/hooks/useNotification';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 import '@fontsource-variable/roboto';
 import '@fontsource-variable/fira-code';
@@ -21,9 +21,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 			<body className="antialiased">
 				<AuthProvider>
 					<NotificationProvider>
-						<ThemeContextProvider>
-							{children}
-						</ThemeContextProvider>
+						<ThemeContextProvider>{children}</ThemeContextProvider>
 					</NotificationProvider>
 				</AuthProvider>
 			</body>

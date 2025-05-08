@@ -17,8 +17,8 @@ export default function Input(props: InputProps) {
 	const [showPassword, setShowPassword] = useState(false);
 
 	return (
-		<div className="relative mt-[10px] w-full h-auto flex flex-col items-center justify-between cursor-pointer ">
-			<div className='w-full h-full flex border-[1px] border-solid border-white rounded-[7px] p-1 px-3 text-white'>
+		<div className="relative mt-[10px] flex h-auto w-full cursor-pointer flex-col items-center justify-between">
+			<div className="flex h-full w-full rounded-[7px] border-[1px] border-solid border-white p-1 px-3 text-white">
 				<input
 					id={id}
 					ref={refElement}
@@ -37,11 +37,13 @@ export default function Input(props: InputProps) {
 						}
 						alt={showPassword ? 'hide' : 'visible'}
 						onClick={() => setShowPassword(!showPassword)}
-						className="w-[20px] h-auto cursor-pointer transform translate-x-[5px]"
+						className="h-auto w-[20px] translate-x-[5px] transform cursor-pointer"
 					/>
 				)}
 			</div>
-			{error && <p className="w-full text-red-500 text-right mt-[3px]">{error}</p>}
+			{error && (
+				<p className="mt-[3px] w-full text-right text-red-500">{error}</p>
+			)}
 		</div>
 	);
 }

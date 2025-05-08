@@ -7,7 +7,7 @@ async function getStompClient(token: string, signal: AbortSignal) {
 
 	const client = new Client({
 		webSocketFactory: () => {
-			return socket
+			return socket;
 		},
 		connectHeaders: {
 			Authorization: `Bearer ${token}`,

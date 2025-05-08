@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 
 export default function Layout({ children }: PropsWithChildren) {
-	const { accessToken } = useAuth()
+	const { accessToken } = useAuth();
 
 	return (
 		<>

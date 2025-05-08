@@ -1,57 +1,75 @@
-'use client'
+'use client';
 
-import React, { useContext, useState, createContext, useCallback } from 'react'
-import Notification from '@/components/Notification'
+import React, {
+	useContext,
+	useState,
+	createContext,
+	useCallback,
+	PropsWithChildren,
+} from 'react';
+import Notification from '@/components/Notification';
 
 type NotificationType = {
-    id: number
-    message: string
-    type: 'success' | 'error' | 'info'
-}
+	id: number;
+	message: string;
+	type: 'success' | 'error' | 'info';
+};
 
 type NotificationContextType = {
-    showNotification: (notification: Omit<NotificationType, 'id'>) => void
-}
+	showNotification: (notification: Omit<NotificationType, 'id'>) => void;
+};
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
+const NotificationContext = createContext<NotificationContextType | undefined>(
+	undefined,
+);
 
-export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
-    const [notifications, setNotifications] = useState<NotificationType[]>([])
+export const NotificationProvider = ({ children }: PropsWithChildren) => {
+	const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
-    const showNotification = useCallback((notification: Omit<NotificationType, 'id'>) => {
-        const id = Date.now()
-        const newNotification: NotificationType = {
-            ...notification,
-            id
-        }
+	const showNotification = useCallback(
+		(notification: Omit<NotificationType, 'id'>) => {
+			const id = Date.now();
+			const newNotification: NotificationType = {
+				...notification,
+				id,
+			};
 
-        setNotifications(prev => [...prev, newNotification])
+			setNotifications((prev) => [...prev, newNotification]);
 
-        setTimeout(() => {
-            setNotifications(prev => prev.filter(n => n.id !== id))
-        }, 3000)
-    }, [])
+			setTimeout(() => {
+				setNotifications((prev) => prev.filter((n) => n.id !== id));
+			}, 3000);
+		},
+		[],
+	);
 
-    const removeNotification = (id: number) => {
-        setNotifications(prev => prev.filter(n => n.id !== id))
-    }
+	const removeNotification = (id: number) => {
+		setNotifications((prev) => prev.filter((n) => n.id !== id));
+	};
 
-    return (
-        <NotificationContext.Provider value={{ showNotification }}>
-            {children}
-            <div className="fixed top-4 right-4 space-y-2 z-50">
-                {notifications.map(notification => (
-                    <Notification key={notification.id} {...notification} onClose={removeNotification} />
-                ))}
-            </div>
-        </NotificationContext.Provider>
-    )
-}
+	return (
+		<NotificationContext.Provider value={{ showNotification }}>
+			{children}
+			<div className="fixed top-4 right-4 z-50 space-y-2">
+				{notifications.map((notification) => (
+					<Notification
+						key={notification.id}
+						{...notification}
+						onClose={removeNotification}
+					/>
+				))}
+			</div>
+		</NotificationContext.Provider>
+	);
+};
 
 export const useNotification = () => {
-    const context = useContext(NotificationContext)
-    if (!context) {
-        throw new Error('useNotification must be used within a NotificationProvider')
-    }
-    return context
-}
+	const context = useContext(NotificationContext);
+
+	if (!context) {
+		throw new Error(
+			'useNotification must be used within a NotificationProvider',
+		);
+	}
+	return context;
+};

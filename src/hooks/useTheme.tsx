@@ -1,40 +1,46 @@
-"use client"
+'use client';
 
 import {
-    createContext,
-    type ReactNode,
-    useContext,
-    useEffect,
-    useState,
+	createContext,
+	type PropsWithChildren,
+	useContext,
+	useEffect,
+	useState,
 } from 'react';
 
-type Theme = 'dark' | 'light'
+type Theme = 'dark' | 'light';
 
 export const ThemeContext = createContext({
-    theme: 'dark',
-    toggleTheme: () => { }
+	theme: 'dark',
+	toggleTheme: () => {},
 });
 
-export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
-    const [theme, setTheme] = useState<Theme>('dark');
+export const useTheme = () => useContext(ThemeContext);
 
-    useEffect(() => {
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme === 'light' || storedTheme === 'dark') {
-            setTheme(storedTheme);
-        }
-    }, []);
-
-    const toggleTheme = () => {
-        localStorage.setItem('theme', theme === 'dark' ? 'light' : 'dark')
-        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-    }
-
-    return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-            {children}
-        </ThemeContext.Provider>
-    )
+function ThemeProvider({ children }: PropsWithChildren) {
+	const { theme } = useTheme();
+	const className = theme === 'dark' ? theme : '';
+	return <div className={className}>{children}</div>;
 }
 
-export const useTheme = () => useContext(ThemeContext)
+export const ThemeContextProvider = ({ children }: PropsWithChildren) => {
+	const [theme, setTheme] = useState<Theme>('dark');
+
+	useEffect(() => {
+		const storedTheme = localStorage.getItem('theme') as Theme;
+		if (storedTheme !== null) {
+			setTheme(storedTheme);
+		}
+	}, []);
+
+	const toggleTheme = () => {
+		localStorage.setItem('theme', theme === 'dark' ? 'light' : 'dark');
+		setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+	};
+
+	return (
+		<ThemeContext.Provider value={{ theme, toggleTheme }}>
+			<ThemeProvider>{children}</ThemeProvider>
+		</ThemeContext.Provider>
+	);
+};

@@ -1,69 +1,68 @@
-'use client'
+'use client';
 
 import React, { useState } from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
-import axios from 'axios'
-import { post } from '@/utils/request'
-import { useForm } from 'react-hook-form'
+import axios from 'axios';
+import { post } from '@/utils/request';
+import { useForm } from 'react-hook-form';
 import { useNotification } from '@/hooks/useNotification';
-import { useRouter } from 'next/navigation'
-import Spinner from '@/components/Spinner'
+import { useRouter } from 'next/navigation';
+import Spinner from '@/components/Spinner';
 
 type FormData = {
-	username: string
-	password: string
-	rePassword: string
-}
+	username: string;
+	password: string;
+	rePassword: string;
+};
 
 export default function Signup() {
-	const { showNotification } = useNotification()
+	const { showNotification } = useNotification();
 	const {
 		register,
 		handleSubmit,
 		watch,
 		formState: { errors },
-	} = useForm<FormData>()
-	const router = useRouter()
-	const [loading, setLoading] = useState<boolean>(false)
+	} = useForm<FormData>();
+	const router = useRouter();
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const handleRegister = async (formData: FormData) => {
 		if (formData.password !== formData.rePassword) {
-			alert('Mật khẩu nhập lại không khớp!')
-			return
+			alert('Mật khẩu nhập lại không khớp!');
+			return;
 		}
-		setLoading(true)
+		setLoading(true);
 		try {
 			const result = await post('users/register/', {
 				username: formData.username,
-				password: formData.password
-			})
+				password: formData.password,
+			});
 			showNotification({
 				type: 'success',
-				message: result.data || 'Đăng ký thành công!'
-			})
-			router.push('/login')
-
+				message: result.data || 'Đăng ký thành công!',
+			});
+			router.push('/login');
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				showNotification({
 					type: 'error',
-					message: error.response?.data?.message || 'Đăng nhập thất bại!'
-				})
+					message: error.response?.data?.message || 'Đăng nhập thất bại!',
+				});
 			} else {
 				showNotification({
 					type: 'error',
-					message: 'Đăng nhập thất bại!'
-				})
+					message: 'Đăng nhập thất bại!',
+				});
 			}
 		} finally {
-			setLoading(false)
+			setLoading(false);
 		}
-	}
+	};
 
 	return (
-		<div className="w-full min-h-screen flex items-center justify-center bg-[url('/image.jpg')] bg-center bg-no-repeat bg-cover p-[10px]">
-			<div className="flex flex-col sm:flex-row h-auto w-auto items-center justify-center rounded-[10px] border-[1px] border-solid border-white p-[10px] bg-black/70">
+		<div className="flex min-h-screen w-full items-center justify-center bg-[url('/image.jpg')] bg-cover bg-center bg-no-repeat p-[10px]">
+			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] sm:flex-row">
 				<div className="flex w-[250px] flex-col items-center p-[10px]">
 					<Link href="/">
 						<img
@@ -78,7 +77,7 @@ export default function Signup() {
 				</div>
 
 				<form
-					className="flex flex-col space-y-[5px] h-auto max-w-[300px] sm:w-[300px] rounded-[10px] border-[1px] border-solid border-white p-[10px] shadow-[2px_2px_2px_grey]"
+					className="flex h-auto max-w-[300px] flex-col space-y-[5px] rounded-[10px] border-[1px] border-solid border-white p-[10px] shadow-[2px_2px_2px_grey] sm:w-[300px]"
 					onSubmit={handleSubmit(handleRegister)}
 				>
 					<Input
@@ -112,33 +111,32 @@ export default function Signup() {
 						refElement={undefined}
 						validation={register('rePassword', {
 							required: 'Vui lòng nhập lại mật khẩu',
-							validate: value => value === watch('password') || 'Mật khẩu không khớp',
+							validate: (value) =>
+								value === watch('password') || 'Mật khẩu không khớp',
 						})}
 						error={errors.rePassword?.message}
 					/>
 
-					<div className="flex items-center justify-between px-[10px] my-[5px]">
+					<div className="my-[5px] flex items-center justify-between px-[10px]">
 						<p>Have an account?</p>
-						<Link href="/login" className='text-blue-500 hover:underline'>Log in</Link>
+						<Link href="/login" className="text-blue-500 hover:underline">
+							Log in
+						</Link>
 					</div>
 
 					<button
 						className="h-[30px] w-full cursor-pointer rounded-[8px] bg-blue-600 text-white"
 						type="submit"
 					>
-						{loading ? (
-							<Spinner />
-						) : (
-							'Đăng kí'
-						)}
+						{loading ? <Spinner /> : 'Đăng kí'}
 					</button>
 
-					<div className='w-full h-[1px] bg-slate-500 flex items-center justify-center relative my-[10px]'>
-						<p className='absolute px-[10px] bg-black'>Or</p>
+					<div className="relative my-[10px] flex h-[1px] w-full items-center justify-center bg-slate-500">
+						<p className="absolute bg-black px-[10px]">Or</p>
 					</div>
 
-					<button className="h-[30px] w-full p-[5px] cursor-pointer rounded-[8px] bg-red-600 mt-[10px] flex items-center justify-center text-white">
-						<img src="/google.png" alt="" className="w-auto h-full" />
+					<button className="mt-[10px] flex h-[30px] w-full cursor-pointer items-center justify-center rounded-[8px] bg-red-600 p-[5px] text-white">
+						<img src="/google.png" alt="" className="h-full w-auto" />
 						<p className="ml-[5px]">Sign up with Google</p>
 					</button>
 				</form>

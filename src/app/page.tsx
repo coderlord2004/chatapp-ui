@@ -4,7 +4,6 @@ import { TypeAnimation } from 'react-type-animation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import ThemeToggle from '@/components/ThemeToggle';
-import { useTheme } from '@/hooks/useTheme';
 
 const entries = [
 	{
@@ -25,11 +24,9 @@ const entries = [
 ];
 
 export default function Page() {
-	const { theme } = useTheme();
-
 	return (
-		<div className={`flex min-h-screen flex-col items-center justify-center p-4 ${(theme === 'dark') ? 'dark:bg-black dark:text-white' : 'dark:bg-white dark:text-black'} transition-all duration-500`}>
-			<header className={`flex w-full items-center justify-between pl-[70px] pr-[10px] rounded-[10px] ${(theme === 'dark') ? '' : 'dark:bg-black/80 dark:text-white'}`}>
+		<div className="flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-black dark:text-white">
+			<header className="flex w-full items-center justify-between rounded-[10px] pr-[10px] pl-[70px] dark:bg-black/80 dark:text-white">
 				<Logo />
 				<div className="flex items-center justify-between space-x-4">
 					<div className="flex space-x-4">
@@ -50,8 +47,8 @@ export default function Page() {
 				</div>
 			</header>
 
-			<main className="mt-8 flex gap-y-[10px] gap-x-[10px] w-full max-w-6xl flex-col items-center justify-center md:flex-row">
-				<div className="flex-1 space-y-6 ml-[10px]">
+			<main className="mt-8 flex w-full max-w-6xl flex-col items-center justify-center gap-x-[10px] gap-y-[10px] md:flex-row">
+				<div className="ml-[10px] flex-1 space-y-6">
 					<h2 className="text-4xl font-bold md:text-5xl">
 						Kết nối mọi lúc, <br />
 						<span className="text-blue-600">
@@ -86,11 +83,11 @@ export default function Page() {
 					</div>
 				</div>
 
-				<div className="animate-fade-in-to-right flex flex-1  justify-end group">
+				<div className="animate-fade-in-to-right group flex flex-1 justify-end">
 					<img
 						src="/bg_image.jpg"
 						alt="Chat App Illustration"
-						className="h-auto w-full max-w-md rounded-lg shadow-xl object-cover group-hover:scale-104 transition-transform duration-300"
+						className="h-auto w-full max-w-md rounded-lg object-cover shadow-xl transition-transform duration-300 group-hover:scale-104"
 					/>
 				</div>
 			</main>

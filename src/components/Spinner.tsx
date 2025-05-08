@@ -1,12 +1,9 @@
 'use client';
 
 function Spinner() {
-
-    return (
-        <div className="w-[25px] h-[25px] rounded-[50%] border-y-[4px] border-y-solid border-y-white border-x-[4px] border-x-solid border-x-transparent animate-spinner-custom">
-
-        </div>
-    );
+	return (
+		<div className="border-y-solid border-x-solid animate-spinner-custom h-[25px] w-[25px] rounded-[50%] border-x-[4px] border-y-[4px] border-x-transparent border-y-white"></div>
+	);
 }
 
 export default Spinner;
