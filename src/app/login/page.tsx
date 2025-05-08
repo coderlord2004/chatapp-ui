@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import { post } from '@/utils/request';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '@/hooks/useNotification';
@@ -41,7 +41,7 @@ export default function Login() {
 			});
 			router.push('/chat');
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
+			if (isAxiosError(error)) {
 				showNotification({
 					type: 'error',
 					message: error.response?.data?.message || 'Đăng nhập thất bại!',

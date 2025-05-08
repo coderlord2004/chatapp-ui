@@ -1,6 +1,12 @@
+'use client';
+
 import axios from 'axios';
 
-const accessToken = localStorage.getItem('accessToken') || null;
+let accessToken = null;
+
+if (global?.window !== undefined) {
+	accessToken = localStorage.getItem('accessToken');
+}
 
 const request = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL,
