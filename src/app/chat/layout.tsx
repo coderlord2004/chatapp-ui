@@ -1,21 +1,16 @@
 'use client';
 
-import { ChangeEvent, PropsWithChildren, useState } from 'react';
-
+import { PropsWithChildren } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 
 export default function Layout({ children }: PropsWithChildren) {
-	const [token, setToken] = useState<string>('');
-
-	function onChange(e: ChangeEvent<HTMLInputElement>) {
-		setToken(e.target.value);
-	}
+	const { accessToken } = useAuth()
 
 	return (
 		<>
-			<input type="text" onChange={onChange} className="bg-white text-black" />
-			{token.length > 0 ? (
-				<WebSocketContextProvider token={token}>
+			{accessToken ? (
+				<WebSocketContextProvider token={accessToken}>
 					{children}
 				</WebSocketContextProvider>
 			) : (

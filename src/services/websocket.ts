@@ -6,7 +6,9 @@ async function getStompClient(token: string, signal: AbortSignal) {
 	const socket = new SockJS(brokerURL);
 
 	const client = new Client({
-		webSocketFactory: () => socket,
+		webSocketFactory: () => {
+			return socket
+		},
 		connectHeaders: {
 			Authorization: `Bearer ${token}`,
 		},
@@ -17,8 +19,7 @@ async function getStompClient(token: string, signal: AbortSignal) {
 			resolve(client);
 		});
 
-		client.onConnect = (frame) => {
-			console.log(frame);
+		client.onConnect = () => {
 			resolve(client);
 		};
 

@@ -9,7 +9,6 @@ import '@fontsource-variable/fira-code';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 import './globals.css';
-import './animation.css';
 
 export const metadata: Metadata = {
 	title: 'Chatting app',
