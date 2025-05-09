@@ -24,7 +24,7 @@ export default function ChatRoom({ chatRoomInfo }: ChatRoomProps) {
     const { post } = useRequest()
     const messages = useMessages(`${roomId}`);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-
+    console.log('username:', decodedJwt?.sub)
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
