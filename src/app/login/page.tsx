@@ -4,12 +4,10 @@ import React, { useState } from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import { isAxiosError } from 'axios';
-import { post } from '@/utils/request';
 import { useRouter } from 'next/navigation';
-import { useNotification } from '@/hooks/useNotification';
 import { useAuth } from '@/contexts/AuthContext';
 import Spinner from '@/components/Spinner';
+import { useRequest } from '@/hooks/useRequest';
 
 type FormData = {
 	username: string;
@@ -17,13 +15,13 @@ type FormData = {
 };
 
 export default function Login() {
+	const { post } = useRequest()
 	const { login } = useAuth();
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm<FormData>();
-	const { showNotification } = useNotification();
 	const router = useRouter();
 	const [loading, setLoading] = useState<boolean>(false);
 
@@ -35,31 +33,15 @@ export default function Login() {
 				password: formData.password,
 			});
 			login(result.access, result.refresh);
-			showNotification({
-				type: 'success',
-				message: result.data || 'Đăng nhập thành công!',
-			});
 			router.push('/chat');
-		} catch (error) {
-			if (isAxiosError(error)) {
-				showNotification({
-					type: 'error',
-					message: error.response?.data?.message || 'Đăng nhập thất bại!',
-				});
-			} else {
-				showNotification({
-					type: 'error',
-					message: 'Đăng ký thất bại!',
-				});
-			}
 		} finally {
-			setLoading(false);
+			setLoading(false)
 		}
 	};
 
 	return (
 		<div className="flex min-h-screen w-full items-center justify-center bg-[url('/image.jpg')] bg-cover bg-center bg-no-repeat p-[10px]">
-			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] sm:flex-row">
+			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] sm:flex-row text-white">
 				<div className="flex w-[200px] flex-col items-center">
 					<Link href="/">
 						<img
@@ -71,6 +53,7 @@ export default function Login() {
 					<h1 className="w-full text-center">
 						Log in connect with your friend!
 					</h1>
+
 				</div>
 				<form
 					className="flex h-full max-w-[300px] flex-col items-center justify-center space-y-[10px] rounded-[10px] border-[1px] border-solid border-white p-[10px] shadow-[2px_2px_2px_grey] sm:w-[300px]"

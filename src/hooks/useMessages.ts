@@ -1,4 +1,4 @@
-import { get } from '@/utils/request';
+import { useRequest } from '@/hooks/useRequest'
 import { useEffect, useState } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,14 +12,12 @@ interface Message {
 export default function useMessages(roomId: string) {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const { accessToken } = useAuth();
-
+	const { get } = useRequest()
 	const webSocketPath = `/user/queue/chat/${roomId}`;
 
 	useEffect(() => {
 		async function getChatRoomMessage() {
-			const data = await get(`messages/${roomId}`, {
-				headers: { Authorization: `Bearer ${accessToken}` },
-			});
+			const data = await get(`messages/${roomId}`);
 
 			setMessages(data);
 		}

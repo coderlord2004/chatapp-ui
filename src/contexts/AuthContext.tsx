@@ -49,7 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	// Nếu đã đăng nhập => bọc children với WebSocketProvider
 	if (accessToken) {
-		console.log('accessToken is valid.');
 		return (
 			<AuthContext.Provider value={value}>
 				<WebSocketContextProvider token={accessToken}>

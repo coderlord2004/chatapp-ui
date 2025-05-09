@@ -3,10 +3,8 @@
 import React, { useState } from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
-import axios from 'axios';
-import { post } from '@/utils/request';
+import { useRequest } from '@/hooks/useRequest';
 import { useForm } from 'react-hook-form';
-import { useNotification } from '@/hooks/useNotification';
 import { useRouter } from 'next/navigation';
 import Spinner from '@/components/Spinner';
 
@@ -17,7 +15,7 @@ type FormData = {
 };
 
 export default function Signup() {
-	const { showNotification } = useNotification();
+	const { post } = useRequest()
 	const {
 		register,
 		handleSubmit,
@@ -33,31 +31,12 @@ export default function Signup() {
 			return;
 		}
 		setLoading(true);
-		try {
-			const result = await post('users/register/', {
-				username: formData.username,
-				password: formData.password,
-			});
-			showNotification({
-				type: 'success',
-				message: result.data || 'Đăng ký thành công!',
-			});
-			router.push('/login');
-		} catch (error) {
-			if (axios.isAxiosError(error)) {
-				showNotification({
-					type: 'error',
-					message: error.response?.data?.message || 'Đăng nhập thất bại!',
-				});
-			} else {
-				showNotification({
-					type: 'error',
-					message: 'Đăng nhập thất bại!',
-				});
-			}
-		} finally {
-			setLoading(false);
-		}
+		await post('users/register/', {
+			username: formData.username,
+			password: formData.password,
+		});
+		setLoading(false)
+		router.push('/login');
 	};
 
 	return (
