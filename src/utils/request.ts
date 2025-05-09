@@ -33,10 +33,10 @@ const refreshAccessToken = async () => {
 		if (!refreshToken) throw new Error('No refresh token');
 
 		const response = await axios.post(
-			`${process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL}/users/token/refresh/`,
-			{ refresh: refreshToken },
-		);
-
+			`${process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL}users/token/refresh/`,
+			{ refresh: refreshToken }
+		)
+    
 		const newAccessToken = response.data.access;
 		localStorage.setItem('accessToken', newAccessToken);
 		return newAccessToken;
