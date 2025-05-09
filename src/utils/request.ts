@@ -46,7 +46,7 @@ const refreshAccessToken = async () => {
 	}
 };
 
-const MSGPACK_CONTENT_TYPE = 'application/msgpack';
+const MSGPACK_CONTENT_TYPE = 'application/x-msgpack';
 
 function encodeRequest(data: unknown, headers: AxiosRequestHeaders) {
 	if (!(data instanceof FormData)) {
