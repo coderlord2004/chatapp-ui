@@ -54,7 +54,7 @@ export default function Page() {
 	return (
 		<div className="flex h-screen bg-gray-900 text-gray-100">
 			{/* Sidebar */}
-			<div className="w-64 min-w-[16rem] bg-gray-800 border-r border-gray-700 flex flex-col z-10">
+			<div className="w-64 min-w-[16rem] bg-gray-800 border-r border-gray-700 flex flex-col z-10 overflow-x-auto resize-x">
 				<div className="p-4 border-b border-gray-700 flex justify-between items-center">
 					<h2 className="gradientColor">Chat Rooms</h2>
 					<div className='flex gap-[14px] justify-center items-center'>
@@ -66,7 +66,7 @@ export default function Page() {
 								onClick={() => setShowInvitations(!isShowInvitations)}
 							>
 								{invitations && invitations.length && (
-									<div className='w-[20px] h-[20px] rounded-[50%] bg-red-500 absolute right-[-70%] top-[-70%] flex justify-center items-center text-[80%]'>
+									<div className='w-[20px] h-[20px] rounded-[50%] bg-red-500 absolute right-[-70%] top-[-70%] text-center text-[80%]'>
 										{invitations.length}
 									</div>
 								)}
@@ -99,6 +99,9 @@ export default function Page() {
 						</div>
 					</div>
 				</div>
+
+
+
 				<div className="flex-1 overflow-y-auto">
 					{chatRooms.length ? (
 						chatRooms.map((chatRoom) => (
