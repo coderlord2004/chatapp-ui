@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import './animations.css';
+@import '../styles/animations.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -29,7 +29,7 @@ body {
 }
 
 .gradientColor {
-	background: linear-gradient(to right, #D86587, #54ABF4);
+	background: linear-gradient(to right, #d86587, #54abf4);
 	background-clip: text;
 	font-weight: bold;
 	font-size: 120%;

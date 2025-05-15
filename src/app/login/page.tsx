@@ -15,7 +15,7 @@ type FormData = {
 };
 
 export default function Login() {
-	const { post } = useRequest()
+	const { post } = useRequest();
 	const { login } = useAuth();
 	const {
 		register,
@@ -35,13 +35,13 @@ export default function Login() {
 			login(result.access, result.refresh);
 			router.push('/chat');
 		} finally {
-			setLoading(false)
+			setLoading(false);
 		}
 	};
 
 	return (
 		<div className="flex min-h-screen w-full items-center justify-center bg-[url('/image.jpg')] bg-cover bg-center bg-no-repeat p-[10px]">
-			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] sm:flex-row text-white">
+			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] text-white sm:flex-row">
 				<div className="flex w-[200px] flex-col items-center">
 					<Link href="/">
 						<img
@@ -53,7 +53,6 @@ export default function Login() {
 					<h1 className="w-full text-center">
 						Log in connect with your friend!
 					</h1>
-
 				</div>
 				<form
 					className="flex h-full max-w-[300px] flex-col items-center justify-center space-y-[10px] rounded-[10px] border-[1px] border-solid border-white p-[10px] shadow-[2px_2px_2px_grey] sm:w-[300px]"

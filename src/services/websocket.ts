@@ -3,12 +3,9 @@ import SockJS from 'sockjs-client';
 
 async function getStompClient(token: string, signal: AbortSignal) {
 	const brokerURL = process.env.NEXT_PUBLIC_WS_BROKERURL!;
-	const socket = new SockJS(brokerURL);
 
 	const client = new Client({
-		webSocketFactory: () => {
-			return socket;
-		},
+		webSocketFactory: () => new SockJS(brokerURL),
 		connectHeaders: {
 			Authorization: `Bearer ${token}`,
 		},

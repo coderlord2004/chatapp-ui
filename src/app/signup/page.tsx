@@ -15,7 +15,7 @@ type FormData = {
 };
 
 export default function Signup() {
-	const { post } = useRequest()
+	const { post } = useRequest();
 	const {
 		register,
 		handleSubmit,
@@ -35,7 +35,7 @@ export default function Signup() {
 			username: formData.username,
 			password: formData.password,
 		});
-		setLoading(false)
+		setLoading(false);
 		router.push('/login');
 	};
 

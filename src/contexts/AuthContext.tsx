@@ -7,6 +7,8 @@ import {
 	useState,
 	ReactNode,
 } from 'react';
+
+import { decodeJwt } from 'jose';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 
 type AuthContextType = {
@@ -69,3 +71,12 @@ export const useAuth = () => {
 
 	return context;
 };
+
+export function useJwtDecoded() {
+	const { accessToken } = useAuth();
+	if (accessToken !== null) {
+		return decodeJwt(accessToken);
+	}
+
+	return null;
+}
