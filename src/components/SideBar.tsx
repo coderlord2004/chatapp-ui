@@ -21,9 +21,9 @@ type UserSearchResult = {
 function useSearchResult(keyword: string) {
 	const [searchUserLoading, setSearchUserLoading] = useState<boolean>(false);
 	const [searchResult, setSearchResult] = useState<UserSearchResult[]>([]);
+	const [searchKeyword, setSearchKeyword] = useState<string>(keyword);
 
 	const { get } = useRequest();
-	const [searchKeyword, setSearchKeyword] = useState<string>(keyword);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
