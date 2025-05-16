@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { ThemeContextProvider } from '@/hooks/useTheme';
 import { NotificationProvider } from '@/hooks/useNotification';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { SearchUserProvider } from '@/hooks/useSearchUser';
 
 import '@fontsource-variable/roboto';
 import '@fontsource-variable/fira-code';
@@ -23,8 +24,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
 				<AuthProvider>
 					<NotificationProvider>
 						<ThemeContextProvider>
-							<RouteProgress />
-							{children}
+							<SearchUserProvider>
+								<RouteProgress />
+								{children}
+							</SearchUserProvider>
 						</ThemeContextProvider>
 					</NotificationProvider>
 				</AuthProvider>

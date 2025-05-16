@@ -10,7 +10,7 @@ interface Message {
 	timestamp?: string;
 }
 
-export default function useMessages(roomId: string) {
+function useMessages(roomId: string) {
 	const [messages, setMessages] = useState<Message[]>([]);
 	const { accessToken } = useAuth();
 	const { get } = useRequest();
@@ -31,3 +31,14 @@ export default function useMessages(roomId: string) {
 
 	return messages;
 }
+
+function useLastMessages(roomId: string) {
+	const messages = useMessages(roomId);
+
+	return {
+		sender: messages[messages.length - 1].sender,
+		message: messages[messages.length - 1],
+	};
+}
+
+export { useMessages, useLastMessages };

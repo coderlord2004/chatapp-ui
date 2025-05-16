@@ -6,23 +6,28 @@ import ChatRoom from '@/components/ChatRoom';
 import { FaComment } from 'react-icons/fa';
 import { ChatRoomInfo } from '@/types/types';
 import { SideBar } from '@/components/SideBar';
+import { useJwtDecoded } from '@/contexts/AuthContext';
 
 export default function Page() {
 	const { get, post } = useRequest();
 	const [chatRoomActive, setChatRoomActive] = useState<ChatRoomInfo | null>(
 		null,
 	);
+	const [isSearchingUserName, setSearchingUsername] = useState<boolean>(false);
+	const jwt = useJwtDecoded();
+	const authUsername = jwt?.sub;
 
 	return (
 		<div className="flex h-screen bg-gray-900 text-gray-100">
 			{/* Sidebar */}
 			<SideBar
+				authUsername={authUsername}
 				chatRoomActive={chatRoomActive}
 				onUpdateChatRoomActive={(activeValue) => setChatRoomActive(activeValue)}
 			/>
 
 			{chatRoomActive ? (
-				<ChatRoom chatRoomInfo={chatRoomActive} />
+				<ChatRoom authUsername={authUsername} chatRoomInfo={chatRoomActive} />
 			) : (
 				<div className="flex flex-1 items-center justify-center bg-gray-900">
 					<div className="max-w-md p-6 text-center">
@@ -32,7 +37,10 @@ export default function Page() {
 						<h3 className="mb-2 text-xl font-medium">Select a chat</h3>
 						<p className="text-gray-400">
 							Choose a conversation from the sidebar to start messaging
-							<span className="cursor-pointer pl-[4px] text-xl font-bold hover:underline">
+							<span
+								className="cursor-pointer pl-[4px] text-xl font-bold hover:underline"
+								onClick={() => setSearchingUsername(!isSearchingUserName)}
+							>
 								or add more friend.
 							</span>
 						</p>

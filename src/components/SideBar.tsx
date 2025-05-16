@@ -4,63 +4,37 @@ import { FaUserCircle } from 'react-icons/fa';
 import { FaUserFriends } from 'react-icons/fa';
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { ChatRoomInfo, Invitation } from '@/types/types';
-import { useJwtDecoded } from '@/contexts/AuthContext';
-import Spinner from './Spinner';
-import { MdPersonAddAlt1 } from 'react-icons/md';
+import { TiTick } from 'react-icons/ti';
+import { IoClose } from 'react-icons/io5';
+import { useSearchUser } from '@/hooks/useSearchUser';
+import { useLastMessages } from '@/hooks/useMessages';
 
 type SideBarProps = {
+	authUsername: string | undefined;
 	chatRoomActive: ChatRoomInfo | null;
 	onUpdateChatRoomActive: (activeValue: ChatRoomInfo) => void;
 };
 
-type UserSearchResult = {
-	id: number;
-	username: string;
-};
-
 export function SideBar(props: SideBarProps) {
-	const { get, post } = useRequest();
-	const [invitations, setInvitation] = useState<Invitation[] | null>(null);
+	const { get, patch } = useRequest();
+	const [invitations, setInvitation] = useState<Invitation[] | undefined>(
+		undefined,
+	);
 	const [isShowInvitations, setShowInvitations] = useState<boolean>(false);
-	const [isSearchingUserName, setSearchingUsername] = useState<boolean>(false);
 	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([]);
-	const [userSearchResults, setUserSearchResults] = useState<
-		UserSearchResult[] | null
-	>(null);
-	const [searchUserLoading, setSearchUserLoading] = useState<boolean>(false);
+	const { setSearchUserModal } = useSearchUser();
+
 	const sideBarRef = useRef<HTMLDivElement>(null);
-	console.log('userSearchResults:', userSearchResults);
-	const jwt = useJwtDecoded();
-	const currentUsername = jwt?.sub;
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
 		if (name) {
 			return name;
 		}
-		console.log('membersUsername:', membersUsername);
 		return membersUsername
-			.filter((username) => username !== currentUsername)
+			.filter((username) => username !== props.authUsername)
 			.join(', ');
 	}
-
-	const sendInvitation = async (receiverName: string, chatGroupId = null) => {
-		await post('invitations/', {
-			receiverUserName: receiverName,
-			chatGroupId: chatGroupId,
-		});
-	};
-
-	const searchUser = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setSearchUserLoading(true);
-		const formData = new FormData(e.target as HTMLFormElement);
-		const data = await get(
-			`users/search/?q=${formData.get('searchingUsername')}`,
-		);
-		setUserSearchResults(data);
-		setSearchUserLoading(false);
-	};
 
 	const startResize = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -83,12 +57,26 @@ export function SideBar(props: SideBarProps) {
 		document.addEventListener('mouseup', stopResize);
 	};
 
+	const handleInvitation = async (invitationId: number, isAccept: boolean) => {
+		await patch(`invitations/${invitationId}`, {
+			accept: isAccept,
+		});
+		const newInvitations = invitations?.map((invitation) => {
+			if (invitation.id === invitationId) {
+				invitation.status = isAccept ? 'ACCEPTED' : 'REJECTED';
+			}
+			return invitation;
+		});
+		setInvitation(newInvitations);
+	};
+
 	useEffect(() => {
 		const getChatRoom = async () => {
 			const results = await Promise.all([
 				get('chatrooms/'),
 				get('invitations/'),
 			]);
+
 			setChatRooms(results[0]);
 			setInvitation(results[1]);
 		};
@@ -100,7 +88,7 @@ export function SideBar(props: SideBarProps) {
 			ref={sideBarRef}
 			className="relative z-10 flex w-64 min-w-[200px] flex-col border-r border-gray-700 bg-gray-800"
 		>
-			<div className="flex items-center justify-between border-b border-gray-700 p-4">
+			<div className="z-[1000] flex items-center justify-between border-b border-gray-700 p-4">
 				<h2 className="gradientColor">NextChat</h2>
 				<div className="flex items-center justify-center gap-[14px]">
 					<div className="relative transition-all duration-200 hover:scale-[1.05] hover:transform hover:text-yellow-400">
@@ -127,9 +115,48 @@ export function SideBar(props: SideBarProps) {
 									invitations.map((invitation) => (
 										<div
 											key={invitation.id}
-											className="min-w-[200px] rounded-[5px] bg-gray-900 p-[5px] text-white"
+											className="flex min-w-[200px] items-center justify-between rounded-[5px] bg-gray-900 p-[5px] text-white"
 										>
-											{invitation.sender}
+											<p>{invitation.sender}</p>
+											{invitation.status === 'PENDING' ? (
+												<div className="flex items-center justify-center">
+													<div
+														className="transform cursor-pointer text-[25px] transition-all duration-200 hover:scale-[1.1] hover:text-[lightgreen]"
+														onClick={() =>
+															handleInvitation(invitation.id, true)
+														}
+													>
+														<TiTick />
+													</div>
+													<div
+														className="cursor-pointer text-[25px] transition-all duration-200 hover:scale-[1.1] hover:transform hover:text-red-600"
+														onClick={() =>
+															handleInvitation(invitation.id, false)
+														}
+													>
+														<IoClose />
+													</div>
+												</div>
+											) : (
+												<div className="flex items-center justify-center rounded-[5px] bg-blue-500 px-[5px]">
+													{invitation.status === 'ACCEPTED' ? (
+														<>
+															<p>Accepted</p>
+															<TiTick className="text-[25px] text-green-500" />
+														</>
+													) : (
+														<>
+															<p>Rejected</p>
+															<IoClose
+																style={{
+																	fontSize: '25px',
+																	color: 'red',
+																}}
+															/>
+														</>
+													)}
+												</div>
+											)}
 										</div>
 									))
 								) : (
@@ -140,7 +167,12 @@ export function SideBar(props: SideBarProps) {
 					</div>
 					<div
 						className="transition-all duration-200 hover:scale-[1.05] hover:transform hover:text-yellow-400"
-						onClick={() => setSearchingUsername(!isSearchingUserName)}
+						onClick={() =>
+							setSearchUserModal({
+								isOpen: true,
+								chatGroupId: null,
+							})
+						}
 					>
 						<IoIosAddCircleOutline
 							style={{
@@ -151,50 +183,6 @@ export function SideBar(props: SideBarProps) {
 					</div>
 				</div>
 			</div>
-
-			{isSearchingUserName && (
-				<div className="fixed inset-0 z-[1000]">
-					<div
-						className="h-full w-full cursor-pointer bg-black/80"
-						onClick={() => setSearchingUsername(!isSearchingUserName)}
-					></div>
-					<div className="absolute top-1/2 left-1/2 flex w-full translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] sm:w-[300px]">
-						<form
-							className="w-full border-[1px] border-solid border-slate-600"
-							onSubmit={searchUser}
-						>
-							<input
-								type="text"
-								name="searchingUsername"
-								placeholder="Nhập username..."
-								className="w-full p-[8px] outline-none"
-								required
-							/>
-						</form>
-						{userSearchResults &&
-							(searchUserLoading ? (
-								<Spinner />
-							) : userSearchResults.length !== 0 ? (
-								userSearchResults.map((user) => (
-									<div
-										key={user.id}
-										className="flex w-full items-center justify-between rounded-[8px] bg-slate-700 p-[10px]"
-									>
-										<p>{user.username}</p>
-										<div
-											className="cursor-pointer"
-											onClick={() => sendInvitation(user.username)}
-										>
-											<MdPersonAddAlt1 />
-										</div>
-									</div>
-								))
-							) : (
-								<div className="w-full text-center">No results!</div>
-							))}
-					</div>
-				</div>
-			)}
 
 			<div className="flex-1 overflow-y-auto">
 				{chatRooms.length ? (
@@ -221,7 +209,7 @@ export function SideBar(props: SideBarProps) {
 								<p className="truncate font-medium">
 									{getChatRoomName(chatRoom)}
 								</p>
-								{chatRoom.type === 'DUO' && (
+								{chatRoom.type === 'GROUP' && (
 									<p className="text-xs text-gray-400">
 										{chatRoom.membersUsername.length} members
 									</p>
@@ -238,7 +226,7 @@ export function SideBar(props: SideBarProps) {
 
 			<div
 				onMouseDown={startResize}
-				className="absolute top-0 right-0 h-full w-[2px] cursor-ew-resize bg-gray-700"
+				className="absolute top-0 right-0 z-[1] h-full w-[2px] cursor-ew-resize bg-slate-600"
 			/>
 		</div>
 	);

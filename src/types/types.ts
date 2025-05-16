@@ -4,7 +4,7 @@ type ChatRoomInfo = {
 	avatar: undefined | string | Blob;
 	membersUsername: [];
 	type: 'GROUP' | 'DUO';
-	createdOn: Date;
+	createdOn: string;
 };
 
 type Invitation = {

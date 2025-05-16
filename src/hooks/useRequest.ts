@@ -1,4 +1,3 @@
-// hooks/useRequest.ts
 'use client';
 
 import { useNotification } from './useNotification';
@@ -50,5 +49,18 @@ export const useRequest = () => {
 		[handleError],
 	);
 
-	return { get, post };
+	const patch = useCallback(
+		async (url: string, data = {}, config = {}) => {
+			try {
+				const response = await request.patch(url, data, config);
+				return response.data;
+			} catch (error) {
+				handleError(error);
+				throw error;
+			}
+		},
+		[handleError],
+	);
+
+	return { get, post, patch };
 };
