@@ -1,6 +1,7 @@
 'use client';
 
-import axios from 'axios';
+import axios, { CreateAxiosDefaults, type AxiosRequestHeaders } from 'axios';
+import { decode, encode } from '@msgpack/msgpack';
 
 const getAccessToken = () => {
 	if (typeof window === 'undefined') {
@@ -41,10 +42,37 @@ const refreshAccessToken = async () => {
 	}
 };
 
-const request = axios.create({
+const MSGPACK_CONTENT_TYPE = 'application/x-msgpack';
+
+function encodeRequest(data: unknown, headers: AxiosRequestHeaders) {
+	if (!(data instanceof FormData)) {
+		headers['Content-Type'] = MSGPACK_CONTENT_TYPE;
+		data = encode(data);
+	}
+
+	return data;
+}
+
+function decodeResponse(data: ArrayBuffer) {
+	return decode(data);
+}
+
+let config: CreateAxiosDefaults = {
 	baseURL: process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL,
 	timeout: 15000,
-});
+};
+
+if (process.env.NODE_ENV === 'production') {
+	config = {
+		headers: { Accept: MSGPACK_CONTENT_TYPE },
+		transformResponse: [decodeResponse],
+		transformRequest: [encodeRequest],
+		responseType: 'arraybuffer',
+		...config,
+	};
+}
+
+const request = axios.create(config);
 
 request.interceptors.request.use(
 	(config) => {
