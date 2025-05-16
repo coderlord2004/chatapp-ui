@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
 import { useRequest } from '@/hooks/useRequest';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaUserFriends } from 'react-icons/fa';
@@ -18,20 +18,51 @@ type UserSearchResult = {
 	username: string;
 };
 
+function useSearchResult(keyword: string) {
+	const [searchUserLoading, setSearchUserLoading] = useState<boolean>(false);
+	const [searchResult, setSearchResult] = useState<UserSearchResult[]>([]);
+
+	const { get } = useRequest();
+	const [searchKeyword, setSearchKeyword] = useState<string>(keyword);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setSearchKeyword(keyword);
+		}, 700);
+
+		return () => clearTimeout(timer);
+	}, [keyword]);
+
+	useEffect(() => {
+		async function getSearchResult() {
+			setSearchUserLoading(true);
+			const result = await get(`users/search/`, {
+				params: { q: searchKeyword },
+			});
+			setSearchResult(result);
+			setSearchUserLoading(false);
+		}
+
+		getSearchResult();
+	}, [get, searchKeyword]);
+
+	return { searchResult, searchUserLoading };
+}
+
 export function SideBar(props: SideBarProps) {
 	const { get, post } = useRequest();
 	const [invitations, setInvitation] = useState<Invitation[] | null>(null);
 	const [isShowInvitations, setShowInvitations] = useState<boolean>(false);
 	const [isSearchingUserName, setSearchingUsername] = useState<boolean>(false);
 	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([]);
-	const [userSearchResults, setUserSearchResults] = useState<
-		UserSearchResult[] | null
-	>(null);
-	const [searchUserLoading, setSearchUserLoading] = useState<boolean>(false);
 	const sideBarRef = useRef<HTMLDivElement>(null);
-	console.log('userSearchResults:', userSearchResults);
 	const jwt = useJwtDecoded();
 	const currentUsername = jwt?.sub;
+
+	const [keyword, setKeyword] = useState<string>('');
+	const { searchResult: userSearchResults, searchUserLoading } =
+		useSearchResult(keyword);
+	console.log('userSearchResults:', userSearchResults);
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -49,17 +80,6 @@ export function SideBar(props: SideBarProps) {
 			receiverUserName: receiverName,
 			chatGroupId: chatGroupId,
 		});
-	};
-
-	const searchUser = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setSearchUserLoading(true);
-		const formData = new FormData(e.target as HTMLFormElement);
-		const data = await get(
-			`users/search/?q=${formData.get('searchingUsername')}`,
-		);
-		setUserSearchResults(data);
-		setSearchUserLoading(false);
 	};
 
 	const startResize = (e: React.MouseEvent) => {
@@ -159,15 +179,13 @@ export function SideBar(props: SideBarProps) {
 						onClick={() => setSearchingUsername(!isSearchingUserName)}
 					></div>
 					<div className="absolute top-1/2 left-1/2 flex w-full translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] sm:w-[300px]">
-						<form
-							className="w-full border-[1px] border-solid border-slate-600"
-							onSubmit={searchUser}
-						>
+						<form className="w-full border-[1px] border-solid border-slate-600">
 							<input
 								type="text"
 								name="searchingUsername"
 								placeholder="Nhập username..."
 								className="w-full p-[8px] outline-none"
+								onChange={(e) => setKeyword(e.target.value)}
 								required
 							/>
 						</form>
