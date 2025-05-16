@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useDeferredValue } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRequest } from '@/hooks/useRequest';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaUserFriends } from 'react-icons/fa';
