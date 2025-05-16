@@ -4,22 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { decodeJwt } from 'jose';
 import useMessages from '@/hooks/useMessages';
 import { FaUserCircle, FaPaperPlane } from 'react-icons/fa';
-
-type ChatRoomInfo = {
-	id: number;
-	name: string;
-	avatar: undefined | string | Blob;
-	membersUsername: [];
-	type: 'GROUP' | 'DUO';
-	createdOn: Date;
-};
+import { ChatRoomInfo, MessageTypes } from '@/types/types';
 
 type ChatRoomProps = {
 	chatRoomInfo: ChatRoomInfo;
 };
 
 export default function ChatRoom({ chatRoomInfo }: ChatRoomProps) {
-	const [newMessage, setNewMessage] = useState('');
+	const messageInput = useRef<HTMLInputElement>(null);
 	const roomId = chatRoomInfo.id;
 	const { accessToken } = useAuth();
 	const decodedJwt = accessToken && decodeJwt(accessToken);
@@ -35,14 +27,12 @@ export default function ChatRoom({ chatRoomInfo }: ChatRoomProps) {
 		scrollToBottom();
 	}, [messages]);
 
-	const sendMessage = async () => {
-		if (!newMessage.trim()) return;
+	const sendMessage = async ({ message }: MessageTypes) => {
+		if (!message.trim()) return;
 
 		await post(`messages/${roomId}`, {
-			message: newMessage,
+			message: message,
 		});
-
-		setNewMessage('');
 	};
 
 	return (
@@ -80,15 +70,12 @@ export default function ChatRoom({ chatRoomInfo }: ChatRoomProps) {
 						}`}
 					>
 						<div
-							className={`max-w-xs rounded-lg p-3 transition-all duration-150 md:max-w-md lg:max-w-lg ${
+							className={`animate-fadeInUp max-w-xs translate-y-[5px] transform rounded-lg px-[12px] py-[8px] opacity-0 transition-all duration-150 md:max-w-md lg:max-w-lg ${
 								decodedJwt && decodedJwt.sub === msg.sender
 									? 'rounded-br-none bg-indigo-600'
 									: 'rounded-bl-none bg-gray-800'
 							}`}
 							style={{
-								opacity: 0,
-								transform: 'translateY(10px)',
-								animation: 'fadeInUp 0.3s forwards',
 								animationDelay: `${idx === messages.length - 1 ? '0.1s' : '0s'}`,
 							}}
 						>
@@ -109,35 +96,37 @@ export default function ChatRoom({ chatRoomInfo }: ChatRoomProps) {
 			<div className="border-t border-gray-800 bg-gray-800/50 p-4">
 				<div className="flex gap-2">
 					<input
+						ref={messageInput}
 						type="text"
-						value={newMessage}
-						onChange={(e) => setNewMessage(e.target.value)}
-						onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter') {
+								const target = e.target as HTMLInputElement;
+								sendMessage({ message: target.value });
+								target.value = '';
+							}
+						}}
 						placeholder="Type a message..."
 						className="flex-1 rounded-lg border border-gray-600 bg-gray-700 px-4 py-2 text-gray-100 focus:border-transparent focus:ring-2 focus:ring-indigo-500 focus:outline-none"
 					/>
 					<button
-						onClick={sendMessage}
-						disabled={!newMessage.trim()}
+						onClick={() => {
+							if (messageInput.current) {
+								sendMessage({ message: messageInput.current.value });
+							}
+						}}
+						disabled={
+							messageInput.current
+								? messageInput.current.value.trim()
+									? true
+									: false
+								: undefined
+						}
 						className="cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						<FaPaperPlane />
 					</button>
 				</div>
 			</div>
-
-			<style jsx>{`
-				@keyframes fadeInUp {
-					from {
-						opacity: 0;
-						transform: translateY(10px);
-					}
-					to {
-						opacity: 1;
-						transform: translateY(0);
-					}
-				}
-			`}</style>
 		</div>
 	);
 }

@@ -1,11 +1,6 @@
 'use client';
 
-import axios, {
-	type AxiosRequestHeaders,
-	type AxiosResponseHeaders,
-} from 'axios';
-
-import { decode, encode } from '@msgpack/msgpack';
+import axios from 'axios';
 
 const getAccessToken = () => {
 	if (typeof window === 'undefined') {
@@ -34,9 +29,9 @@ const refreshAccessToken = async () => {
 
 		const response = await axios.post(
 			`${process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL}users/token/refresh/`,
-			{ refresh: refreshToken }
-		)
-    
+			{ refresh: refreshToken },
+		);
+
 		const newAccessToken = response.data.access;
 		localStorage.setItem('accessToken', newAccessToken);
 		return newAccessToken;
@@ -46,31 +41,8 @@ const refreshAccessToken = async () => {
 	}
 };
 
-const MSGPACK_CONTENT_TYPE = 'application/x-msgpack';
-
-function encodeRequest(data: unknown, headers: AxiosRequestHeaders) {
-	if (!(data instanceof FormData)) {
-		headers['Content-Type'] = MSGPACK_CONTENT_TYPE;
-		data = encode(data);
-	}
-
-	return data;
-}
-
-function decodeResponse(data: ArrayBuffer, headers: AxiosResponseHeaders) {
-	if (headers['content-type'] === MSGPACK_CONTENT_TYPE) {
-		return decode(data);
-	}
-
-	return data;
-}
-
 const request = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL,
-	headers: { Accept: MSGPACK_CONTENT_TYPE },
-	transformResponse: [decodeResponse],
-	transformRequest: [encodeRequest],
-	responseType: 'arraybuffer',
 	timeout: 15000,
 });
 
