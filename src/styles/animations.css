@@ -4,7 +4,7 @@
 	--animate-typing-effect-9:
 		typing 1.5s steps(9) 2s forwards, cursor 0.4s step-end infinite alternate;
 	--animate-fade-in-to-right: fadeInToRight 0.8s ease-out;
-	--animate-spinner: spinner 0.7s ease-in infinite;
+	--animate-spinner: spinner 0.6s ease-out infinite;
 	--animate-fadeInUp: fadeInUp 0.3s forwards;
 
 	@keyframes cursor {

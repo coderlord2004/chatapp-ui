@@ -18,12 +18,12 @@ export default function Input(props: InputProps) {
 
 	return (
 		<div className="relative mt-[10px] flex h-auto w-full cursor-pointer flex-col items-center justify-between">
-			<div className="flex h-full w-full rounded-[7px] border-[1px] border-solid border-white p-1 px-3 text-white">
+			<div className="flex h-full w-full items-center justify-center rounded-[7px] border-[1px] border-solid border-white p-1 px-3 text-white">
 				<input
 					id={id}
 					ref={refElement}
 					type={!showPassword ? type : 'text'}
-					className="w-[90%] outline-none"
+					className={`${type === 'password' ? 'flex-1' : 'w-full'} outline-none`}
 					placeholder={`Enter ${label}:`}
 					{...validation}
 					required
