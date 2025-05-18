@@ -12,7 +12,11 @@ import { decodeJwt } from 'jose';
 
 import getStompClient from '@/services/websocket';
 
-const WebSocketContext = createContext<Client | undefined>(undefined);
+interface ContextType {
+	stompClient?: Client;
+}
+
+const WebSocketContext = createContext<ContextType | undefined>(undefined);
 
 interface Props {
 	token: string;
@@ -53,7 +57,7 @@ function WebSocketContextProvider({ children, token }: Props) {
 	}, [stompClient]);
 
 	return (
-		<WebSocketContext.Provider value={stompClient}>
+		<WebSocketContext.Provider value={{ stompClient }}>
 			{children}
 		</WebSocketContext.Provider>
 	);
@@ -61,11 +65,16 @@ function WebSocketContextProvider({ children, token }: Props) {
 
 type Callback = (messageBody: unknown) => void;
 
-function useWebSocket(destination: string | undefined, callback: Callback) {
-	const stompClient = useContext(WebSocketContext);
+function useWebSocket(destination: string, callback: Callback) {
+	const context = useContext(WebSocketContext);
+
+	if (context === undefined) {
+		throw new Error('You called useWebSocket outside WebSocketContextProvider');
+	}
 
 	useEffect(() => {
-		if (!stompClient || destination === undefined) {
+		const { stompClient } = context;
+		if (!stompClient || !destination) {
 			return;
 		}
 
@@ -77,7 +86,7 @@ function useWebSocket(destination: string | undefined, callback: Callback) {
 		return () => {
 			subscription.unsubscribe();
 		};
-	}, [stompClient, destination, callback]);
+	}, [context, destination, callback]);
 }
 
 export { WebSocketContextProvider, useWebSocket };
