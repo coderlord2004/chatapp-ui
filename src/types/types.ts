@@ -5,19 +5,19 @@ type ChatRoomInfo = {
 	membersUsername: string[];
 	type: 'GROUP' | 'DUO';
 	createdOn: string;
-	latestMessage: LatestMessageType | null
+	latestMessage: LatestMessageType | null;
 };
 
 type AttachmentType = {
-	source: string,
-	type: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'RAW' | 'DOCUMENT'
-}
+	source: string;
+	type: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'RAW' | 'DOCUMENT';
+};
 
 type AuthUser = {
-	id: number,
-	username: string,
-	avatar: string
-}
+	id: number;
+	username: string;
+	avatar: string;
+};
 
 type Invitation = {
 	id: number;
@@ -39,14 +39,20 @@ type MessageResponseType = {
 	message: string;
 	sentOn?: string;
 	attachments: AttachmentType[];
-	sending?: boolean
-}
+	sending?: boolean;
+};
 
 type LatestMessageType = {
 	sender: string;
 	message: string;
 	sentOn: string;
 	attachments: AttachmentType[];
-}
+};
 
-export type { ChatRoomInfo, Invitation, MessageRequestType, MessageResponseType, LatestMessageType };
+export type {
+	ChatRoomInfo,
+	Invitation,
+	MessageRequestType,
+	MessageResponseType,
+	LatestMessageType,
+};

@@ -29,7 +29,7 @@ type SearchUserContextType = {
 
 export const SearchUserContext = createContext<SearchUserContextType>({
 	searchUserModal: { isOpen: false, chatGroupId: null },
-	setSearchUserModal: () => { },
+	setSearchUserModal: () => {},
 });
 
 export function SearchUserProvider({ children }: PropsWithChildren) {
@@ -81,7 +81,7 @@ export function SearchUserProvider({ children }: PropsWithChildren) {
 							})
 						}
 					></div>
-					<div className="absolute top-1/4 left-1/2 flex w-[90%] h-auto translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] sm:w-[300px] overflow-y-auto">
+					<div className="absolute top-1/4 left-1/2 flex h-auto w-[90%] translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] overflow-y-auto sm:w-[300px]">
 						<div className="flex w-full items-center justify-between border-[1px] border-solid border-slate-600">
 							<input
 								type="text"

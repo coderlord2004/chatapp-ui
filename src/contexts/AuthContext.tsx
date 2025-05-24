@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [refreshToken, setRefreshToken] = useState<string | null>(null);
-	const router = useRouter()
+	const router = useRouter();
 	useEffect(() => {
 		const storedAccess = localStorage.getItem('accessToken');
 		const storedRefresh = localStorage.getItem('refreshToken');
@@ -51,8 +51,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	// Nếu đã đăng nhập => bọc children với WebSocketProvider
 	if (accessToken) {
-		console.log('đã đăng nhập')
-		router.push('/chat')
+		console.log('đã đăng nhập');
+		router.push('/chat');
 		return (
 			<AuthContext.Provider value={value}>
 				<WebSocketContextProvider token={accessToken}>

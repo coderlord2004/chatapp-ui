@@ -77,7 +77,10 @@ export default function Page() {
 						>
 							Bắt đầu ngay
 						</Link>
-						<a href="#special-feature" className="cursor-pointer rounded-lg border border-blue-600 px-6 py-3 text-blue-600 transition hover:bg-blue-500 hover:text-white">
+						<a
+							href="#special-feature"
+							className="cursor-pointer rounded-lg border border-blue-600 px-6 py-3 text-blue-600 transition hover:bg-blue-500 hover:text-white"
+						>
 							Xem demo
 						</a>
 					</div>
@@ -93,7 +96,10 @@ export default function Page() {
 			</main>
 
 			<section className="mt-16 mb-12 w-full max-w-4xl">
-				<h3 id="special-feature" className="mb-8 text-center text-2xl font-bold">
+				<h3
+					id="special-feature"
+					className="mb-8 text-center text-2xl font-bold"
+				>
 					Tính năng nổi bật
 				</h3>
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-3">

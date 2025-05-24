@@ -58,7 +58,7 @@ function decodeResponse(data: ArrayBuffer) {
 }
 
 let config: CreateAxiosDefaults = {
-	baseURL: process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL
+	baseURL: process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL,
 };
 
 if (process.env.NODE_ENV === 'production') {

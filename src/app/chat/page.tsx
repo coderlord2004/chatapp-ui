@@ -7,18 +7,18 @@ import { FaComment } from 'react-icons/fa';
 import { ChatRoomInfo } from '@/types/types';
 import { SideBar } from '@/components/SideBar';
 import { useJwtDecoded } from '@/contexts/AuthContext';
-import { useSearchUser } from '@/hooks/useSearchUser'
+import { useSearchUser } from '@/hooks/useSearchUser';
 import useInvitations from '@/hooks/useInvitations';
 
 export default function Page() {
 	const { get, post } = useRequest();
-	const { setSearchUserModal } = useSearchUser()
+	const { setSearchUserModal } = useSearchUser();
 	const [chatRoomActive, setChatRoomActive] = useState<ChatRoomInfo | null>(
 		null,
 	);
 	const jwt = useJwtDecoded();
 	const authUsername = jwt?.sub;
-	console.log('me:', authUsername)
+	console.log('me:', authUsername);
 
 	return (
 		<div className="flex h-screen bg-gray-900 text-gray-100">
@@ -42,10 +42,12 @@ export default function Page() {
 							Choose a conversation from the sidebar to start messaging
 							<span
 								className="cursor-pointer pl-[4px] text-xl font-bold hover:underline"
-								onClick={() => setSearchUserModal({
-									isOpen: true,
-									chatGroupId: null
-								})}
+								onClick={() =>
+									setSearchUserModal({
+										isOpen: true,
+										chatGroupId: null,
+									})
+								}
 							>
 								or add more friend.
 							</span>

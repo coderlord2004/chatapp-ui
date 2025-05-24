@@ -38,4 +38,4 @@ function formatTime(isoString: string) {
 	});
 }
 
-export { formatDateTime, formatTime }
+export { formatDateTime, formatTime };
