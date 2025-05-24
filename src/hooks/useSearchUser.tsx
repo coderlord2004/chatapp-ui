@@ -5,12 +5,12 @@ import {
 	type PropsWithChildren,
 	SetStateAction,
 	useContext,
+	useEffect,
 	useState,
 } from 'react';
 import { useRequest } from '@/hooks/useRequest';
 import Spinner from '../components/Spinner';
 import { MdPersonAddAlt1 } from 'react-icons/md';
-import { HiOutlineSearch } from 'react-icons/hi';
 
 type UserSearchResult = {
 	id: number;
@@ -29,7 +29,7 @@ type SearchUserContextType = {
 
 export const SearchUserContext = createContext<SearchUserContextType>({
 	searchUserModal: { isOpen: false, chatGroupId: null },
-	setSearchUserModal: () => {},
+	setSearchUserModal: () => { },
 });
 
 export function SearchUserProvider({ children }: PropsWithChildren) {
@@ -42,6 +42,7 @@ export function SearchUserProvider({ children }: PropsWithChildren) {
 		UserSearchResult[] | null
 	>(null);
 	const [searchUserLoading, setSearchUserLoading] = useState<boolean>(false);
+	const [searchTerm, setSearchTerm] = useState<string>('');
 
 	const sendInvitation = async (receiverName: string, chatGroupId = null) => {
 		await post('invitations/', {
@@ -50,16 +51,21 @@ export function SearchUserProvider({ children }: PropsWithChildren) {
 		});
 	};
 
-	const searchUser = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setSearchUserLoading(true);
-		const formData = new FormData(e.target as HTMLFormElement);
-		const data = await get(
-			`users/search/?q=${formData.get('searchingUsername')}`,
-		);
-		setUserSearchResults(data);
-		setSearchUserLoading(false);
-	};
+	useEffect(() => {
+		const delayDebounce = setTimeout(async () => {
+			if (searchTerm.trim() === '') {
+				setUserSearchResults(null);
+				return;
+			}
+
+			setSearchUserLoading(true);
+			const data = await get(`users/search/?q=${searchTerm}`);
+			setUserSearchResults(data);
+			setSearchUserLoading(false);
+		}, 300);
+
+		return () => clearTimeout(delayDebounce);
+	}, [get, searchTerm]);
 
 	return (
 		<SearchUserContext.Provider value={{ searchUserModal, setSearchUserModal }}>
@@ -75,25 +81,18 @@ export function SearchUserProvider({ children }: PropsWithChildren) {
 							})
 						}
 					></div>
-					<div className="absolute top-1/4 left-1/2 flex w-[90%] translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] sm:w-[300px]">
-						<form
-							className="flex w-full items-center justify-between border-[1px] border-solid border-slate-600"
-							onSubmit={searchUser}
-						>
+					<div className="absolute top-1/4 left-1/2 flex w-[90%] h-auto translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] sm:w-[300px] overflow-y-auto">
+						<div className="flex w-full items-center justify-between border-[1px] border-solid border-slate-600">
 							<input
 								type="text"
 								name="searchingUsername"
 								placeholder="Nhập username..."
 								className="w-full p-[8px] outline-none"
-								required
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
 							/>
-							<button
-								type="submit"
-								className="transform text-[30px] transition-all duration-200 hover:scale-[1.2]"
-							>
-								<HiOutlineSearch />
-							</button>
-						</form>
+						</div>
+
 						{userSearchResults &&
 							(searchUserLoading ? (
 								<Spinner />

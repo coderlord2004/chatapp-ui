@@ -3,11 +3,13 @@ import { useRequest } from '@/hooks/useRequest';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaUserFriends } from 'react-icons/fa';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import { ChatRoomInfo, Invitation } from '@/types/types';
+import { ChatRoomInfo } from '@/types/types';
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';
 import { useSearchUser } from '@/hooks/useSearchUser';
-import { useLastMessages } from '@/hooks/useMessages';
+import useInvitations from '@/hooks/useInvitations';
+import { formatDateTime } from '@/utils/formatDateTime';
+import { useJwtDecoded } from '@/contexts/AuthContext';
 
 type SideBarProps = {
 	authUsername: string | undefined;
@@ -17,13 +19,11 @@ type SideBarProps = {
 
 export function SideBar(props: SideBarProps) {
 	const { get, patch } = useRequest();
-	const [invitations, setInvitation] = useState<Invitation[] | undefined>(
-		undefined,
-	);
+	const invitations = useInvitations()
 	const [isShowInvitations, setShowInvitations] = useState<boolean>(false);
 	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([]);
 	const { setSearchUserModal } = useSearchUser();
-
+	console.log('invitations:', invitations)
 	const sideBarRef = useRef<HTMLDivElement>(null);
 
 	function getChatRoomName(info: ChatRoomInfo) {
@@ -33,6 +33,7 @@ export function SideBar(props: SideBarProps) {
 		}
 		return membersUsername
 			.filter((username) => username !== props.authUsername)
+			.slice(0, 3)
 			.join(', ');
 	}
 
@@ -56,29 +57,53 @@ export function SideBar(props: SideBarProps) {
 		document.addEventListener('mousemove', handleMouseMove);
 		document.addEventListener('mouseup', stopResize);
 	};
-
+	console.log('chat room:', chatRooms)
 	const handleInvitation = async (invitationId: number, isAccept: boolean) => {
 		await patch(`invitations/${invitationId}`, {
 			accept: isAccept,
 		});
-		const newInvitations = invitations?.map((invitation) => {
-			if (invitation.id === invitationId) {
-				invitation.status = isAccept ? 'ACCEPTED' : 'REJECTED';
+		const newInvitation = invitations.map(i => {
+			if (i.chatRoomId === invitationId) {
+				return {
+					...i,
+					status: isAccept ? 'ACCEPTED' : 'REJECTED'
+				}
 			}
-			return invitation;
-		});
-		setInvitation(newInvitations);
+			return i
+		})
+
+		if (isAccept) {
+			const senderInvitation = invitations.find(invitation => invitation.id === invitationId)
+			setChatRooms(prev => {
+				if (senderInvitation) {
+					const newChatRoom: ChatRoomInfo = {
+						id: senderInvitation.chatRoomId,
+						name: null,
+						avatar: senderInvitation.sender.avatar,
+						membersUsername: [senderInvitation.sender.username, senderInvitation.receiver.username],
+						type: 'DUO',
+						createdOn: Date.now().toString(),
+						latestMessage: null
+					};
+					return [newChatRoom, ...prev];
+				}
+				return prev;
+			})
+		}
 	};
+
+	const getTotalNewInvitations = () => {
+		return invitations.filter((i) => i.status === 'PENDING').length
+	}
+	const totalNewInvitations = getTotalNewInvitations()
 
 	useEffect(() => {
 		const getChatRoom = async () => {
 			const results = await Promise.all([
-				get('chatrooms/'),
-				get('invitations/'),
+				get('chatrooms/')
 			]);
 
 			setChatRooms(results[0]);
-			setInvitation(results[1]);
 		};
 		getChatRoom();
 	}, [get]);
@@ -86,19 +111,19 @@ export function SideBar(props: SideBarProps) {
 	return (
 		<div
 			ref={sideBarRef}
-			className="relative z-10 flex w-64 min-w-[200px] flex-col border-r border-gray-700 bg-gray-800"
+			className="relative z-10 flex w-full lsm:w-64 min-w-[200px] flex-col border-r border-gray-700 bg-gray-800"
 		>
 			<div className="z-[1000] flex items-center justify-between border-b border-gray-700 p-4">
 				<h2 className="gradientColor">NextChat</h2>
 				<div className="flex items-center justify-center gap-[14px]">
-					<div className="relative transition-all duration-200 hover:scale-[1.05] hover:transform hover:text-yellow-400">
+					<div className="relative ">
 						<div
-							className="relative"
+							className="relative transition-all duration-200 hover:scale-[1.05] hover:transform hover:text-yellow-400"
 							onClick={() => setShowInvitations(!isShowInvitations)}
 						>
-							{invitations && invitations.length && (
+							{totalNewInvitations !== 0 && (
 								<div className="absolute top-[-70%] right-[-70%] flex h-[20px] w-[20px] items-center justify-center rounded-[50%] bg-red-500 text-[80%]">
-									{invitations.length}
+									{totalNewInvitations}
 								</div>
 							)}
 							<FaUserFriends
@@ -117,7 +142,16 @@ export function SideBar(props: SideBarProps) {
 											key={invitation.id}
 											className="flex min-w-[200px] items-center justify-between rounded-[5px] bg-gray-900 p-[5px] text-white"
 										>
-											<p>{invitation.sender}</p>
+											{invitation.sender.avatar ? (
+												<img
+													src={invitation.sender.avatar}
+													alt=""
+													className='w-[25px] h-[25px]'
+												/>
+											) : (
+												<FaUserCircle className='text-[25px]' />
+											)}
+											<p>{invitation.sender.username}</p>
 											{invitation.status === 'PENDING' ? (
 												<div className="flex items-center justify-center">
 													<div
@@ -138,7 +172,7 @@ export function SideBar(props: SideBarProps) {
 													</div>
 												</div>
 											) : (
-												<div className="flex items-center justify-center rounded-[5px] bg-blue-500 px-[5px]">
+												<div className="flex items-center justify-center rounded-[5px] bg-blue-500 px-[5px] text-xs">
 													{invitation.status === 'ACCEPTED' ? (
 														<>
 															<p>Accepted</p>
@@ -190,11 +224,10 @@ export function SideBar(props: SideBarProps) {
 						<div
 							key={chatRoom.id}
 							onClick={() => props.onUpdateChatRoomActive(chatRoom)}
-							className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${
-								chatRoom === props.chatRoomActive
-									? 'bg-indigo-600'
-									: 'hover:bg-gray-700'
-							}`}
+							className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${chatRoom === props.chatRoomActive
+								? 'bg-indigo-600'
+								: 'hover:bg-gray-700'
+								}`}
 						>
 							{chatRoom.avatar ? (
 								<img
@@ -203,12 +236,22 @@ export function SideBar(props: SideBarProps) {
 									className="h-8 w-8 rounded-full object-cover"
 								/>
 							) : (
-								<FaUserCircle className="h-8 w-8 text-gray-400" />
+								<FaUserCircle className="h-8 min-w-8 text-gray-400" />
 							)}
 							<div className="ml-3 overflow-hidden">
 								<p className="truncate font-medium">
 									{getChatRoomName(chatRoom)}
 								</p>
+								{chatRoom.latestMessage && (
+									<div className='text-gray-400 text-[80%]'>
+										<p>
+											<b>{props.authUsername ? 'Bạn' : chatRoom.latestMessage.sender}: </b>
+											{chatRoom.latestMessage.attachments?.length ? 'Đã gửi 1 ảnh' : chatRoom.latestMessage.message}
+										</p>
+										<span>.</span>
+										{formatDateTime(chatRoom.latestMessage.sentOn)}
+									</div>
+								)}
 								{chatRoom.type === 'GROUP' && (
 									<p className="text-xs text-gray-400">
 										{chatRoom.membersUsername.length} members
@@ -226,7 +269,7 @@ export function SideBar(props: SideBarProps) {
 
 			<div
 				onMouseDown={startResize}
-				className="absolute top-0 right-0 z-[1] h-full w-[2px] cursor-ew-resize bg-slate-600"
+				className="absolute top-0 right-0 z-[1] h-full w-[2px] cursor-ew-resize bg-slate-600 hidden lsm:block"
 			/>
 		</div>
 	);

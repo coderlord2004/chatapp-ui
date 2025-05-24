@@ -1,4 +1,5 @@
-export default function formatDateTime(isoString: string): string {
+function formatDateTime(isoString: string) {
+	if (!isoString) return;
 	const date = new Date(isoString);
 
 	const weekday = date.toLocaleDateString('en-US', {
@@ -23,3 +24,18 @@ export default function formatDateTime(isoString: string): string {
 
 	return `${weekday}, ${formattedDate} ${formattedTime}`;
 }
+
+function formatTime(isoString: string) {
+	if (!isoString) return;
+	const date = new Date(isoString);
+
+	return date.toLocaleTimeString('en-GB', {
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit',
+		hour12: false,
+		timeZone: 'UTC',
+	});
+}
+
+export { formatDateTime, formatTime }
