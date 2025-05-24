@@ -50,7 +50,7 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
 	return (
 		<NotificationContext.Provider value={{ showNotification }}>
 			{children}
-			<div className="fixed top-4 right-4 z-50 space-y-2">
+			<div className="fixed top-4 right-4 z-[2000] space-y-2">
 				{notifications.map((notification) => (
 					<Notification
 						key={notification.id}

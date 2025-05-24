@@ -41,7 +41,7 @@ export default function Signup() {
 
 	return (
 		<div className="flex min-h-screen w-full items-center justify-center bg-[url('/image.jpg')] bg-cover bg-center bg-no-repeat p-[10px]">
-			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] sm:flex-row">
+			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] text-white sm:flex-row">
 				<div className="flex w-[250px] flex-col items-center p-[10px]">
 					<Link href="/">
 						<img
@@ -104,7 +104,7 @@ export default function Signup() {
 					</div>
 
 					<button
-						className="h-[30px] w-full cursor-pointer rounded-[8px] bg-blue-600 text-white"
+						className="flex h-[30px] w-full cursor-pointer items-center justify-center rounded-[8px] bg-blue-600 text-white"
 						type="submit"
 					>
 						{loading ? <Spinner /> : 'Đăng kí'}
