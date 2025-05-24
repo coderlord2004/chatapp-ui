@@ -1,18 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRequest } from '@/hooks/useRequest';
+import { useState } from 'react';
 import ChatRoom from '@/components/ChatRoom';
 import { FaComment } from 'react-icons/fa';
 import { ChatRoomInfo } from '@/types/types';
 import { SideBar } from '@/components/SideBar';
 import { useJwtDecoded } from '@/contexts/AuthContext';
-import { useSearchUser } from '@/hooks/useSearchUser';
-import useInvitations from '@/hooks/useInvitations';
 
 export default function Page() {
-	const { get, post } = useRequest();
-	const { setSearchUserModal } = useSearchUser();
 	const [chatRoomActive, setChatRoomActive] = useState<ChatRoomInfo | null>(
 		null,
 	);

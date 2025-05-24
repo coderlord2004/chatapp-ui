@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, useOptimistic } from 'react';
-import { useRequest } from '@/hooks/useRequest';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { decodeJwt } from 'jose';
 import useMessages from '@/hooks/useMessages';
@@ -111,7 +110,7 @@ export default function ChatRoom({
 						scrollToBottomButton.current &&
 						e.target instanceof HTMLElement &&
 						e.target.scrollHeight - e.target.scrollTop >
-							e.target.clientHeight + 50
+						e.target.clientHeight + 50
 					) {
 						scrollToBottomButton.current.style.display = 'block';
 					} else if (scrollToBottomButton.current) {
@@ -149,21 +148,19 @@ export default function ChatRoom({
 				{optimisticMessages.map((msg, idx) => (
 					<div
 						key={msg.id}
-						className={`flex ${
-							decodedJwt && decodedJwt.sub === msg.sender
-								? 'justify-end'
-								: 'justify-start'
-						}`}
+						className={`flex ${decodedJwt && decodedJwt.sub === msg.sender
+							? 'justify-end'
+							: 'justify-start'
+							}`}
 					>
 						<div
 							className={`animate-fadeInUp flex max-w-xs translate-y-[5px] transform flex-col items-end justify-center gap-[14px] opacity-0 transition-all duration-150 md:max-w-md lg:max-w-lg`}
 						>
 							<div
-								className={`group relative rounded-lg p-[8px] text-gray-100 ${
-									decodedJwt && decodedJwt.sub === msg.sender
-										? 'rounded-br-none bg-indigo-600'
-										: 'rounded-bl-none bg-gray-800'
-								}`}
+								className={`group relative rounded-lg p-[8px] text-gray-100 ${decodedJwt && decodedJwt.sub === msg.sender
+									? 'rounded-br-none bg-indigo-600'
+									: 'rounded-bl-none bg-gray-800'
+									}`}
 							>
 								{decodedJwt && decodedJwt.sub !== msg.sender && (
 									<p className="mb-1 text-xs font-semibold text-indigo-300">
