@@ -7,7 +7,7 @@ import {
 	useState,
 	ReactNode,
 } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { decodeJwt } from 'jose';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 
@@ -21,17 +21,14 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [accessToken, setAccessToken] = useState<string | null>(null);
-	const [refreshToken, setRefreshToken] = useState<string | null>(null);
+	const [accessToken, setAccessToken] = useState<string | null>(
+		localStorage.getItem('accessToken') || null,
+	);
+	const [refreshToken, setRefreshToken] = useState<string | null>(
+		localStorage.getItem('refreshToken') || null,
+	);
 	const router = useRouter();
-	useEffect(() => {
-		const storedAccess = localStorage.getItem('accessToken');
-		const storedRefresh = localStorage.getItem('refreshToken');
-		if (storedAccess && storedRefresh) {
-			setAccessToken(storedAccess);
-			setRefreshToken(storedRefresh);
-		}
-	}, []);
+	const pathname = usePathname();
 
 	const login = (access: string, refresh: string) => {
 		localStorage.setItem('accessToken', access);
@@ -48,21 +45,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	};
 
 	const value = { accessToken, refreshToken, login, logout };
+	useEffect(() => {
+		if (accessToken && pathname !== '/chat') {
+			router.push('/chat');
+		} else if (!accessToken && pathname !== '/signup') {
+			router.push('/login');
+		}
+	}, [accessToken, router, pathname]);
 
-	// Nếu đã đăng nhập => bọc children với WebSocketProvider
-	if (accessToken) {
-		console.log('đã đăng nhập');
-		router.push('/chat');
-		return (
-			<AuthContext.Provider value={value}>
+	return (
+		<AuthContext.Provider value={value}>
+			{accessToken ? (
 				<WebSocketContextProvider token={accessToken}>
 					{children}
 				</WebSocketContextProvider>
-			</AuthContext.Provider>
-		);
-	}
-	console.log('accessToken invalid.');
-	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+			) : (
+				children
+			)}
+		</AuthContext.Provider>
+	);
 }
 
 export const useAuth = () => {

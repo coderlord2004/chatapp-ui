@@ -9,6 +9,7 @@ import {
 import { type Client } from '@stomp/stompjs';
 import { Mutex } from 'async-mutex';
 import { decodeJwt } from 'jose';
+import { MessageResponseType } from '@/types/types';
 
 import getStompClient from '@/services/websocket';
 
@@ -63,7 +64,7 @@ function WebSocketContextProvider({ children, token }: Props) {
 	);
 }
 
-type Callback = (messageBody: unknown) => void;
+type Callback = (messageBody: MessageResponseType) => void;
 
 function useWebSocket(destination: string, callback: Callback) {
 	const context = useContext(WebSocketContext);

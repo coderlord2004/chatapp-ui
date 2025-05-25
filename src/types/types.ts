@@ -36,10 +36,11 @@ type MessageRequestType = {
 type MessageResponseType = {
 	id: number;
 	sender: string;
-	message: string;
+	message: string | null;
 	sentOn?: string;
 	attachments: AttachmentType[];
 	sending?: boolean;
+	isFake?: boolean;
 };
 
 type LatestMessageType = {

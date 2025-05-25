@@ -25,30 +25,18 @@ export default function ChatRoom({
 	const roomId = chatRoomInfo.id;
 	const { accessToken } = useAuth();
 	const decodedJwt = accessToken && decodeJwt(accessToken);
-	const messages = useMessages(`${roomId}`, messagePage);
+	const { messages, updateMessages } = useMessages(`${roomId}`, messagePage);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollToBottomButton = useRef<HTMLDivElement>(null);
 	const { setSearchUserModal } = useSearchUser();
-	const [optimisticMessages, setOptimisticMessage] = useState<
-		MessageResponseType[]
-	>([]);
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 	};
 
-	const sendOptimistic = (message: MessageResponseType) => {
-		setOptimisticMessage((prev) => [...prev, message]);
-	};
-
 	useEffect(() => {
 		scrollToBottom();
-		setOptimisticMessage(messages);
 	}, [messages]);
-
-	useEffect(() => {
-		scrollToBottom();
-	}, [optimisticMessages]);
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -104,13 +92,13 @@ export default function ChatRoom({
 
 			{/* Messages Container */}
 			<div
-				className="flex-1 space-y-3 overflow-y-auto bg-gray-900/50 p-4 transition-all duration-200"
+				className="flex-1 space-y-3 overflow-y-auto bg-gray-900/50 p-[10px] transition-all duration-200"
 				onScroll={(e) => {
 					if (
 						scrollToBottomButton.current &&
 						e.target instanceof HTMLElement &&
 						e.target.scrollHeight - e.target.scrollTop >
-						e.target.clientHeight + 50
+							e.target.clientHeight + 50
 					) {
 						scrollToBottomButton.current.style.display = 'block';
 					} else if (scrollToBottomButton.current) {
@@ -145,22 +133,24 @@ export default function ChatRoom({
 						{formatDateTime(chatRoomInfo.createdOn)}
 					</p>
 				</div>
-				{optimisticMessages.map((msg, idx) => (
+				{messages.map((msg, idx) => (
 					<div
 						key={msg.id}
-						className={`flex ${decodedJwt && decodedJwt.sub === msg.sender
-							? 'justify-end'
-							: 'justify-start'
-							}`}
+						className={`flex ${
+							decodedJwt && decodedJwt.sub === msg.sender
+								? 'justify-end'
+								: 'justify-start'
+						}`}
 					>
 						<div
 							className={`animate-fadeInUp flex max-w-xs translate-y-[5px] transform flex-col items-end justify-center gap-[14px] opacity-0 transition-all duration-150 md:max-w-md lg:max-w-lg`}
 						>
 							<div
-								className={`group relative rounded-lg p-[8px] text-gray-100 ${decodedJwt && decodedJwt.sub === msg.sender
-									? 'rounded-br-none bg-indigo-600'
-									: 'rounded-bl-none bg-gray-800'
-									}`}
+								className={`group relative rounded-lg p-[8px] text-gray-100 ${
+									decodedJwt && decodedJwt.sub === msg.sender
+										? 'rounded-br-none bg-indigo-600'
+										: 'rounded-bl-none bg-gray-800'
+								}`}
 							>
 								{decodedJwt && decodedJwt.sub !== msg.sender && (
 									<p className="mb-1 text-xs font-semibold text-indigo-300">
@@ -169,7 +159,7 @@ export default function ChatRoom({
 								)}
 								<p className="h-full w-full">{msg.message}</p>
 								<p
-									className={`absolute top-[100%] right-0 text-[60%] whitespace-nowrap text-gray-500 ${idx === optimisticMessages.length - 1 ? '' : 'hidden group-hover:block'}`}
+									className={`absolute top-[100%] ${decodedJwt && decodedJwt.sub === msg.sender ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${idx === messages.length - 1 ? '' : 'hidden group-hover:block'}`}
 								>
 									{msg.sending
 										? 'Đang gửi'
@@ -224,7 +214,7 @@ export default function ChatRoom({
 					typeof decodedJwt?.sub === 'string' ? decodedJwt.sub : undefined
 				}
 				roomId={roomId}
-				onSendOptimistic={sendOptimistic}
+				onSendOptimistic={updateMessages}
 			/>
 		</div>
 	);
