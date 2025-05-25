@@ -12,7 +12,9 @@ export default function useMessages(roomId: string, page: number) {
 
 	useEffect(() => {
 		async function getChatRoomMessage() {
-			const data = await get(`messages/${roomId}?page=${page}`);
+			const data = await get(`messages/`, {
+				params: { page, room: roomId },
+			});
 
 			setMessages(data);
 		}

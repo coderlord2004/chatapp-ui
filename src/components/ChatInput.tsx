@@ -74,7 +74,7 @@ export default function ChatInput({
 		});
 
 		try {
-			await post(`messages/${roomId}`, formData);
+			await post(`messages/`, formData, { params: { room: roomId } });
 		} catch (err) {
 			console.error('Send failed:', err);
 		}
