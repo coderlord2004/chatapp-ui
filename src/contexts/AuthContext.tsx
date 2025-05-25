@@ -5,11 +5,12 @@ import {
 	useContext,
 	useEffect,
 	useState,
-	ReactNode,
+	PropsWithChildren,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { decodeJwt } from 'jose';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
+import { getAccessToken, getRefreshToken } from '@/utils/request';
 
 type AuthContextType = {
 	accessToken: string | null;
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	};
 
 	useEffect(() => {
+		// TODO: check if accessToken valid
 		if (accessToken && pathname !== '/chat') {
 			router.push('/chat');
 		}

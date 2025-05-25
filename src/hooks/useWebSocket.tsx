@@ -9,7 +9,6 @@ import {
 import { type Client } from '@stomp/stompjs';
 import { Mutex } from 'async-mutex';
 import { decodeJwt } from 'jose';
-import { MessageResponseType } from '@/types/types';
 
 import getStompClient from '@/services/websocket';
 
@@ -64,16 +63,18 @@ function WebSocketContextProvider({ children, token }: Props) {
 	);
 }
 
-type Callback = (messageBody: MessageResponseType) => void;
+type Callback = (messageBody: unknown) => void;
 
 function useWebSocket(destination: string, callback: Callback) {
 	const context = useContext(WebSocketContext);
 
-	if (context === undefined) {
-		throw new Error('You called useWebSocket outside WebSocketContextProvider');
-	}
-
 	useEffect(() => {
+		if (context === undefined) {
+			throw new Error(
+				'You called useWebSocket outside WebSocketContextProvider',
+			);
+		}
+
 		const { stompClient } = context;
 		if (!stompClient || !destination) {
 			return;

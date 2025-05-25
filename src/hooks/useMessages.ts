@@ -21,8 +21,8 @@ export default function useMessages(roomId: string, page: number) {
 		getChatRoomMessage();
 	}, [roomId, page, accessToken, get]);
 
-	useWebSocket(webSocketPath, (message: MessageResponseType) => {
-		console.log('message response:', message);
+	useWebSocket(webSocketPath, (response) => {
+		const message = response as MessageResponseType;
 		message.isFake = false;
 		message.sending = false;
 		setMessages((prev) => [
