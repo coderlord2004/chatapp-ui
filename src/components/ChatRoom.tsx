@@ -10,7 +10,8 @@ import { formatDateTime, formatTime } from '@/utils/formatDateTime';
 import { useSearchUser } from '@/hooks/useSearchUser';
 import { HiUserGroup } from 'react-icons/hi2';
 import Image from '@/components/Image';
-import { MessageResponseType } from '@/types/types';
+import ProgressLoading from './ProgressLoading';
+import { FaDownload } from 'react-icons/fa';
 
 type ChatRoomProps = {
 	authUsername: string | undefined;
@@ -29,6 +30,9 @@ export default function ChatRoom({
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollToBottomButton = useRef<HTMLDivElement>(null);
 	const { setSearchUserModal } = useSearchUser();
+	const [uploadProgress, setUploadProgress] = useState<number>(0);
+
+	console.log('messages:', messages);
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,6 +41,12 @@ export default function ChatRoom({
 	useEffect(() => {
 		scrollToBottom();
 	}, [messages]);
+
+	useEffect(() => {
+		if (uploadProgress === 100) {
+			setUploadProgress(-1);
+		}
+	}, [uploadProgress]);
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -98,9 +108,15 @@ export default function ChatRoom({
 						scrollToBottomButton.current &&
 						e.target instanceof HTMLElement &&
 						e.target.scrollHeight - e.target.scrollTop >
-							e.target.clientHeight + 50
+							e.target.clientHeight + 100
 					) {
 						scrollToBottomButton.current.style.display = 'block';
+						if (
+							e.target.scrollHeight - e.target.scrollTop >
+							0.6 * e.target.scrollHeight
+						) {
+							setMessagePage((prev) => prev + 1);
+						}
 					} else if (scrollToBottomButton.current) {
 						scrollToBottomButton.current.style.display = 'none';
 					}
@@ -133,6 +149,7 @@ export default function ChatRoom({
 						{formatDateTime(chatRoomInfo.createdOn)}
 					</p>
 				</div>
+
 				{messages.map((msg, idx) => (
 					<div
 						key={msg.id}
@@ -167,31 +184,44 @@ export default function ChatRoom({
 								</p>
 							</div>
 
-							{msg.attachments.map((attachment, idx) => {
-								if (attachment.type === 'IMAGE') {
-									return (
-										<div
-											key={msg.id + idx}
-											className="h-[250px] w-[200px] rounded-[7px]"
-										>
+							{msg.attachments.map((attachment, idx) => (
+								<div key={msg.id + idx} className="group relative">
+									{attachment.type === 'IMAGE' ? (
+										<div className="group relative h-[250px] w-[200px] rounded-[7px]">
 											<Image src={attachment.source} />
 										</div>
-									);
-								} else if (attachment.type === 'VIDEO') {
-									return (
-										<div
-											key={msg.id + idx}
-											className="max-w-[70%] rounded-[7px]"
+									) : attachment.type === 'VIDEO' ? (
+										<video
+											src={attachment.source}
+											className="rounded-[8px] object-cover"
+											controls
+										/>
+									) : (
+										<a
+											href={attachment.source}
+											download={attachment.source}
+											className={`group relative flex gap-[10px] rounded-lg p-[8px] text-gray-100 ${
+												decodedJwt && decodedJwt.sub === msg.sender
+													? 'rounded-br-none bg-indigo-600'
+													: 'rounded-bl-none bg-gray-800'
+											}`}
 										>
-											<video
-												src={attachment.source}
-												className="rounded-[8px] object-cover"
-												controls
-											/>
+											Tải xuống
+											<FaDownload className="text-[20px]" />
+										</a>
+									)}
+
+									{uploadProgress > 0 ? (
+										<ProgressLoading uploadProgress={uploadProgress} />
+									) : (
+										<div
+											className={`absolute top-[100%] ${decodedJwt && decodedJwt.sub === msg.sender ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${idx === messages.length - 1 ? '' : 'hidden group-hover:block'}`}
+										>
+											{`Đã gửi lúc ${formatTime(msg.sentOn || '')}`}
 										</div>
-									);
-								}
-							})}
+									)}
+								</div>
+							))}
 						</div>
 					</div>
 				))}
@@ -215,6 +245,7 @@ export default function ChatRoom({
 				}
 				roomId={roomId}
 				onSendOptimistic={updateMessages}
+				onSetUploadProgress={setUploadProgress}
 			/>
 		</div>
 	);

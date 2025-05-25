@@ -20,7 +20,7 @@ function useInvitations() {
 
 	useWebSocket(webSocketPath, (message) => {
 		console.log('invitation response:', message);
-		setInvitations((prev) => [message as Invitation, ...prev]);
+		setInvitations((prev) => [message as unknown as Invitation, ...prev]);
 	});
 
 	const updateInvitationStatus = (
@@ -46,7 +46,7 @@ function useInvitationReply() {
 
 	useWebSocket(webSocketPath, (message) => {
 		console.log('invitation reply response:', message);
-		setInvitationReply(message as Invitation);
+		setInvitationReply(message as unknown as Invitation);
 	});
 
 	return invitationReply;

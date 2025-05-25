@@ -3,15 +3,13 @@ import { useRequest } from '@/hooks/useRequest';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaUserFriends } from 'react-icons/fa';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import { ChatRoomInfo, Invitation } from '@/types/types';
+import { ChatRoomInfo } from '@/types/types';
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';
 import { useSearchUser } from '@/hooks/useSearchUser';
 import { useInvitations, useInvitationReply } from '@/hooks/useInvitations';
 import { formatDateTime } from '@/utils/formatDateTime';
-import useMessages from '@/hooks/useMessages';
 import { FaPowerOff } from 'react-icons/fa';
-import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { IoMdSettings } from 'react-icons/io';
 
@@ -108,6 +106,24 @@ export function SideBar(props: SideBarProps) {
 		};
 		getChatRoom();
 	}, [get]);
+
+	useEffect(() => {
+		if (invitationReply) {
+			const newChatRoom: ChatRoomInfo = {
+				id: invitationReply.chatRoomId,
+				name: null,
+				avatar: invitationReply.sender.avatar,
+				membersUsername: [
+					invitationReply.sender.username,
+					invitationReply.receiver.username,
+				],
+				type: 'DUO',
+				createdOn: Date.now().toString(),
+				latestMessage: null,
+			};
+			setChatRooms((prev) => [newChatRoom, ...prev]);
+		}
+	}, [invitationReply]);
 
 	return (
 		<div
