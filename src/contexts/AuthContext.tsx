@@ -2,15 +2,14 @@
 
 import {
 	createContext,
+	PropsWithChildren,
 	useContext,
 	useEffect,
 	useState,
-	PropsWithChildren,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { decodeJwt } from 'jose';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
-import { getAccessToken, getRefreshToken } from '@/utils/request';
 
 type AuthContextType = {
 	accessToken: string | null;
@@ -21,7 +20,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: PropsWithChildren) {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
@@ -34,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		if (storedAccessToken) {
 			setAccessToken(storedAccessToken);
 		}
+
 		if (storedRefreshToken) {
 			setRefreshToken(storedRefreshToken);
 		}
