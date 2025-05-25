@@ -19,10 +19,22 @@ export default function useMessages(roomId: string, page: number) {
 		getChatRoomMessage();
 	}, [roomId, page, accessToken, get]);
 
-	useWebSocket(webSocketPath, (message) => {
+	useWebSocket(webSocketPath, (message: MessageResponseType) => {
 		console.log('message response:', message);
-		setMessages((prev) => [...prev, message as MessageResponseType]);
+		message.isFake = false;
+		message.sending = false;
+		setMessages((prev) => [
+			...prev.filter((message) => message.isFake !== true),
+			message,
+		]);
 	});
 
-	return messages;
+	function updateMessages(fakeMessage: MessageResponseType) {
+		setMessages((prev) => [...prev, fakeMessage]);
+	}
+
+	return {
+		messages,
+		updateMessages,
+	};
 }

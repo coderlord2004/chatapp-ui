@@ -6,6 +6,7 @@ import { FaComment } from 'react-icons/fa';
 import { ChatRoomInfo } from '@/types/types';
 import { SideBar } from '@/components/SideBar';
 import { useJwtDecoded } from '@/contexts/AuthContext';
+import { useSearchUser } from '@/hooks/useSearchUser';
 
 export default function Page() {
 	const [chatRoomActive, setChatRoomActive] = useState<ChatRoomInfo | null>(
@@ -13,6 +14,7 @@ export default function Page() {
 	);
 	const jwt = useJwtDecoded();
 	const authUsername = jwt?.sub;
+	const { setSearchUserModal } = useSearchUser();
 	console.log('me:', authUsername);
 
 	return (

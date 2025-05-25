@@ -3,13 +3,17 @@ import { useRequest } from '@/hooks/useRequest';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaUserFriends } from 'react-icons/fa';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import { ChatRoomInfo } from '@/types/types';
+import { ChatRoomInfo, Invitation } from '@/types/types';
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';
 import { useSearchUser } from '@/hooks/useSearchUser';
-import useInvitations from '@/hooks/useInvitations';
+import { useInvitations, useInvitationReply } from '@/hooks/useInvitations';
 import { formatDateTime } from '@/utils/formatDateTime';
-import { useJwtDecoded } from '@/contexts/AuthContext';
+import useMessages from '@/hooks/useMessages';
+import { FaPowerOff } from 'react-icons/fa';
+import { useRouter } from 'next/router';
+import { useAuth } from '@/contexts/AuthContext';
+import { IoMdSettings } from 'react-icons/io';
 
 type SideBarProps = {
 	authUsername: string | undefined;
@@ -19,12 +23,14 @@ type SideBarProps = {
 
 export function SideBar(props: SideBarProps) {
 	const { get, patch } = useRequest();
-	const invitations = useInvitations();
+	const { invitations, updateInvitationStatus } = useInvitations();
 	const [isShowInvitations, setShowInvitations] = useState<boolean>(false);
 	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([]);
 	const { setSearchUserModal } = useSearchUser();
-	console.log('invitations:', invitations);
+	const invitationReply = useInvitationReply();
 	const sideBarRef = useRef<HTMLDivElement>(null);
+	const { logout } = useAuth();
+	const [isShowSetting, setShowSetting] = useState<boolean>(false);
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -57,21 +63,13 @@ export function SideBar(props: SideBarProps) {
 		document.addEventListener('mousemove', handleMouseMove);
 		document.addEventListener('mouseup', stopResize);
 	};
+	console.log('invitation:', invitations);
 	console.log('chat room:', chatRooms);
 	const handleInvitation = async (invitationId: number, isAccept: boolean) => {
 		await patch(`invitations/${invitationId}`, {
 			accept: isAccept,
 		});
-		const newInvitation = invitations.map((i) => {
-			if (i.chatRoomId === invitationId) {
-				return {
-					...i,
-					status: isAccept ? 'ACCEPTED' : 'REJECTED',
-				};
-			}
-			return i;
-		});
-
+		updateInvitationStatus(invitationId, isAccept ? 'ACCEPTED' : 'REJECTED');
 		if (isAccept) {
 			const senderInvitation = invitations.find(
 				(invitation) => invitation.id === invitationId,
@@ -202,6 +200,7 @@ export function SideBar(props: SideBarProps) {
 							</div>
 						)}
 					</div>
+
 					<div
 						className="transition-all duration-200 hover:scale-[1.05] hover:transform hover:text-yellow-400"
 						onClick={() =>
@@ -218,10 +217,29 @@ export function SideBar(props: SideBarProps) {
 							}}
 						/>
 					</div>
+
+					<div className="relative flex items-center justify-center">
+						<div onClick={() => setShowSetting(!isShowSetting)}>
+							<IoMdSettings className="cursor-pointer text-[120%] hover:transform hover:text-yellow-400" />
+						</div>
+
+						{isShowSetting && (
+							<div className="absolute top-[120%] left-1/2 flex translate-x-[-50%] transform cursor-pointer flex-col gap-[10px] rounded-[8px] bg-slate-600 p-[10px]">
+								<div>me: {props.authUsername}</div>
+								<div
+									className="flex items-center justify-center gap-[7px] p-[5px] transition-all duration-200 hover:transform hover:bg-slate-500 hover:text-red-700"
+									onClick={() => logout()}
+								>
+									<p className="whitespace-nowrap">Log out</p>
+									<FaPowerOff className="text-[120%]" title="logout" />
+								</div>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 
-			<div className="flex-1 overflow-y-auto">
+			<div className="scrollBarStyle flex-1 overflow-y-auto">
 				{chatRooms.length ? (
 					chatRooms.map((chatRoom) => (
 						<div

@@ -9,7 +9,7 @@ import { MessageResponseType } from '@/types/types';
 
 type ChatRoomProps = {
 	authUsername: string | undefined;
-	roomId: number;
+	roomId: number | null;
 	onSendOptimistic: (msg: MessageResponseType) => void;
 };
 
@@ -38,6 +38,8 @@ export default function ChatInput({
 		const formData = new FormData();
 		const text = message.trim();
 
+		if (!text && !attachments) return;
+
 		if (attachments) {
 			for (let i = 0; i < attachments.length; i++) {
 				formData.append('attachments', attachments[i].fileData);
@@ -48,21 +50,10 @@ export default function ChatInput({
 		if (text) {
 			formData.append('message', text);
 		}
-		console.log('attachment:', {
-			id: fakeId,
-			message: text,
-			sender: authUsername || 'you',
-			sentOn: new Date().toISOString(),
-			attachments:
-				attachments?.map((a) => ({
-					source: a.imagePreview,
-					type: a.fileData.type.startsWith('video') ? 'VIDEO' : 'IMAGE',
-				})) || [],
-			sending: true,
-		});
+
 		onSendOptimistic({
 			id: fakeId,
-			message: text,
+			message: text ? text : null,
 			sender: authUsername || 'you',
 			sentOn: new Date().toISOString(),
 			attachments:
@@ -71,6 +62,7 @@ export default function ChatInput({
 					type: a.fileData.type.startsWith('video') ? 'VIDEO' : 'IMAGE',
 				})) || [],
 			sending: true,
+			isFake: true,
 		});
 
 		try {
@@ -108,7 +100,7 @@ export default function ChatInput({
 		}, 0);
 	};
 
-	useEffect(() => {}, [attachments]);
+	console.log('attachments', attachments);
 
 	return (
 		<div className="relative flex flex-col gap-[15px] border-t border-gray-800 bg-gray-800/50 p-4">
@@ -156,7 +148,7 @@ export default function ChatInput({
 				</div>
 				<button
 					type="submit"
-					disabled={!message.trim()}
+					disabled={!message.trim() && (attachments ? false : true)}
 					className="cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					<FaPaperPlane />
