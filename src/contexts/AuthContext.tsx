@@ -5,11 +5,12 @@ import {
 	useContext,
 	useEffect,
 	useState,
-	ReactNode,
+	PropsWithChildren,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { decodeJwt } from 'jose';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
+import { getAccessToken, getRefreshToken } from '@/utils/request';
 
 type AuthContextType = {
 	accessToken: string | null;
@@ -20,13 +21,14 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: PropsWithChildren) {
 	const [accessToken, setAccessToken] = useState<string | null>(
-		localStorage.getItem('accessToken') || null,
+		getAccessToken() || null,
 	);
 	const [refreshToken, setRefreshToken] = useState<string | null>(
-		localStorage.getItem('refreshToken') || null,
+		getRefreshToken() || null,
 	);
+
 	const router = useRouter();
 	const pathname = usePathname();
 
@@ -46,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	const value = { accessToken, refreshToken, login, logout };
 	useEffect(() => {
+		// TODO: check if accessToken valid
 		if (accessToken && pathname !== '/chat') {
 			router.push('/chat');
 		} else if (!accessToken && pathname !== '/signup') {

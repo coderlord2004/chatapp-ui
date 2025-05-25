@@ -3,15 +3,13 @@ import { useRequest } from '@/hooks/useRequest';
 import { FaUserCircle } from 'react-icons/fa';
 import { FaUserFriends } from 'react-icons/fa';
 import { IoIosAddCircleOutline } from 'react-icons/io';
-import { ChatRoomInfo, Invitation } from '@/types/types';
+import { ChatRoomInfo } from '@/types/types';
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';
 import { useSearchUser } from '@/hooks/useSearchUser';
-import { useInvitations, useInvitationReply } from '@/hooks/useInvitations';
+import { useInvitations } from '@/hooks/useInvitations';
 import { formatDateTime } from '@/utils/formatDateTime';
-import useMessages from '@/hooks/useMessages';
 import { FaPowerOff } from 'react-icons/fa';
-import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { IoMdSettings } from 'react-icons/io';
 
@@ -27,7 +25,6 @@ export function SideBar(props: SideBarProps) {
 	const [isShowInvitations, setShowInvitations] = useState<boolean>(false);
 	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([]);
 	const { setSearchUserModal } = useSearchUser();
-	const invitationReply = useInvitationReply();
 	const sideBarRef = useRef<HTMLDivElement>(null);
 	const { logout } = useAuth();
 	const [isShowSetting, setShowSetting] = useState<boolean>(false);

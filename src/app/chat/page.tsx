@@ -15,7 +15,6 @@ export default function Page() {
 	const jwt = useJwtDecoded();
 	const authUsername = jwt?.sub;
 	const { setSearchUserModal } = useSearchUser();
-	console.log('me:', authUsername);
 
 	return (
 		<div className="flex h-screen bg-gray-900 text-gray-100">

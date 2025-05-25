@@ -10,7 +10,6 @@ import { formatDateTime, formatTime } from '@/utils/formatDateTime';
 import { useSearchUser } from '@/hooks/useSearchUser';
 import { HiUserGroup } from 'react-icons/hi2';
 import Image from '@/components/Image';
-import { MessageResponseType } from '@/types/types';
 
 type ChatRoomProps = {
 	authUsername: string | undefined;
@@ -22,6 +21,8 @@ export default function ChatRoom({
 	chatRoomInfo,
 }: ChatRoomProps) {
 	const [messagePage, setMessagePage] = useState<number>(1);
+	setMessagePage(1); // TODO:
+
 	const roomId = chatRoomInfo.id;
 	const { accessToken } = useAuth();
 	const decodedJwt = accessToken && decodeJwt(accessToken);

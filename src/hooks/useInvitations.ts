@@ -19,18 +19,14 @@ function useInvitations() {
 	}, [accessToken, get]);
 
 	useWebSocket(webSocketPath, (message) => {
-		console.log('invitation response:', message);
 		setInvitations((prev) => [message as Invitation, ...prev]);
 	});
 
-	const updateInvitationStatus = (
-		id: number,
-		status: 'ACCEPTED' | 'REJECTED',
-	) => {
+	function updateInvitationStatus(id: number, status: 'ACCEPTED' | 'REJECTED') {
 		setInvitations((prev) =>
 			prev.map((inv) => (inv.id === id ? { ...inv, status } : inv)),
 		);
-	};
+	}
 
 	return {
 		invitations,
