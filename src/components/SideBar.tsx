@@ -106,6 +106,24 @@ export function SideBar(props: SideBarProps) {
 		getChatRoom();
 	}, [get]);
 
+	useEffect(() => {
+		if (invitationReply) {
+			const newChatRoom: ChatRoomInfo = {
+				id: invitationReply.chatRoomId,
+				name: null,
+				avatar: invitationReply.sender.avatar,
+				membersUsername: [
+					invitationReply.sender.username,
+					invitationReply.receiver.username,
+				],
+				type: 'DUO',
+				createdOn: Date.now().toString(),
+				latestMessage: null,
+			};
+			setChatRooms((prev) => [newChatRoom, ...prev]);
+		}
+	}, [invitationReply]);
+
 	return (
 		<div
 			ref={sideBarRef}

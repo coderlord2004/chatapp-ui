@@ -21,16 +21,23 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: PropsWithChildren) {
-	const [accessToken, setAccessToken] = useState<string | null>(
-		getAccessToken() || null,
-	);
-	const [refreshToken, setRefreshToken] = useState<string | null>(
-		getRefreshToken() || null,
-	);
+export function AuthProvider({ children }: { children: ReactNode }) {
+	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
 	const router = useRouter();
 	const pathname = usePathname();
+
+	useEffect(() => {
+		const storedAccessToken = localStorage.getItem('accessToken');
+		const storedRefreshToken = localStorage.getItem('refreshToken');
+		if (storedAccessToken) {
+			setAccessToken(storedAccessToken);
+		}
+		if (storedRefreshToken) {
+			setRefreshToken(storedRefreshToken);
+		}
+	}, []);
 
 	const login = (access: string, refresh: string) => {
 		localStorage.setItem('accessToken', access);
@@ -41,20 +48,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 	const logout = () => {
 		localStorage.removeItem('accessToken');
-		localStorage.removeItem('refresh');
+		localStorage.removeItem('refreshToken');
 		setAccessToken(null);
 		setRefreshToken(null);
 	};
 
-	const value = { accessToken, refreshToken, login, logout };
 	useEffect(() => {
 		// TODO: check if accessToken valid
 		if (accessToken && pathname !== '/chat') {
 			router.push('/chat');
-		} else if (!accessToken && pathname !== '/signup') {
-			router.push('/login');
 		}
 	}, [accessToken, router, pathname]);
+
+	const value = { accessToken, refreshToken, login, logout };
 
 	return (
 		<AuthContext.Provider value={value}>

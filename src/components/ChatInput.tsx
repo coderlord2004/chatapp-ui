@@ -11,6 +11,7 @@ type ChatRoomProps = {
 	authUsername: string | undefined;
 	roomId: number | null;
 	onSendOptimistic: (msg: MessageResponseType) => void;
+	onSetUploadProgress: (percent: number) => void;
 };
 
 type AttachmentTypes = {
@@ -22,6 +23,7 @@ export default function ChatInput({
 	authUsername,
 	roomId,
 	onSendOptimistic,
+	onSetUploadProgress,
 }: ChatRoomProps) {
 	const { post } = useRequest();
 	const [message, setMessage] = useState('');
@@ -66,7 +68,19 @@ export default function ChatInput({
 		});
 
 		try {
-			await post(`messages/`, formData, { params: { room: roomId } });
+			await post(`messages/`, formData, {
+				params: {
+					room: roomId,
+				},
+				onUploadProgress: attachments
+					? (progressEvent) => {
+							const percent = Math.round(
+								(progressEvent.loaded * 100) / (progressEvent.total || 1),
+							);
+							onSetUploadProgress(percent);
+						}
+					: () => {},
+			});
 		} catch (err) {
 			console.error('Send failed:', err);
 		}
@@ -157,33 +171,64 @@ export default function ChatInput({
 
 			{attachments && attachments.length !== 0 && (
 				<div className="flex flex-wrap gap-[10px]">
-					{attachments.map((attachment) => (
-						<div
-							key={attachment.imagePreview}
-							className="relative h-[100px] w-[100px]"
-						>
-							<div
-								className="absolute top-[-10px] right-[-10px] cursor-pointer text-[23px]"
-								onClick={() => {
-									URL.revokeObjectURL(attachment.imagePreview);
-									setAttachments((prev) => {
-										const newAttachments = prev?.filter(
-											(n) => n.imagePreview !== attachment.imagePreview,
-										);
+					{attachments.map((attachment) => {
+						const isImage = attachment.fileData.type.startsWith('image/');
+						const isVideo = attachment.fileData.type.startsWith('video/');
+						const isDocument = !isImage && !isVideo;
 
-										return newAttachments || null;
-									});
-								}}
+						return (
+							<div
+								key={attachment.imagePreview}
+								className="relative h-[100px] w-[100px]"
 							>
-								<IoIosCloseCircleOutline />
+								<div
+									className="absolute top-[-10px] right-[-10px] z-10 cursor-pointer text-[23px]"
+									onClick={() => {
+										URL.revokeObjectURL(attachment.imagePreview);
+										setAttachments(
+											(prev) =>
+												prev?.filter(
+													(n) => n.imagePreview !== attachment.imagePreview,
+												) || null,
+										);
+									}}
+								>
+									<IoIosCloseCircleOutline />
+								</div>
+
+								{isImage && (
+									<img
+										src={attachment.imagePreview}
+										alt="preview"
+										className="h-full w-full rounded-[10px] object-cover"
+									/>
+								)}
+
+								{isVideo && (
+									<video
+										src={attachment.imagePreview}
+										className="h-full w-full rounded-[10px] object-cover"
+										controls
+									/>
+								)}
+
+								{isDocument && (
+									<div className="flex h-full w-full flex-col items-center justify-center rounded-[10px] bg-gray-100 px-1 text-center">
+										<div className="w-full truncate text-sm font-medium">
+											{attachment.fileData.name}
+										</div>
+										<a
+											href={attachment.imagePreview}
+											download={attachment.fileData.name}
+											className="mt-1 text-xs text-blue-600 underline"
+										>
+											Tải xuống
+										</a>
+									</div>
+								)}
 							</div>
-							<img
-								src={attachment.imagePreview}
-								alt=""
-								className="rounded-[10px] object-cover"
-							/>
-						</div>
-					))}
+						);
+					})}
 				</div>
 			)}
 		</div>

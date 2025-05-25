@@ -42,7 +42,7 @@ function useInvitationReply() {
 
 	useWebSocket(webSocketPath, (message) => {
 		console.log('invitation reply response:', message);
-		setInvitationReply(message as Invitation);
+		setInvitationReply(message as unknown as Invitation);
 	});
 
 	return invitationReply;
