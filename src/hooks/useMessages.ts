@@ -37,6 +37,7 @@ export default function useMessages(roomId: string, page: number) {
 
 	function updateMessage(
 		messageId: number,
+		newMessage: string,
 		sending: boolean,
 		isUpdated: boolean,
 	) {
@@ -48,6 +49,7 @@ export default function useMessages(roomId: string, page: number) {
 
 				return {
 					...m,
+					message: newMessage,
 					sending,
 					isUpdated,
 				};

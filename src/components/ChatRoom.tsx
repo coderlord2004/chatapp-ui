@@ -59,8 +59,9 @@ export default function ChatRoom({
 
 	const [isUpdateMessage, setIsUpdateMessage] = useState<number | null>(null);
 	const updateMessageRef = useRef<HTMLInputElement>(null);
+	const [isShowChatRoomInfo, setIsShowChatRoomInfo] = useState<boolean>(false);
 
-	console.log('messages:', messages);
+	console.log('isUpdateMessage:', isUpdateMessage);
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -94,11 +95,11 @@ export default function ChatRoom({
 		const formData = new FormData();
 		formData.append('message', newMessage);
 
-		updateMessage(messageId, true, false);
+		updateMessage(messageId, newMessage, true, false);
 
 		await put(`/messages/${messageId}`, formData);
 
-		updateMessage(messageId, false, true);
+		updateMessage(messageId, newMessage, false, true);
 	}
 
 	function getChatRoomName(info: ChatRoomInfo) {
@@ -122,7 +123,10 @@ export default function ChatRoom({
 		<div className="lsm:flex relative hidden flex-1 flex-col bg-gray-900">
 			{/* Chat Header */}
 			<div className="flex max-h-[60px] items-center justify-between border-b border-gray-800 bg-gray-800/50 px-4 py-[10px]">
-				<div className="flex items-center">
+				<div
+					className="flex cursor-pointer items-center"
+					onClick={() => setIsShowChatRoomInfo(true)}
+				>
 					{chatRoomInfo.avatar ? (
 						<img
 							src={chatRoomInfo.avatar}
@@ -143,7 +147,7 @@ export default function ChatRoom({
 						)}
 					</div>
 				</div>
-				{chatRoomInfo.type === 'GROUP' && (
+				{chatRoomInfo.type === 'DUO' && (
 					<div
 						title="Thêm bạn bè"
 						className="cursor-pointer text-[30px] hover:text-yellow-400"
@@ -233,7 +237,7 @@ export default function ChatRoom({
 										</p>
 									)}
 
-									{isUpdateMessage ? (
+									{isUpdateMessage === msg.id ? (
 										<form
 											className="h-full w-full"
 											onSubmit={handleUpdateMessage}
@@ -276,7 +280,13 @@ export default function ChatRoom({
 
 										{isShowMessageMenu.id === msg.id && (
 											<div className="animate-fadeInUp absolute top-1/2 right-[100%] flex w-auto translate-y-[-50%] transform flex-col gap-[5px] rounded-[8px] bg-slate-700 p-[10px]">
-												<div className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-blue-600">
+												<div
+													className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-blue-600"
+													onClick={() => {
+														setIsUpdateMessage(msg.id);
+														setShowMessageMenu({ id: null, isOpen: false });
+													}}
+												>
 													Sửa tin nhắn
 												</div>
 												<div
@@ -343,6 +353,28 @@ export default function ChatRoom({
 				{/* Empty div for auto-scrolling */}
 				<div ref={messagesEndRef} />
 			</div>
+
+			{isShowChatRoomInfo && (
+				<div className="absolute top-0 right-0 z-50 flex h-full w-[50%] flex-col items-center justify-start bg-gray-900 px-[10px] py-[20px] shadow-lg">
+					<h2>Danh sách thành viên</h2>
+					<button
+						className="absolute top-2 right-2 cursor-pointer text-[200%] text-white hover:text-red-500"
+						aria-label="Close chat room info"
+						onClick={() => setIsShowChatRoomInfo(false)}
+					>
+						&times;
+					</button>
+
+					{chatRoomInfo.membersUsername.map((username) => (
+						<div
+							key={username}
+							className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 text-left hover:bg-gray-800"
+						>
+							{username}
+						</div>
+					))}
+				</div>
+			)}
 
 			<div
 				className="absolute bottom-[80px] left-1/2 translate-x-[-50%] transform cursor-pointer rounded-[50%] bg-black/80 p-[5px] text-[20px]"
