@@ -7,7 +7,7 @@ import { ChatRoomInfo } from '@/types/types';
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';
 import { useSearchUser } from '@/hooks/useSearchUser';
-import { useInvitations } from '@/hooks/useInvitations';
+import { useInvitations, useInvitationReply } from '@/hooks/useInvitations';
 import { formatDateTime } from '@/utils/formatDateTime';
 import { FaPowerOff } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,13 +28,13 @@ export function SideBar(props: SideBarProps) {
 	const sideBarRef = useRef<HTMLDivElement>(null);
 	const { logout } = useAuth();
 	const [isShowSetting, setShowSetting] = useState<boolean>(false);
+	const invitationReply = useInvitationReply();
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
 		if (name) {
 			return name;
 		}
-
 		return membersUsername
 			.filter((username) => username !== props.authUsername)
 			.slice(0, 3)
@@ -61,56 +61,69 @@ export function SideBar(props: SideBarProps) {
 		document.addEventListener('mousemove', handleMouseMove);
 		document.addEventListener('mouseup', stopResize);
 	};
-
+	console.log('invitation:', invitations);
+	console.log('chat room:', chatRooms);
 	const handleInvitation = async (invitationId: number, isAccept: boolean) => {
 		await patch(`invitations/${invitationId}`, {
 			accept: isAccept,
 		});
-
 		updateInvitationStatus(invitationId, isAccept ? 'ACCEPTED' : 'REJECTED');
-		if (!isAccept) {
-			return;
-		}
-
-		const senderInvitation = invitations.find(
-			(invitation) => invitation.id === invitationId,
-		);
-
-		setChatRooms((prev) => {
-			if (!senderInvitation) {
+		if (isAccept) {
+			const senderInvitation = invitations.find(
+				(invitation) => invitation.id === invitationId,
+			);
+			setChatRooms((prev) => {
+				if (senderInvitation) {
+					const newChatRoom: ChatRoomInfo = {
+						id: senderInvitation.chatRoomId,
+						name: null,
+						avatar: senderInvitation.sender.avatar,
+						membersUsername: [
+							senderInvitation.sender.username,
+							senderInvitation.receiver.username,
+						],
+						type: 'DUO',
+						createdOn: Date.now().toString(),
+						latestMessage: null,
+					};
+					return [newChatRoom, ...prev];
+				}
 				return prev;
-			}
-
-			const newChatRoom: ChatRoomInfo = {
-				id: senderInvitation.chatRoomId,
-				name: null,
-				avatar: senderInvitation.sender.avatar,
-				membersUsername: [
-					senderInvitation.sender.username,
-					senderInvitation.receiver.username,
-				],
-				type: 'DUO',
-				createdOn: Date.now().toString(),
-				latestMessage: null,
-			};
-
-			return [newChatRoom, ...prev];
-		});
+			});
+		}
 	};
 
 	const getTotalNewInvitations = () => {
 		return invitations.filter((i) => i.status === 'PENDING').length;
 	};
-
 	const totalNewInvitations = getTotalNewInvitations();
 
 	useEffect(() => {
 		const getChatRoom = async () => {
-			const results = await get('chatrooms/');
+			const results = await Promise.all([get('chatrooms/')]);
+
 			setChatRooms(results[0]);
 		};
 		getChatRoom();
 	}, [get]);
+
+	useEffect(() => {
+		if (invitationReply) {
+			const newChatRoom: ChatRoomInfo = {
+				id: invitationReply.chatRoomId,
+				name: null,
+				avatar: invitationReply.sender.avatar,
+				membersUsername: [
+					invitationReply.sender.username,
+					invitationReply.receiver.username,
+				],
+				type: 'DUO',
+				createdOn: Date.now().toString(),
+				latestMessage: null,
+			};
+			setChatRooms((prev) => [newChatRoom, ...prev]);
+		}
+	}, [invitationReply]);
 
 	return (
 		<div

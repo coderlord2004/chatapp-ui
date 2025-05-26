@@ -2,10 +2,10 @@
 
 import {
 	createContext,
-	PropsWithChildren,
 	useContext,
 	useEffect,
 	useState,
+	ReactNode,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { decodeJwt } from 'jose';
@@ -24,12 +24,11 @@ type TokenTypes = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: PropsWithChildren) {
+export function AuthProvider({ children }: { children: ReactNode }) {
 	const [token, setToken] = useState<TokenTypes>({
 		accessToken: null,
 		refreshToken: null,
 	});
-
 	const router = useRouter();
 	const pathname = usePathname();
 
