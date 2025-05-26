@@ -12,10 +12,22 @@ import { HiUserGroup } from 'react-icons/hi2';
 import Image from '@/components/Image';
 import ProgressLoading from './ProgressLoading';
 import { FaDownload } from 'react-icons/fa';
+import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
+import { useRequest } from '@/hooks/useRequest';
 
 type ChatRoomProps = {
 	authUsername: string | undefined;
 	chatRoomInfo: ChatRoomInfo;
+};
+
+type UploadProgressType = {
+	id: number | null;
+	percent: number;
+};
+
+type MessageMenuType = {
+	id: number | null;
+	isOpen: boolean;
 };
 
 export default function ChatRoom({
@@ -26,11 +38,22 @@ export default function ChatRoom({
 	const roomId = chatRoomInfo.id;
 	const { accessToken } = useAuth();
 	const decodedJwt = accessToken && decodeJwt(accessToken);
-	const { messages, updateMessages } = useMessages(`${roomId}`, messagePage);
+	const { messages, insertFakeMessages, deleteMessage } = useMessages(
+		`${roomId}`,
+		messagePage,
+	);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollToBottomButton = useRef<HTMLDivElement>(null);
 	const { setSearchUserModal } = useSearchUser();
-	const [uploadProgress, setUploadProgress] = useState<number>(0);
+	const [uploadProgress, setUploadProgress] = useState<UploadProgressType>({
+		id: null,
+		percent: 0,
+	});
+	const [isShowMessageMenu, setShowMessageMenu] = useState<MessageMenuType>({
+		id: null,
+		isOpen: false,
+	});
+	const { remove } = useRequest();
 
 	console.log('messages:', messages);
 
@@ -40,13 +63,26 @@ export default function ChatRoom({
 
 	useEffect(() => {
 		scrollToBottom();
-	}, [messages]);
+	}, [messages.length, roomId]);
 
 	useEffect(() => {
-		if (uploadProgress === 100) {
-			setUploadProgress(-1);
+		if (uploadProgress.percent === 100) {
+			setUploadProgress({
+				id: null,
+				percent: -1,
+			});
 		}
 	}, [uploadProgress]);
+
+	async function handleDeleteMessage(messageId: number) {
+		await remove(`/messages/${messageId}`);
+		deleteMessage(messageId);
+	}
+
+	// async function handleUpdateMessage(messageId: number) {
+	// 	await put(`/messages/${messageId}`)
+	// 	// deleteMessage(messageId)
+	// }
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -57,6 +93,12 @@ export default function ChatRoom({
 			.filter((username) => username !== authUsername)
 			.slice(0, 3)
 			.join(', ');
+	}
+
+	function isAuthUser(sender: string): boolean {
+		if (!decodedJwt) return false;
+
+		return decodedJwt.sub === sender;
 	}
 
 	return (
@@ -112,8 +154,8 @@ export default function ChatRoom({
 					) {
 						scrollToBottomButton.current.style.display = 'block';
 						if (
-							e.target.scrollHeight - e.target.scrollTop >
-							0.6 * e.target.scrollHeight
+							e.target.scrollHeight - e.target.scrollTop ===
+							e.target.scrollHeight
 						) {
 							setMessagePage((prev) => prev + 1);
 						}
@@ -154,74 +196,111 @@ export default function ChatRoom({
 					<div
 						key={msg.id}
 						className={`flex ${
-							decodedJwt && decodedJwt.sub === msg.sender
-								? 'justify-end'
-								: 'justify-start'
+							isAuthUser(msg.sender) ? 'justify-end' : 'justify-start'
 						}`}
 					>
 						<div
-							className={`animate-fadeInUp flex max-w-xs translate-y-[5px] transform flex-col items-end justify-center gap-[14px] opacity-0 transition-all duration-150 md:max-w-md lg:max-w-lg`}
+							className={`animate-fadeInUp flex max-w-[85%] translate-y-[5px] transform flex-col items-end justify-center gap-[12px] opacity-0 transition-all duration-150 md:max-w-md lg:max-w-lg ${isAuthUser(msg.sender) ? 'items-end' : 'items-start'}`}
 						>
-							<div
-								className={`group relative rounded-lg p-[8px] text-gray-100 ${
-									decodedJwt && decodedJwt.sub === msg.sender
-										? 'rounded-br-none bg-indigo-600'
-										: 'rounded-bl-none bg-gray-800'
-								}`}
-							>
-								{decodedJwt && decodedJwt.sub !== msg.sender && (
-									<p className="mb-1 text-xs font-semibold text-indigo-300">
-										{msg.sender}
-									</p>
-								)}
-								<p className="h-full w-full">{msg.message}</p>
-								<p
-									className={`absolute top-[100%] ${decodedJwt && decodedJwt.sub === msg.sender ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${idx === messages.length - 1 ? '' : 'hidden group-hover:block'}`}
+							{msg.message && (
+								<div
+									className={`group relative rounded-lg p-[8px] text-gray-100 ${
+										isAuthUser(msg.sender)
+											? 'rounded-br-none bg-indigo-600'
+											: 'rounded-bl-none bg-gray-800'
+									}`}
 								>
-									{msg.sending
-										? 'Đang gửi'
-										: `Đã gửi lúc ${formatTime(msg.sentOn || '')}`}
-								</p>
-							</div>
-
-							{msg.attachments.map((attachment, idx) => (
-								<div key={msg.id + idx} className="group relative">
-									{attachment.type === 'IMAGE' ? (
-										<div className="group relative h-[250px] w-[200px] rounded-[7px]">
-											<Image src={attachment.source} />
-										</div>
-									) : attachment.type === 'VIDEO' ? (
-										<video
-											src={attachment.source}
-											className="rounded-[8px] object-cover"
-											controls
-										/>
-									) : (
-										<a
-											href={attachment.source}
-											download={attachment.source}
-											className={`group relative flex gap-[10px] rounded-lg p-[8px] text-gray-100 ${
-												decodedJwt && decodedJwt.sub === msg.sender
-													? 'rounded-br-none bg-indigo-600'
-													: 'rounded-bl-none bg-gray-800'
-											}`}
-										>
-											Tải xuống
-											<FaDownload className="text-[20px]" />
-										</a>
+									{!isAuthUser(msg.sender) && (
+										<p className="mb-1 text-xs font-semibold text-indigo-300">
+											{msg.sender}
+										</p>
 									)}
 
-									{uploadProgress > 0 ? (
-										<ProgressLoading uploadProgress={uploadProgress} />
-									) : (
+									<p className="h-full w-full">{msg.message}</p>
+									<p
+										className={`absolute top-[100%] ${isAuthUser(msg.sender) ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${idx === messages.length - 1 ? '' : 'hidden group-hover:block'}`}
+									>
+										{msg.sending
+											? 'Đang gửi'
+											: `Đã gửi lúc ${formatTime(msg.sentOn || '')}`}
+									</p>
+
+									<div className="absolute top-1/2 right-[100%] translate-y-[-50%] transform cursor-pointer">
 										<div
-											className={`absolute top-[100%] ${decodedJwt && decodedJwt.sub === msg.sender ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${idx === messages.length - 1 ? '' : 'hidden group-hover:block'}`}
+											onClick={() =>
+												setShowMessageMenu((prev) =>
+													prev.id === msg.id
+														? { id: null, isOpen: false }
+														: { id: msg.id, isOpen: true },
+												)
+											}
+											className="text-[130%]"
 										>
-											{`Đã gửi lúc ${formatTime(msg.sentOn || '')}`}
+											<HiOutlineDotsCircleHorizontal />
 										</div>
-									)}
+
+										{isShowMessageMenu.id === msg.id && (
+											<div className="animate-fadeInUp absolute top-1/2 right-[100%] flex w-auto translate-y-[-50%] transform flex-col gap-[5px] rounded-[8px] bg-slate-700 p-[10px]">
+												<div className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-blue-600">
+													Sửa tin nhắn
+												</div>
+												<div
+													className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-red-600"
+													onClick={() => handleDeleteMessage(msg.id)}
+												>
+													Xóa tin nhắn
+												</div>
+											</div>
+										)}
+									</div>
 								</div>
-							))}
+							)}
+
+							{msg.attachments && (
+								<div className={`flex max-w-[100%] gap-[7px]`}>
+									{msg.attachments.map((attachment, idx) => (
+										<div
+											key={msg.id + idx}
+											className="group relative min-w-[calc(100%/3-7px)]"
+										>
+											{attachment.type === 'IMAGE' ? (
+												<div className="group relative rounded-[7px]">
+													<Image src={attachment.source} />
+												</div>
+											) : attachment.type === 'VIDEO' ? (
+												<video
+													src={attachment.source}
+													className="rounded-[8px] object-cover"
+													controls
+												/>
+											) : (
+												<a
+													href={attachment.source}
+													download={attachment.source}
+													className={`group relative flex gap-[10px] rounded-lg p-[8px] text-gray-100 ${
+														isAuthUser(msg.sender)
+															? 'rounded-br-none bg-indigo-600'
+															: 'rounded-bl-none bg-gray-800'
+													}`}
+												>
+													Tải xuống
+													<FaDownload className="text-[20px]" />
+												</a>
+											)}
+
+											{uploadProgress.id === msg.id ? (
+												<ProgressLoading percent={uploadProgress.percent} />
+											) : (
+												<div
+													className={`absolute top-[100%] ${isAuthUser(msg.sender) ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${idx === messages.length - 1 ? '' : 'hidden group-hover:block'}`}
+												>
+													{`Đã gửi lúc ${formatTime(msg.sentOn || '')}`}
+												</div>
+											)}
+										</div>
+									))}
+								</div>
+							)}
 						</div>
 					</div>
 				))}
@@ -244,7 +323,7 @@ export default function ChatRoom({
 					typeof decodedJwt?.sub === 'string' ? decodedJwt.sub : undefined
 				}
 				roomId={roomId}
-				onSendOptimistic={updateMessages}
+				onSendOptimistic={insertFakeMessages}
 				onSetUploadProgress={setUploadProgress}
 			/>
 		</div>

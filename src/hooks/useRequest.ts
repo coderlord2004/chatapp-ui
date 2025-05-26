@@ -48,6 +48,32 @@ export const useRequest = () => {
 		[handleError],
 	);
 
+	const remove = useCallback(
+		async (url: string) => {
+			try {
+				const response = await request.delete(url);
+				return response.data;
+			} catch (error) {
+				handleError(error);
+				throw error;
+			}
+		},
+		[handleError],
+	);
+
+	const put = useCallback(
+		async (url: string, data = {}, config = {}) => {
+			try {
+				const response = await request.put(url, data, config);
+				return response.data;
+			} catch (error) {
+				handleError(error);
+				throw error;
+			}
+		},
+		[handleError],
+	);
+
 	const patch = useCallback(
 		async (url: string, data = {}, config = {}) => {
 			try {
@@ -61,5 +87,5 @@ export const useRequest = () => {
 		[handleError],
 	);
 
-	return { get, post, patch };
+	return { get, post, put, patch, remove };
 };

@@ -31,12 +31,27 @@ export default function useMessages(roomId: string, page: number) {
 		]);
 	});
 
-	function updateMessages(fakeMessage: MessageResponseType) {
+	function insertFakeMessages(fakeMessage: MessageResponseType) {
 		setMessages((prev) => [...prev, fakeMessage]);
+	}
+
+	function deleteMessage(messageId: number) {
+		setMessages((prev) =>
+			prev.map((m) => {
+				if (m.id === messageId) {
+					return {
+						...m,
+						message: 'Đã thu hồi tin nhắn',
+					};
+				}
+				return m;
+			}),
+		);
 	}
 
 	return {
 		messages,
-		updateMessages,
+		insertFakeMessages,
+		deleteMessage,
 	};
 }

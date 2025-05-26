@@ -284,7 +284,7 @@ export function SideBar(props: SideBarProps) {
 									<div className="text-[80%] text-gray-400">
 										<p>
 											<b>
-												{props.authUsername
+												{props.authUsername === chatRoom.latestMessage.sender
 													? 'Bạn'
 													: chatRoom.latestMessage.sender}
 												:{' '}
