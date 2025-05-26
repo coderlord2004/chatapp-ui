@@ -7,7 +7,7 @@ import { ChatRoomInfo } from '@/types/types';
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';
 import { useSearchUser } from '@/hooks/useSearchUser';
-import { useInvitations, useInvitationReply } from '@/hooks/useInvitations';
+import { useInvitations } from '@/hooks/useInvitations';
 import { formatDateTime } from '@/utils/formatDateTime';
 import { FaPowerOff } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,7 +28,6 @@ export function SideBar(props: SideBarProps) {
 	const sideBarRef = useRef<HTMLDivElement>(null);
 	const { logout } = useAuth();
 	const [isShowSetting, setShowSetting] = useState<boolean>(false);
-	const invitationReply = useInvitationReply();
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
