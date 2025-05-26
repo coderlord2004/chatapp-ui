@@ -25,10 +25,10 @@ export function SideBar(props: SideBarProps) {
 	const [isShowInvitations, setShowInvitations] = useState<boolean>(false);
 	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([]);
 	const { setSearchUserModal } = useSearchUser();
-	const invitationReply = useInvitationReply();
 	const sideBarRef = useRef<HTMLDivElement>(null);
 	const { logout } = useAuth();
 	const [isShowSetting, setShowSetting] = useState<boolean>(false);
+	const invitationReply = useInvitationReply();
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -284,7 +284,7 @@ export function SideBar(props: SideBarProps) {
 									<div className="text-[80%] text-gray-400">
 										<p>
 											<b>
-												{props.authUsername === chatRoom.latestMessage.sender
+												{props.authUsername
 													? 'Bạn'
 													: chatRoom.latestMessage.sender}
 												:{' '}

@@ -3,21 +3,28 @@
 import axios, { CreateAxiosDefaults, type AxiosRequestHeaders } from 'axios';
 import { decode, encode } from '@msgpack/msgpack';
 
-const getAccessToken = () => {
+function getLocalStorage() {
 	if (typeof window === 'undefined') {
 		return null;
 	}
-	return localStorage.getItem('accessToken');
+
+	return localStorage;
+}
+
+export const getAccessToken = () => {
+	return getLocalStorage()?.getItem('accessToken');
 };
 
-const getRefreshToken = () => {
-	if (typeof window === 'undefined') {
-		return null;
-	}
-	return localStorage.getItem('refreshToken');
+export const getRefreshToken = () => {
+	return getLocalStorage()?.getItem('refreshToken');
 };
 
 const logout = () => {
+	const localStorage = getLocalStorage();
+	if (localStorage === null) {
+		return;
+	}
+
 	localStorage.removeItem('accessToken');
 	localStorage.removeItem('refreshToken');
 	window.location.href = '/login';
@@ -34,7 +41,7 @@ const refreshAccessToken = async () => {
 		);
 
 		const newAccessToken = response.data.access;
-		localStorage.setItem('accessToken', newAccessToken);
+		getLocalStorage()?.setItem('accessToken', newAccessToken);
 		return newAccessToken;
 	} catch (err) {
 		logout();
