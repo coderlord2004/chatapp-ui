@@ -2,6 +2,7 @@
 
 import {
 	createContext,
+	PropsWithChildren,
 	useContext,
 	useEffect,
 	useState,
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		accessToken: null,
 		refreshToken: null,
 	});
+    
 	const router = useRouter();
 	const pathname = usePathname();
 
