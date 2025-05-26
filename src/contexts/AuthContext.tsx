@@ -6,10 +6,10 @@ import {
 	useContext,
 	useEffect,
 	useState,
+	ReactNode,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { decodeJwt } from 'jose';
-import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 
 type AuthContextType = {
 	accessToken: string | null;
@@ -18,61 +18,63 @@ type AuthContextType = {
 	logout: () => void;
 };
 
+type TokenTypes = {
+	accessToken: string | null;
+	refreshToken: string | null;
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: PropsWithChildren) {
-	const [accessToken, setAccessToken] = useState<string | null>(null);
-	const [refreshToken, setRefreshToken] = useState<string | null>(null);
-
+export function AuthProvider({ children }: { children: ReactNode }) {
+	const [token, setToken] = useState<TokenTypes>({
+		accessToken: null,
+		refreshToken: null,
+	});
+    
 	const router = useRouter();
 	const pathname = usePathname();
 
 	useEffect(() => {
 		const storedAccessToken = localStorage.getItem('accessToken');
 		const storedRefreshToken = localStorage.getItem('refreshToken');
-		if (storedAccessToken) {
-			setAccessToken(storedAccessToken);
-		}
 
-		if (storedRefreshToken) {
-			setRefreshToken(storedRefreshToken);
+		if (storedAccessToken && storedRefreshToken) {
+			setToken({
+				accessToken: storedAccessToken,
+				refreshToken: storedRefreshToken,
+			});
 		}
 	}, []);
 
-	const login = (access: string, refresh: string) => {
-		localStorage.setItem('accessToken', access);
-		localStorage.setItem('refreshToken', refresh);
-		setAccessToken(access);
-		setRefreshToken(refresh);
+	const login = (accessToken: string, refreshToken: string) => {
+		localStorage.setItem('accessToken', accessToken);
+		localStorage.setItem('refreshToken', refreshToken);
+		setToken({ accessToken, refreshToken });
 	};
 
 	const logout = () => {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
-		setAccessToken(null);
-		setRefreshToken(null);
+		setToken({ accessToken: null, refreshToken: null });
+		router.push('/login');
 	};
 
 	useEffect(() => {
-		// TODO: check if accessToken valid
-		if (accessToken && pathname !== '/chat') {
+		if (!token.accessToken || !token.refreshToken) return;
+
+		if (token.accessToken && pathname !== '/chat') {
 			router.push('/chat');
 		}
-	}, [accessToken, router, pathname]);
+	}, [token, router, pathname]);
 
-	const value = { accessToken, refreshToken, login, logout };
+	const value = {
+		accessToken: token.accessToken,
+		refreshToken: token.refreshToken,
+		login,
+		logout,
+	};
 
-	return (
-		<AuthContext.Provider value={value}>
-			{accessToken ? (
-				<WebSocketContextProvider token={accessToken}>
-					{children}
-				</WebSocketContextProvider>
-			) : (
-				children
-			)}
-		</AuthContext.Provider>
-	);
+	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {

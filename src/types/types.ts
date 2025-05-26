@@ -38,9 +38,10 @@ type MessageResponseType = {
 	sender: string;
 	message: string | null;
 	sentOn?: string;
-	attachments: AttachmentType[];
+	attachments: AttachmentType[] | null;
 	sending?: boolean;
 	isFake?: boolean;
+	isUpdated?: boolean;
 };
 
 type LatestMessageType = {

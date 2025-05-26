@@ -7,15 +7,11 @@ import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 export default function Layout({ children }: PropsWithChildren) {
 	const { accessToken } = useAuth();
 
+	if (!accessToken) return null;
+
 	return (
-		<>
-			{accessToken ? (
-				<WebSocketContextProvider token={accessToken}>
-					{children}
-				</WebSocketContextProvider>
-			) : (
-				children
-			)}
-		</>
+		<WebSocketContextProvider token={accessToken}>
+			{children}
+		</WebSocketContextProvider>
 	);
 }

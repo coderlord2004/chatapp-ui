@@ -7,11 +7,16 @@ import { MdAttachFile } from 'react-icons/md';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { MessageResponseType } from '@/types/types';
 
+type UploadProgressType = {
+	id: number | null;
+	percent: number;
+};
+
 type ChatRoomProps = {
 	authUsername: string | undefined;
 	roomId: number | null;
 	onSendOptimistic: (msg: MessageResponseType) => void;
-	onSetUploadProgress: (percent: number) => void;
+	onSetUploadProgress: (uploadProgress: UploadProgressType) => void;
 };
 
 type AttachmentTypes = {
@@ -32,6 +37,7 @@ export default function ChatInput({
 	const [attachments, setAttachments] = useState<AttachmentTypes[] | null>(
 		null,
 	);
+	const templeAttachments = useRef<AttachmentTypes[] | null>(null);
 
 	const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -48,13 +54,14 @@ export default function ChatInput({
 			}
 		}
 
-		const fakeId = -Date.now();
 		if (text) {
 			formData.append('message', text);
 		}
 
+		templeAttachments.current = attachments;
+		const fakeId = -Date.now();
 		onSendOptimistic({
-			id: fakeId,
+			id: -Date.now(),
 			message: text ? text : null,
 			sender: authUsername || 'you',
 			sentOn: new Date().toISOString(),
@@ -66,18 +73,22 @@ export default function ChatInput({
 			sending: true,
 			isFake: true,
 		});
+		setAttachments(null);
 
 		try {
 			await post(`messages/`, formData, {
 				params: {
 					room: roomId,
 				},
-				onUploadProgress: attachments
+				onUploadProgress: templeAttachments.current
 					? (progressEvent) => {
 							const percent = Math.round(
 								(progressEvent.loaded * 100) / (progressEvent.total || 1),
 							);
-							onSetUploadProgress(percent);
+							onSetUploadProgress({
+								id: fakeId,
+								percent: percent,
+							});
 						}
 					: () => {},
 			});

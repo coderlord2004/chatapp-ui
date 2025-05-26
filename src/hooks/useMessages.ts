@@ -31,12 +31,49 @@ export default function useMessages(roomId: string, page: number) {
 		]);
 	});
 
-	function updateMessages(fakeMessage: MessageResponseType) {
+	function insertFakeMessages(fakeMessage: MessageResponseType) {
 		setMessages((prev) => [...prev, fakeMessage]);
+	}
+
+	function updateMessage(
+		messageId: number,
+		sending: boolean,
+		isUpdated: boolean,
+	) {
+		setMessages((prev) =>
+			prev.map((m) => {
+				if (m.id !== messageId) {
+					return m;
+				}
+
+				return {
+					...m,
+					sending,
+					isUpdated,
+				};
+			}),
+		);
+	}
+
+	function deleteMessage(messageId: number) {
+		setMessages((prev) =>
+			prev.map((m) => {
+				if (m.id !== messageId) {
+					return m;
+				}
+
+				return {
+					...m,
+					message: 'Đã thu hồi tin nhắn',
+				};
+			}),
+		);
 	}
 
 	return {
 		messages,
-		updateMessages,
+		insertFakeMessages,
+		updateMessage,
+		deleteMessage,
 	};
 }
