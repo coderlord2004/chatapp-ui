@@ -41,6 +41,7 @@ type MessageResponseType = {
 	attachments: AttachmentType[] | null;
 	sending?: boolean;
 	isFake?: boolean;
+	isUpdated?: boolean;
 };
 
 type LatestMessageType = {

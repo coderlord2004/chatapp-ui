@@ -35,16 +35,37 @@ export default function useMessages(roomId: string, page: number) {
 		setMessages((prev) => [...prev, fakeMessage]);
 	}
 
+	function updateMessage(
+		messageId: number,
+		sending: boolean,
+		isUpdated: boolean,
+	) {
+		setMessages((prev) =>
+			prev.map((m) => {
+				if (m.id !== messageId) {
+					return m;
+				}
+
+				return {
+					...m,
+					sending,
+					isUpdated,
+				};
+			}),
+		);
+	}
+
 	function deleteMessage(messageId: number) {
 		setMessages((prev) =>
 			prev.map((m) => {
-				if (m.id === messageId) {
-					return {
-						...m,
-						message: 'Đã thu hồi tin nhắn',
-					};
+				if (m.id !== messageId) {
+					return m;
 				}
-				return m;
+
+				return {
+					...m,
+					message: 'Đã thu hồi tin nhắn',
+				};
 			}),
 		);
 	}
@@ -52,6 +73,7 @@ export default function useMessages(roomId: string, page: number) {
 	return {
 		messages,
 		insertFakeMessages,
+		updateMessage,
 		deleteMessage,
 	};
 }

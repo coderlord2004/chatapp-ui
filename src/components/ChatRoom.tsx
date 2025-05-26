@@ -42,10 +42,8 @@ export default function ChatRoom({
 	const roomId = chatRoomInfo.id;
 	const { accessToken } = useAuth();
 	const decodedJwt = accessToken && decodeJwt(accessToken);
-	const { messages, insertFakeMessages, deleteMessage } = useMessages(
-		`${roomId}`,
-		messagePage,
-	);
+	const { messages, insertFakeMessages, updateMessage, deleteMessage } =
+		useMessages(`${roomId}`, messagePage);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollToBottomButton = useRef<HTMLDivElement>(null);
 	const { setSearchUserModal } = useSearchUser();
@@ -57,7 +55,10 @@ export default function ChatRoom({
 		id: null,
 		isOpen: false,
 	});
-	const { remove } = useRequest();
+	const { put, remove } = useRequest();
+
+	const [isUpdateMessage, setIsUpdateMessage] = useState<number | null>(null);
+	const updateMessageRef = useRef<HTMLInputElement>(null);
 
 	console.log('messages:', messages);
 
@@ -83,10 +84,22 @@ export default function ChatRoom({
 		deleteMessage(messageId);
 	}
 
-	// async function handleUpdateMessage(messageId: number) {
-	// 	await put(`/messages/${messageId}`)
-	// 	// deleteMessage(messageId)
-	// }
+	async function handleUpdateMessage(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+		const messageId = isUpdateMessage;
+		const newMessage = updateMessageRef.current?.value.trim();
+
+		if (!newMessage || !messageId) return;
+
+		const formData = new FormData();
+		formData.append('message', newMessage);
+
+		updateMessage(messageId, true, false);
+
+		await put(`/messages/${messageId}`, formData);
+
+		updateMessage(messageId, false, true);
+	}
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -220,7 +233,25 @@ export default function ChatRoom({
 										</p>
 									)}
 
-									<p className="h-full w-full">{msg.message}</p>
+									{isUpdateMessage ? (
+										<form
+											className="h-full w-full"
+											onSubmit={handleUpdateMessage}
+										>
+											<input
+												ref={updateMessageRef}
+												type="text"
+												name="updateMessage"
+												className="h-full w-full bg-transparent text-gray-100 outline-none"
+												defaultValue={msg.message}
+												autoFocus
+												onBlur={() => setIsUpdateMessage(null)}
+											/>
+										</form>
+									) : (
+										<p className="h-full w-full">{msg.message}</p>
+									)}
+
 									<p
 										className={`absolute top-[100%] ${isAuthUser(msg.sender) ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${idx === messages.length - 1 ? '' : 'hidden group-hover:block'}`}
 									>
