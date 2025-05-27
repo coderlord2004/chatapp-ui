@@ -13,6 +13,7 @@ export default function Page() {
 		null,
 	);
 	const jwt = useJwtDecoded();
+
 	const authUsername = jwt?.sub;
 	const { setSearchUserModal } = useSearchUser();
 

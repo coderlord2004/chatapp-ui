@@ -14,6 +14,8 @@ import ProgressLoading from './ProgressLoading';
 import { FaDownload } from 'react-icons/fa';
 import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
 import { useRequest } from '@/hooks/useRequest';
+import VideoCall from '@/components/VideoCall';
+import { IoIosVideocam } from 'react-icons/io';
 
 type ChatRoomProps = {
 	authUsername: string | undefined;
@@ -61,8 +63,8 @@ export default function ChatRoom({
 	const updateMessageRef = useRef<HTMLInputElement>(null);
 	const [isShowChatRoomInfo, setIsShowChatRoomInfo] = useState<boolean>(false);
 
-	console.log('isUpdateMessage:', isUpdateMessage);
-
+	const [startVideoCall, setStartVideoCall] = useState<boolean>(false);
+	console.log('start video call', startVideoCall);
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 	};
@@ -147,18 +149,28 @@ export default function ChatRoom({
 						)}
 					</div>
 				</div>
+
 				{chatRoomInfo.type === 'DUO' && (
-					<div
-						title="Thêm bạn bè"
-						className="cursor-pointer text-[30px] hover:text-yellow-400"
-						onClick={() =>
-							setSearchUserModal({
-								isOpen: true,
-								chatGroupId: chatRoomInfo.id,
-							})
-						}
-					>
-						<MdPersonAddAlt />
+					<div className="flex items-center justify-center gap-[10px]">
+						<div
+							className="cursor-pointer text-[30px] hover:text-yellow-400"
+							onClick={() => setStartVideoCall(!startVideoCall)}
+						>
+							<IoIosVideocam />
+						</div>
+
+						<div
+							title="Thêm bạn bè"
+							className="cursor-pointer text-[30px] hover:text-yellow-400"
+							onClick={() =>
+								setSearchUserModal({
+									isOpen: true,
+									chatGroupId: chatRoomInfo.id,
+								})
+							}
+						>
+							<MdPersonAddAlt />
+						</div>
 					</div>
 				)}
 			</div>
@@ -264,40 +276,42 @@ export default function ChatRoom({
 											: `Đã gửi lúc ${formatTime(msg.sentOn || '')}`}
 									</p>
 
-									<div className="absolute top-1/2 right-[100%] translate-y-[-50%] transform cursor-pointer">
-										<div
-											onClick={() =>
-												setShowMessageMenu((prev) =>
-													prev.id === msg.id
-														? { id: null, isOpen: false }
-														: { id: msg.id, isOpen: true },
-												)
-											}
-											className="text-[130%]"
-										>
-											<HiOutlineDotsCircleHorizontal />
-										</div>
-
-										{isShowMessageMenu.id === msg.id && (
-											<div className="animate-fadeInUp absolute top-1/2 right-[100%] flex w-auto translate-y-[-50%] transform flex-col gap-[5px] rounded-[8px] bg-slate-700 p-[10px]">
-												<div
-													className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-blue-600"
-													onClick={() => {
-														setIsUpdateMessage(msg.id);
-														setShowMessageMenu({ id: null, isOpen: false });
-													}}
-												>
-													Sửa tin nhắn
-												</div>
-												<div
-													className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-red-600"
-													onClick={() => handleDeleteMessage(msg.id)}
-												>
-													Xóa tin nhắn
-												</div>
+									{isAuthUser(msg.sender) && (
+										<div className="absolute top-1/2 right-[100%] translate-y-[-50%] transform cursor-pointer">
+											<div
+												onClick={() =>
+													setShowMessageMenu((prev) =>
+														prev.id === msg.id
+															? { id: null, isOpen: false }
+															: { id: msg.id, isOpen: true },
+													)
+												}
+												className="text-[130%]"
+											>
+												<HiOutlineDotsCircleHorizontal />
 											</div>
-										)}
-									</div>
+
+											{isShowMessageMenu.id === msg.id && (
+												<div className="animate-fadeInUp absolute top-1/2 right-[100%] flex w-auto translate-y-[-50%] transform flex-col gap-[5px] rounded-[8px] bg-slate-700 p-[10px]">
+													<div
+														className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-blue-600"
+														onClick={() => {
+															setIsUpdateMessage(msg.id);
+															setShowMessageMenu({ id: null, isOpen: false });
+														}}
+													>
+														Sửa tin nhắn
+													</div>
+													<div
+														className="rounded-[8px] bg-slate-600 p-[7px] whitespace-nowrap transition-colors duration-200 hover:bg-red-600"
+														onClick={() => handleDeleteMessage(msg.id)}
+													>
+														Xóa tin nhắn
+													</div>
+												</div>
+											)}
+										</div>
+									)}
 								</div>
 							)}
 
@@ -393,6 +407,18 @@ export default function ChatRoom({
 				onSendOptimistic={insertFakeMessages}
 				onSetUploadProgress={setUploadProgress}
 			/>
+
+			{startVideoCall && (
+				<VideoCall
+					selfId={authUsername}
+					targetId={
+						chatRoomInfo.membersUsername.find(
+							(username) => username !== authUsername,
+						) || ''
+					}
+					onClose={() => setStartVideoCall(false)}
+				/>
+			)}
 		</div>
 	);
 }

@@ -91,4 +91,4 @@ function useWebSocket(destination: string, callback: Callback) {
 	}, [context, destination, callback]);
 }
 
-export { WebSocketContextProvider, useWebSocket };
+export { WebSocketContext, WebSocketContextProvider, useWebSocket };

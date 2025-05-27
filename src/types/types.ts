@@ -51,10 +51,19 @@ type LatestMessageType = {
 	attachments: AttachmentType[];
 };
 
+type SignalMessage = {
+	type: 'offer' | 'answer' | 'candidate';
+	caller: string;
+	target: string;
+	sdp?: RTCSessionDescriptionInit;
+	candidate?: RTCIceCandidateInit;
+};
+
 export type {
 	ChatRoomInfo,
 	Invitation,
 	MessageRequestType,
 	MessageResponseType,
 	LatestMessageType,
+	SignalMessage,
 };
