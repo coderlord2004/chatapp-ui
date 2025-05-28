@@ -34,7 +34,12 @@ export const NotificationProvider = ({ children }: PropsWithChildren) => {
 				id,
 			};
 
-			setNotifications((prev) => [...prev, newNotification]);
+			setNotifications((prev) => {
+				if (prev.find((n) => n.message == notification.message)) {
+					return prev;
+				}
+				return [...prev, newNotification];
+			});
 
 			setTimeout(() => {
 				setNotifications((prev) => prev.filter((n) => n.id !== id));

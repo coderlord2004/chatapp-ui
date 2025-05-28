@@ -15,11 +15,11 @@ export function useWebRTCSignaling({ selfId, targetId, onSignal }: Props) {
 		const { stompClient } = context ?? {};
 		if (!stompClient) return;
 
-		const destination = `/user/${selfId}/queue/signaling`;
+		const destination = `/user/queue/signaling`;
 
 		const subscription = stompClient.subscribe(destination, (message) => {
 			const body = JSON.parse(message.body) as SignalMessage;
-
+			console.log('Received signaling message:', body);
 			if (body.caller !== targetId) return;
 
 			onSignal(body);

@@ -1,8 +1,11 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useWebRTCSignaling } from '@/hooks/useWebRTCSignaling';
 import { SignalMessage } from '@/types/types';
+import { useNotification } from '@/hooks/useNotification';
+import { MdCallEnd } from 'react-icons/md';
+import { IoMdClose } from 'react-icons/io';
 
 const iceConfig = {
 	iceServers: [
@@ -15,19 +18,27 @@ const iceConfig = {
 	],
 };
 
-export default function VideoCall({
-	selfId,
-	targetId,
-	onClose,
-}: {
+interface VideoCallProps {
+	isMounted: boolean;
+	onMounted: () => void;
 	selfId: string | undefined;
 	targetId: string;
 	onClose: () => void;
-}) {
+}
+
+export default function VideoCall({
+	isMounted,
+	onMounted,
+	selfId,
+	targetId,
+	onClose,
+}: VideoCallProps) {
 	const localVideoRef = useRef<HTMLVideoElement>(null);
 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
 	const pcRef = useRef<RTCPeerConnection | null>(null);
-	const [inCall, setInCall] = useState(false);
+	const { showNotification } = useNotification();
+	const [isStartCall, setIsStartCall] = useState<boolean>(false);
+	const [isShowMe, setIsShowMe] = useState<boolean>(true);
 
 	const { sendSignal } = useWebRTCSignaling({
 		selfId,
@@ -46,8 +57,23 @@ export default function VideoCall({
 		},
 	});
 
+	const checkMediaDevicesSupport = useCallback(() => {
+		if (
+			typeof navigator.mediaDevices === 'undefined' ||
+			typeof navigator.mediaDevices.getUserMedia === 'undefined'
+		) {
+			showNotification({
+				type: 'error',
+				message: 'Media devices not supported in this browser.',
+			});
+			return false;
+		}
+		return true;
+	}, [showNotification]);
+
 	const handleReceiveOffer = async (msg: SignalMessage) => {
-		setInCall(true);
+		if (!checkMediaDevicesSupport()) return;
+
 		const stream = await navigator.mediaDevices.getUserMedia({
 			video: true,
 			audio: true,
@@ -89,15 +115,7 @@ export default function VideoCall({
 	};
 
 	const startCall = async () => {
-		setInCall(true);
-
-		if (
-			typeof navigator.mediaDevices === 'undefined' ||
-			typeof navigator.mediaDevices.getUserMedia === 'undefined'
-		) {
-			console.error('Media devices not supported in this browser.');
-			return;
-		}
+		if (!checkMediaDevicesSupport()) return;
 
 		const stream = await navigator.mediaDevices.getUserMedia({
 			video: true,
@@ -139,35 +157,54 @@ export default function VideoCall({
 	};
 
 	return (
-		<div className="fixed inset-0">
+		<div className={`fixed inset-0 ${isMounted ? '' : 'hidden'}`}>
 			<div
 				className="overlay absolute inset-0 cursor-pointer bg-black/70"
 				onClick={onClose}
 			></div>
 
-			<div className="absolute top-1/2 left-1/2 flex h-full -translate-x-1/2 -translate-y-1/2 transform flex-col items-center justify-center p-4">
-				{!inCall && (
-					<button
-						className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
-						onClick={startCall}
+			<div className="absolute top-1/2 left-1/2 flex h-[90%] w-[90%] -translate-x-1/2 -translate-y-1/2 transform flex-col items-center justify-center gap-[10px] p-4 sm:h-[80%] sm:w-[80%]">
+				<div className="relative flex w-full flex-1 gap-4 rounded-2xl">
+					{isShowMe && (
+						<div className="absolute top-4 right-4 w-[40%] rounded bg-slate-900 shadow sm:relative sm:top-0 sm:right-0 sm:w-[calc(100%/2-8px)] sm:bg-slate-800 sm:shadow-[0_0_3px_3px_gray]">
+							<video
+								ref={localVideoRef}
+								autoPlay
+								playsInline
+								muted
+								className=""
+							/>
+							<div
+								className="absolute top-2 right-2 flex cursor-pointer text-[20px] hover:text-red-500 sm:hidden"
+								onClick={() => setIsShowMe(!isShowMe)}
+							>
+								<IoMdClose />
+							</div>
+						</div>
+					)}
+					<div className="w-full rounded bg-slate-800 shadow-[0_0_3px_3px_gray] sm:w-[calc(100%/2-8px)]">
+						<video ref={remoteVideoRef} autoPlay playsInline className="" />
+					</div>
+				</div>
+
+				<div className="flex gap-[10px]">
+					{!isStartCall && (
+						<div
+							className="box-border flex cursor-pointer items-center justify-center rounded-[8px] bg-blue-500 p-[5px]"
+							onClick={() => {
+								setIsStartCall(!isStartCall);
+								startCall();
+							}}
+						>
+							Call now!
+						</div>
+					)}
+					<div
+						className="flex w-[60px] cursor-pointer items-center justify-center rounded-[10px] bg-red-500 text-[30px] text-white"
+						onClick={onMounted}
 					>
-						Start Video Call
-					</button>
-				)}
-				<div className="mt-4 flex gap-4 rounded-2xl">
-					<video
-						ref={localVideoRef}
-						autoPlay
-						playsInline
-						muted
-						className="w-1/2 rounded bg-slate-600 shadow"
-					/>
-					<video
-						ref={remoteVideoRef}
-						autoPlay
-						playsInline
-						className="w-1/2 rounded bg-slate-600 shadow"
-					/>
+						<MdCallEnd />
+					</div>
 				</div>
 			</div>
 		</div>

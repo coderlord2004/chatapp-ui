@@ -26,13 +26,13 @@ const entries = [
 export default function Page() {
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-black dark:text-white">
-			<header className="flex w-full items-center justify-between rounded-[10px] pr-[10px] pl-[70px] dark:bg-black/80 dark:text-white">
+			<header className="flex w-full items-center justify-between gap-[5px] rounded-[10px] pr-[10px] sm:pl-[70px] dark:bg-black/80 dark:text-white">
 				<Logo />
 				<div className="flex items-center justify-between space-x-4">
 					<div className="flex space-x-4">
 						<Link
 							href="/login"
-							className="px-4 py-2 font-medium text-blue-600 hover:underline"
+							className="hidden px-4 py-2 font-medium text-blue-600 hover:underline sm:flex"
 						>
 							Đăng nhập
 						</Link>
