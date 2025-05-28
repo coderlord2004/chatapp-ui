@@ -13,22 +13,37 @@ export default function Page() {
 		null,
 	);
 	const jwt = useJwtDecoded();
+	const [isOpenSidebar, setOpenSidebar] = useState<boolean>(true);
 	const authUsername = jwt?.sub;
 	const { setSearchUserModal } = useSearchUser();
 
+	const toggleSidebar = () => {
+		setOpenSidebar(!isOpenSidebar);
+	};
+
 	return (
-		<div className="flex h-screen bg-gray-900 text-gray-100">
+		<div className="relative flex h-screen overflow-hidden bg-gray-900 text-gray-100">
 			{/* Sidebar */}
 			<SideBar
+				isOpenSidebar={isOpenSidebar}
+				onOpenSidebar={toggleSidebar}
 				authUsername={authUsername}
 				chatRoomActive={chatRoomActive}
-				onUpdateChatRoomActive={(activeValue) => setChatRoomActive(activeValue)}
+				onUpdateChatRoomActive={(activeValue) => {
+					setChatRoomActive(activeValue);
+					setOpenSidebar(false);
+				}}
 			/>
 
 			{chatRoomActive ? (
-				<ChatRoom authUsername={authUsername} chatRoomInfo={chatRoomActive} />
+				<ChatRoom
+					authUsername={authUsername}
+					chatRoomInfo={chatRoomActive}
+					isOpenSidebar={isOpenSidebar}
+					onOpenSidebar={toggleSidebar}
+				/>
 			) : (
-				<div className="flex flex-1 items-center justify-center bg-gray-900">
+				<div className="hidden flex-1 items-center justify-center bg-gray-900 sm:flex">
 					<div className="max-w-md p-6 text-center">
 						<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-800">
 							<FaComment className="text-2xl text-gray-500" />

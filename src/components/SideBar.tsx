@@ -14,6 +14,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { IoMdSettings } from 'react-icons/io';
 
 type SideBarProps = {
+	isOpenSidebar: boolean;
+	onOpenSidebar: () => void;
 	authUsername: string | undefined;
 	chatRoomActive: ChatRoomInfo | null;
 	onUpdateChatRoomActive: (activeValue: ChatRoomInfo) => void;
@@ -29,6 +31,7 @@ export function SideBar(props: SideBarProps) {
 	const { logout } = useAuth();
 	const [isShowSetting, setShowSetting] = useState<boolean>(false);
 	const invitationReply = useInvitationReply();
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -41,28 +44,6 @@ export function SideBar(props: SideBarProps) {
 			.join(', ');
 	}
 
-	const startResize = (e: React.MouseEvent) => {
-		e.preventDefault();
-		const box = sideBarRef.current;
-		if (!box) return;
-
-		const startX = e.clientX;
-		const startWidth = box.offsetWidth;
-
-		const handleMouseMove = (e: MouseEvent) => {
-			box.style.width = `${startWidth + (e.clientX - startX)}px`;
-		};
-
-		const stopResize = () => {
-			document.removeEventListener('mousemove', handleMouseMove);
-			document.removeEventListener('mouseup', stopResize);
-		};
-
-		document.addEventListener('mousemove', handleMouseMove);
-		document.addEventListener('mouseup', stopResize);
-	};
-	console.log('invitation:', invitations);
-	console.log('chat room:', chatRooms);
 	const handleInvitation = async (invitationId: number, isAccept: boolean) => {
 		await patch(`invitations/${invitationId}`, {
 			accept: isAccept,
@@ -101,7 +82,7 @@ export function SideBar(props: SideBarProps) {
 	useEffect(() => {
 		const getChatRoom = async () => {
 			const results = await Promise.all([get('chatrooms/')]);
-
+			setIsLoading(false);
 			setChatRooms(results[0]);
 		};
 		getChatRoom();
@@ -128,7 +109,7 @@ export function SideBar(props: SideBarProps) {
 	return (
 		<div
 			ref={sideBarRef}
-			className="lsm:w-64 relative z-10 flex w-full min-w-[200px] flex-col border-r border-gray-700 bg-gray-800"
+			className={`sidebar ${props.isOpenSidebar ? 'w-full sm:w-auto' : 'w-0'} relative h-full flex-col border-r border-gray-700 bg-gray-800 sm:max-w-[300px] sm:min-w-[230px]`}
 		>
 			<div className="z-[1000] flex items-center justify-between border-b border-gray-700 p-4">
 				<h2 className="gradientColor">NextChat</h2>
@@ -240,7 +221,7 @@ export function SideBar(props: SideBarProps) {
 						</div>
 
 						{isShowSetting && (
-							<div className="absolute top-[120%] left-1/2 flex translate-x-[-50%] transform cursor-pointer flex-col gap-[10px] rounded-[8px] bg-slate-600 p-[10px]">
+							<div className="absolute top-[120%] right-0 flex transform cursor-pointer flex-col gap-[10px] rounded-[8px] bg-slate-600 p-[10px] sm:right-1/2 sm:translate-x-[50%]">
 								<div>me: {props.authUsername}</div>
 								<div
 									className="flex items-center justify-center gap-[7px] p-[5px] transition-all duration-200 hover:transform hover:bg-slate-500 hover:text-red-700"
@@ -256,7 +237,20 @@ export function SideBar(props: SideBarProps) {
 			</div>
 
 			<div className="scrollBarStyle flex-1 overflow-y-auto">
-				{chatRooms.length ? (
+				{isLoading ? (
+					Array.from({ length: 6 }).map((_, index) => (
+						<div
+							key={index}
+							className="mx-2 my-1 flex animate-pulse items-center rounded-lg bg-gray-700 p-3"
+						>
+							<div className="h-8 w-8 rounded-full bg-gray-600"></div>
+							<div className="ml-3 flex-1 space-y-2">
+								<div className="h-4 w-[60%] bg-gray-600"></div>
+								<div className="h-3 w-[80%] bg-gray-600"></div>
+							</div>
+						</div>
+					))
+				) : chatRooms.length ? (
 					chatRooms.map((chatRoom) => (
 						<div
 							key={chatRoom.id}
@@ -281,20 +275,21 @@ export function SideBar(props: SideBarProps) {
 									{getChatRoomName(chatRoom)}
 								</p>
 								{chatRoom.latestMessage && (
-									<div className="text-[80%] text-gray-400">
-										<p>
+									<div className="flex items-center justify-between text-[80%] text-gray-400">
+										<div className="truncate">
 											<b>
 												{props.authUsername
 													? 'Bạn'
 													: chatRoom.latestMessage.sender}
-												:{' '}
-											</b>
+												:
+											</b>{' '}
 											{chatRoom.latestMessage.attachments?.length
 												? 'Đã gửi 1 ảnh'
 												: chatRoom.latestMessage.message}
-										</p>
-										<span>.</span>
-										{formatDateTime(chatRoom.latestMessage.sentOn)}
+										</div>
+										<div className="flex-shrink-0 pl-2 text-[11px] text-nowrap">
+											{formatDateTime(chatRoom.latestMessage.sentOn)}
+										</div>
 									</div>
 								)}
 								{chatRoom.type === 'GROUP' && (
@@ -311,11 +306,6 @@ export function SideBar(props: SideBarProps) {
 					</div>
 				)}
 			</div>
-
-			<div
-				onMouseDown={startResize}
-				className="lsm:block absolute top-0 right-0 z-[1] hidden h-full w-[2px] cursor-ew-resize bg-slate-600"
-			/>
 		</div>
 	);
 }

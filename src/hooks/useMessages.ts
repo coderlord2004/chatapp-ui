@@ -6,6 +6,7 @@ import { MessageResponseType } from '@/types/types';
 
 export default function useMessages(roomId: string, page: number) {
 	const [messages, setMessages] = useState<MessageResponseType[]>([]);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const { accessToken } = useAuth();
 	const { get } = useRequest();
 	const webSocketPath = `/user/queue/chat/${roomId}`;
@@ -16,6 +17,7 @@ export default function useMessages(roomId: string, page: number) {
 				params: { page, room: roomId },
 			});
 
+			setIsLoading(false);
 			setMessages(data);
 		}
 		getChatRoomMessage();
@@ -77,5 +79,6 @@ export default function useMessages(roomId: string, page: number) {
 		insertFakeMessages,
 		updateMessage,
 		deleteMessage,
+		isLoading,
 	};
 }
