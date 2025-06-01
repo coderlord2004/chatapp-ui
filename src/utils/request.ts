@@ -1,6 +1,10 @@
 'use client';
 
-import axios, { CreateAxiosDefaults, type AxiosRequestHeaders } from 'axios';
+import axios, {
+	AxiosResponseHeaders,
+	CreateAxiosDefaults,
+	type AxiosRequestHeaders,
+} from 'axios';
 import { decode, encode } from '@msgpack/msgpack';
 
 function getLocalStorage() {
@@ -60,8 +64,18 @@ function encodeRequest(data: unknown, headers: AxiosRequestHeaders) {
 	return data;
 }
 
-function decodeResponse(data: ArrayBuffer) {
-	return decode(data);
+let textEncoder: TextDecoder | undefined;
+
+function decodeResponse(data: ArrayBuffer, headers: AxiosResponseHeaders) {
+	if (headers['content-type'] === MSGPACK_CONTENT_TYPE) {
+		return decode(data);
+	}
+
+	if (textEncoder === undefined) {
+		textEncoder = new TextDecoder('utf-8');
+	}
+
+	return JSON.parse(textEncoder.decode(data));
 }
 
 let config: CreateAxiosDefaults = {
