@@ -109,10 +109,9 @@ request.interceptors.response.use(
 	(response) => response,
 	async (error) => {
 		const originalRequest = error.config;
-		const accessTokenExpired =
-			error.response?.status === 401 && !originalRequest._retry;
+		const accessTokenExpired = error.response?.status === 401;
 
-		if (!accessTokenExpired) {
+		if (!accessTokenExpired || originalRequest._retry === true) {
 			return Promise.reject(error);
 		}
 
