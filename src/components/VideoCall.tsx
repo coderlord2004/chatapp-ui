@@ -51,7 +51,7 @@ export default function VideoCall({
 					new RTCSessionDescription(msg.sdp!),
 				);
 			} else if (msg.type === 'candidate') {
-				const candidate = new RTCIceCandidate(msg.candidate!);
+				const candidate = new RTCIceCandidate(msg.candidate);
 				await pcRef.current?.addIceCandidate(candidate);
 			}
 		},

@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
 	images: {
 		unoptimized: true, // Tắt tối ưu hóa hình ảnh
 	},
+	webpack: (config) => ({
+		...config,
+		optimization: {
+			minimize: false,
+		},
+	}),
 };
 
 export default nextConfig;
