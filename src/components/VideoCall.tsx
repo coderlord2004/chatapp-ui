@@ -43,16 +43,22 @@ export default function VideoCall({
 	const { sendSignal } = useWebRTCSignaling({
 		selfId,
 		targetId,
+
 		onSignal: async (msg) => {
-			if (msg.type === 'offer') {
-				await handleReceiveOffer(msg);
-			} else if (msg.type === 'answer') {
-				await pcRef.current?.setRemoteDescription(
-					new RTCSessionDescription(msg.sdp!),
-				);
-			} else if (msg.type === 'candidate') {
-				const candidate = new RTCIceCandidate(msg.candidate);
-				await pcRef.current?.addIceCandidate(candidate);
+			switch (msg.type) {
+				case 'offer':
+					await handleReceiveOffer(msg);
+				case 'answer':
+					await pcRef.current?.setRemoteDescription(
+						new RTCSessionDescription(msg.sdp!),
+					);
+				case 'candidate':
+					try {
+						const candidate = new RTCIceCandidate(msg.candidate);
+						await pcRef.current?.addIceCandidate(candidate);
+					} catch {
+						return;
+					}
 			}
 		},
 	});
