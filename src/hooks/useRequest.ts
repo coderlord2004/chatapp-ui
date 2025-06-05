@@ -87,5 +87,5 @@ export const useRequest = () => {
 		[handleError],
 	);
 
-	return { get, post, put, patch, remove };
+	return { get, post, put, patch, remove, handleError };
 };

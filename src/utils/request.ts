@@ -7,26 +7,16 @@ import axios, {
 } from 'axios';
 import { decode, encode } from '@msgpack/msgpack';
 
-function getLocalStorage() {
-	if (typeof window === 'undefined') {
-		return null;
-	}
-
-	return localStorage;
-}
-
-export const getAccessToken = () => {
-	return getLocalStorage()?.getItem('accessToken');
-};
-
-export const getRefreshToken = () => {
-	return getLocalStorage()?.getItem('refreshToken');
-};
+import {
+	getAccessToken,
+	getLocalStorage,
+	getNewAccessToken,
+	getRefreshToken,
+} from './jwts';
 
 const logout = () => {
-	const localStorage = getLocalStorage();
-	if (localStorage === null) {
-		return;
+	if (typeof window === 'undefined') {
+		return null;
 	}
 
 	localStorage.removeItem('accessToken');
@@ -39,12 +29,7 @@ const refreshAccessToken = async () => {
 		const refreshToken = getRefreshToken();
 		if (!refreshToken) throw new Error('No refresh token');
 
-		const response = await axios.post(
-			`${process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL}users/token/refresh/`,
-			{ refresh: refreshToken },
-		);
-
-		const newAccessToken = response.data.access;
+		const newAccessToken = await getNewAccessToken(refreshToken);
 		getLocalStorage()?.setItem('accessToken', newAccessToken);
 		return newAccessToken;
 	} catch (err) {

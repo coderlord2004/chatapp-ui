@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Input from '@/components/Input';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Spinner from '@/components/Spinner';
 import { useRequest } from '@/hooks/useRequest';
+import axios from 'axios';
+import { isAuthorized } from '@/utils/jwts';
 
 type FormData = {
 	username: string;
@@ -15,29 +17,45 @@ type FormData = {
 };
 
 export default function Login() {
-	const { post } = useRequest();
+	const { handleError } = useRequest();
 	const { login } = useAuth();
+
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm<FormData>();
+
 	const router = useRouter();
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const handleLogin = async (formData: FormData) => {
 		setLoading(true);
+
 		try {
-			const result = await post('/users/token/', {
+			const { data: result } = await axios.post('/users/token/', {
 				username: formData.username,
 				password: formData.password,
 			});
+
 			login(result.access, result.refresh);
 			router.push('/chat');
+		} catch (err) {
+			handleError(err);
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	useEffect(() => {
+		async function redirectIfAuthoized() {
+			if (await isAuthorized()) {
+				router.push('/chat');
+			}
+		}
+
+		redirectIfAuthoized();
+	}, [router]);
 
 	return (
 		<div className="flex min-h-screen w-full items-center justify-center bg-[url('/image.jpg')] bg-cover bg-center bg-no-repeat p-[10px]">

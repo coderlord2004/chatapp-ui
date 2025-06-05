@@ -4,6 +4,8 @@ import { TypeAnimation } from 'react-type-animation';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
 import ThemeToggle from '@/components/ThemeToggle';
+import { useEffect, useState } from 'react';
+import { isAuthorized } from '@/utils/jwts';
 
 const entries = [
 	{
@@ -23,19 +25,40 @@ const entries = [
 	},
 ];
 
+function useIsAuthoized() {
+	const [isAuthorizedState, setIsAuthoized] = useState(false);
+
+	useEffect(() => {
+		isAuthorized().then(setIsAuthoized);
+	}, []);
+
+	return isAuthorizedState;
+}
+
 export default function Page() {
+	const isAuthorized = useIsAuthoized();
+
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-black dark:text-white">
 			<header className="flex w-full items-center justify-between gap-[5px] rounded-[10px] pr-[10px] sm:pl-[70px] dark:bg-black/80 dark:text-white">
 				<Logo />
 				<div className="flex items-center justify-between space-x-4">
 					<div className="flex space-x-4">
-						<Link
-							href="/login"
-							className="hidden px-4 py-2 font-medium text-blue-600 hover:underline sm:flex"
-						>
-							Đăng nhập
-						</Link>
+						{isAuthorized ? (
+							<Link
+								href="/chat"
+								className="hidden px-4 py-2 font-medium text-blue-600 hover:underline sm:flex"
+							>
+								Bắt đầu ngay
+							</Link>
+						) : (
+							<Link
+								href="/login"
+								className="hidden px-4 py-2 font-medium text-blue-600 hover:underline sm:flex"
+							>
+								Đăng nhập
+							</Link>
+						)}
 						<Link
 							href="/signup"
 							className="rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
@@ -72,7 +95,7 @@ export default function Page() {
 					</p>
 					<div className="flex space-x-4">
 						<Link
-							href="/login"
+							href={isAuthorized ? '/chat' : '/login'}
 							className="rounded-lg bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
 						>
 							Bắt đầu ngay

@@ -78,8 +78,10 @@ export default function VideoCall({
 			video: true,
 			audio: true,
 		});
+
 		if (localVideoRef.current) {
 			localVideoRef.current.srcObject = stream;
+			console.log('stream: ', stream);
 		}
 
 		const pc = new RTCPeerConnection(iceConfig);

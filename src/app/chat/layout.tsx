@@ -1,17 +1,27 @@
 'use client';
 
 import { PropsWithChildren } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 
-export default function Layout({ children }: PropsWithChildren) {
+function WebSocketProvider({ children }: PropsWithChildren) {
 	const { accessToken } = useAuth();
 
-	if (!accessToken) return null;
+	if (!accessToken) {
+		return null;
+	}
 
 	return (
 		<WebSocketContextProvider token={accessToken}>
 			{children}
 		</WebSocketContextProvider>
+	);
+}
+
+export default function Layout({ children }: PropsWithChildren) {
+	return (
+		<AuthProvider>
+			<WebSocketProvider>{children}</WebSocketProvider>
+		</AuthProvider>
 	);
 }

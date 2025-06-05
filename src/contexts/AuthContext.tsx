@@ -5,10 +5,16 @@ import {
 	useContext,
 	useEffect,
 	useState,
-	ReactNode,
+	PropsWithChildren,
+	useCallback,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { decodeJwt } from 'jose';
+import {
+	getAccessToken,
+	getNewAccessToken,
+	getRefreshToken,
+} from '@/utils/jwts';
 
 type AuthContextType = {
 	accessToken: string | null;
@@ -22,27 +28,59 @@ type TokenTypes = {
 	refreshToken: string | null;
 };
 
+function isTokenValid(token: string | null) {
+	if (token === null) {
+		return false;
+	}
+
+	try {
+		const payload = decodeJwt(token);
+
+		let exp = 0;
+		if (payload.exp !== undefined) {
+			exp = payload.exp * 1000;
+		}
+
+		return exp - 60 > Date.now();
+	} catch {
+		return false;
+	}
+}
+
+async function isAuthorized() {
+	const refreshToken = getRefreshToken();
+	if (!isTokenValid(refreshToken)) {
+		return false;
+	}
+
+	const accessToken = getAccessToken();
+	if (isTokenValid(accessToken)) {
+		return true;
+	}
+
+	try {
+		const accessToken = await getNewAccessToken(refreshToken!);
+		localStorage.setItem('accessToken', accessToken);
+
+		return true;
+	} catch {
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('refreshToken');
+
+		return false;
+	}
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: PropsWithChildren) {
 	const [token, setToken] = useState<TokenTypes>({
 		accessToken: null,
 		refreshToken: null,
 	});
+
 	const router = useRouter();
 	const pathname = usePathname();
-
-	useEffect(() => {
-		const storedAccessToken = localStorage.getItem('accessToken');
-		const storedRefreshToken = localStorage.getItem('refreshToken');
-
-		if (storedAccessToken && storedRefreshToken) {
-			setToken({
-				accessToken: storedAccessToken,
-				refreshToken: storedRefreshToken,
-			});
-		}
-	}, []);
 
 	const login = (accessToken: string, refreshToken: string) => {
 		localStorage.setItem('accessToken', accessToken);
@@ -50,12 +88,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		setToken({ accessToken, refreshToken });
 	};
 
-	const logout = () => {
+	const logout = useCallback(() => {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
 		setToken({ accessToken: null, refreshToken: null });
 		router.push('/login');
-	};
+	}, [router]);
+
+	useEffect(() => {
+		async function checkIfLoggedIn() {
+			if (!(await isAuthorized())) {
+				logout();
+				return;
+			}
+
+			const storedAccessToken = getAccessToken();
+			const storedRefreshToken = getRefreshToken();
+
+			if (storedAccessToken && storedRefreshToken) {
+				setToken({
+					accessToken: storedAccessToken,
+					refreshToken: storedRefreshToken,
+				});
+			}
+		}
+
+		checkIfLoggedIn();
+	}, [logout]);
 
 	useEffect(() => {
 		if (!token.accessToken || !token.refreshToken) return;
