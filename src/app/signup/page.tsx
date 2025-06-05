@@ -7,6 +7,7 @@ import { useRequest } from '@/hooks/useRequest';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Spinner from '@/components/Spinner';
+import { normalRequest } from '@/utils/request';
 
 type FormData = {
 	username: string;
@@ -15,7 +16,7 @@ type FormData = {
 };
 
 export default function Signup() {
-	const { post } = useRequest();
+	const { handleError } = useRequest();
 	const {
 		register,
 		handleSubmit,
@@ -30,13 +31,20 @@ export default function Signup() {
 			alert('Mật khẩu nhập lại không khớp!');
 			return;
 		}
+
 		setLoading(true);
-		await post('users/register/', {
-			username: formData.username,
-			password: formData.password,
-		});
-		setLoading(false);
-		router.push('/login');
+		try {
+			await normalRequest.post('users/register/', {
+				username: formData.username,
+				password: formData.password,
+			});
+
+			router.push('/login');
+		} catch (err) {
+			handleError(err);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (

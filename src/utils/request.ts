@@ -78,6 +78,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const request = axios.create(config);
+export const normalRequest = axios.create(config);
 
 request.interceptors.request.use(
 	(config) => {

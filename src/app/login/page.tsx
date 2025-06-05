@@ -8,8 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Spinner from '@/components/Spinner';
 import { useRequest } from '@/hooks/useRequest';
-import axios from 'axios';
 import { isAuthorized } from '@/utils/jwts';
+import { normalRequest } from '@/utils/request';
 
 type FormData = {
 	username: string;
@@ -33,7 +33,7 @@ export default function Login() {
 		setLoading(true);
 
 		try {
-			const { data: result } = await axios.post('/users/token/', {
+			const { data: result } = await normalRequest.post('/users/token/', {
 				username: formData.username,
 				password: formData.password,
 			});
