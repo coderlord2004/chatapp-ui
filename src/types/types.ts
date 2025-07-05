@@ -59,6 +59,13 @@ type SignalMessage = {
 	candidate?: RTCIceCandidateInit;
 };
 
+type UpdateMessageParams = {
+	messageId: number,
+	newMessage: string,
+	sending: boolean,
+	isUpdated: boolean,
+}
+
 export type {
 	ChatRoomInfo,
 	Invitation,
@@ -66,4 +73,5 @@ export type {
 	MessageResponseType,
 	LatestMessageType,
 	SignalMessage,
+	UpdateMessageParams
 };

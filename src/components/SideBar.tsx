@@ -109,7 +109,7 @@ export function SideBar(props: SideBarProps) {
 	return (
 		<div
 			ref={sideBarRef}
-			className={`sidebar ${props.isOpenSidebar ? 'w-full sm:w-auto' : 'w-0'} relative h-full flex-col border-r border-gray-700 bg-gray-800 sm:max-w-[300px] sm:min-w-[230px]`}
+			className={`sidebar ${props.isOpenSidebar ? 'w-full sm:w-auto' : 'w-0'} relative h-full flex flex-col justify-between border-r border-gray-700 bg-gray-800 sm:max-w-[300px] sm:min-w-[230px]`}
 		>
 			<div className="z-[1000] flex items-center justify-between border-b border-gray-700 p-4">
 				<h2 className="gradientColor">NextChat</h2>
@@ -236,7 +236,7 @@ export function SideBar(props: SideBarProps) {
 				</div>
 			</div>
 
-			<div className="scrollBarStyle flex-1 overflow-y-auto">
+			<div className="scrollBarStyle flex flex-col flex-1 overflow-y-auto">
 				{isLoading ? (
 					Array.from({ length: 6 }).map((_, index) => (
 						<div
@@ -255,11 +255,10 @@ export function SideBar(props: SideBarProps) {
 						<div
 							key={chatRoom.id}
 							onClick={() => props.onUpdateChatRoomActive(chatRoom)}
-							className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${
-								chatRoom === props.chatRoomActive
-									? 'bg-indigo-600'
-									: 'hover:bg-gray-700'
-							}`}
+							className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${chatRoom === props.chatRoomActive
+								? 'bg-indigo-600'
+								: 'hover:bg-gray-700'
+								}`}
 						>
 							{chatRoom.avatar ? (
 								<img

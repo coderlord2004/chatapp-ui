@@ -11,15 +11,11 @@ function ThemeToggle() {
 			<label htmlFor="toggleThemeInput" className="cursor-pointer">
 				{theme === 'dark' ? (
 					<IoIosSunny
-						style={{
-							fontSize: '150%',
-						}}
+						className='text-[150%] text-amber-300'
 					/>
 				) : (
 					<FaMoon
-						style={{
-							fontSize: '150%',
-						}}
+						className='text-[150%] text-white'
 					/>
 				)}
 			</label>

@@ -10,11 +10,11 @@ import { IoMdClose } from 'react-icons/io';
 const iceConfig = {
 	iceServers: [
 		{ urls: 'stun:stun.l.google.com:19302' },
-		// {
-		//     urls: 'turn:yourserver.com:3478',
-		//     username: 'user',
-		//     credential: 'pass'
-		// }
+		{
+			urls: 'turn:relay1.expressturn.com:3480',
+			username: '000000002066046148',
+			credential: 's0j+DngvJr3dBUO30zdh9AqQLi4='
+		}
 	],
 };
 
@@ -43,22 +43,16 @@ export default function VideoCall({
 	const { sendSignal } = useWebRTCSignaling({
 		selfId,
 		targetId,
-
 		onSignal: async (msg) => {
-			switch (msg.type) {
-				case 'offer':
-					await handleReceiveOffer(msg);
-				case 'answer':
-					await pcRef.current?.setRemoteDescription(
-						new RTCSessionDescription(msg.sdp!),
-					);
-				case 'candidate':
-					try {
-						const candidate = new RTCIceCandidate(msg.candidate);
-						await pcRef.current?.addIceCandidate(candidate);
-					} catch {
-						return;
-					}
+			if (msg.type === 'offer') {
+				await handleReceiveOffer(msg);
+			} else if (msg.type === 'answer') {
+				await pcRef.current?.setRemoteDescription(
+					new RTCSessionDescription(msg.sdp!),
+				);
+			} else if (msg.type === 'candidate') {
+				const candidate = new RTCIceCandidate(msg.candidate!);
+				await pcRef.current?.addIceCandidate(candidate);
 			}
 		},
 	});
@@ -81,13 +75,11 @@ export default function VideoCall({
 		if (!checkMediaDevicesSupport()) return;
 
 		const stream = await navigator.mediaDevices.getUserMedia({
-			video: true,
+			video: false,
 			audio: true,
 		});
-
 		if (localVideoRef.current) {
 			localVideoRef.current.srcObject = stream;
-			console.log('stream: ', stream);
 		}
 
 		const pc = new RTCPeerConnection(iceConfig);
@@ -109,7 +101,10 @@ export default function VideoCall({
 			}
 		};
 
-		stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+		stream.getTracks().forEach((track) => {
+			console.log('track: ', track)
+			pc.addTrack(track, stream)
+		});
 
 		await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp!));
 		const answer = await pc.createAnswer();
@@ -126,7 +121,7 @@ export default function VideoCall({
 		if (!checkMediaDevicesSupport()) return;
 
 		const stream = await navigator.mediaDevices.getUserMedia({
-			video: true,
+			video: false,
 			audio: true,
 		});
 		if (localVideoRef.current) {
