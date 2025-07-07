@@ -5,7 +5,7 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 
 const APP_ID = "f5aaad68939a4279876790a674790b94";
 const CHANNEL = "test-channel"; // có thể là bất kỳ string nào
-const TOKEN = null; // dùng null nếu không bật App Certificate
+const TOKEN = '007eJxTYKhVP8Ozt+rBrieFvc3eC+cxhXYUan8Qqzc/Pv11dZjZo08KDGmmiYmJKWYWlsaWiSZG5pYW5mbmlgaJZuYmQCrJ0uSofU5GQyAjg7CSHzMjAwSC+DwMJanFJbrJGYl5eak5DAwAcQMh0g=='; // dùng null nếu không bật App Certificate
 
 const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
