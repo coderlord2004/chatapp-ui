@@ -83,20 +83,18 @@ export default function Message({
 	return (
 		<div
 			key={message.id}
-			className={`flex ${
-				isAuthUser(message.sender) ? 'justify-end' : 'justify-start'
-			}`}
+			className={`flex ${isAuthUser(message.sender) ? 'justify-end' : 'justify-start'
+				}`}
 		>
 			<div
 				className={`animate-fadeInUp flex h-full max-w-[85%] transform flex-col items-end justify-center gap-[12px] opacity-0 transition-all duration-150 md:max-w-md lg:max-w-lg ${isAuthUser(message.sender) ? 'items-end' : 'items-start'}`}
 			>
 				{message.message && (
 					<div
-						className={`group relative rounded-lg p-[8px] text-gray-100 ${
-							isAuthUser(message.sender)
+						className={`group relative rounded-lg p-[8px] text-gray-100 ${isAuthUser(message.sender)
 								? 'rounded-br-none bg-indigo-600'
 								: 'rounded-bl-none bg-gray-800'
-						}`}
+							}`}
 					>
 						{!isAuthUser(message.sender) && (
 							<p className="mb-1 text-xs font-semibold text-indigo-300">
@@ -123,7 +121,7 @@ export default function Message({
 						)}
 
 						<p
-							className={`absolute top-[100%] ${isAuthUser(message.sender) ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${index === totalMessages - 1 ? '' : 'hidden group-hover:block'}`}
+							className={`absolute top-[100%] ${isAuthUser(message.sender) ? 'right-0' : 'left-0'} text-[60%] whitespace-nowrap text-gray-500 ${index === totalMessages - 1 ? 'block' : 'hidden group-hover:block'}`}
 						>
 							{message.sending
 								? 'Đang gửi'
@@ -199,11 +197,10 @@ export default function Message({
 									<a
 										href={attachment.source}
 										download={attachment.source}
-										className={`group relative flex gap-[10px] rounded-lg p-[8px] text-gray-100 ${
-											isAuthUser(message.sender)
+										className={`group relative flex gap-[10px] rounded-lg p-[8px] text-gray-100 ${isAuthUser(message.sender)
 												? 'rounded-br-none bg-indigo-600'
 												: 'rounded-bl-none bg-gray-800'
-										}`}
+											}`}
 									>
 										Tải xuống
 										<FaDownload className="text-[20px]" />

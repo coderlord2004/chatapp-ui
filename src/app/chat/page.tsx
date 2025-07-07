@@ -23,7 +23,6 @@ export default function Page() {
 
 	return (
 		<div className="relative flex h-screen overflow-hidden bg-gray-900 text-gray-100">
-			{/* Sidebar */}
 			<SideBar
 				isOpenSidebar={isOpenSidebar}
 				onOpenSidebar={toggleSidebar}
