@@ -16,7 +16,7 @@ export const useRequest = () => {
 			}
 
 			console.log('error: ', error);
-			const message = error.response?.data?.title || 'Lỗi từ máy chủ.';
+			const message = error.response?.data?.detail || 'Lỗi từ máy chủ.';
 			showNotification({ type: 'error', message });
 		},
 		[showNotification],

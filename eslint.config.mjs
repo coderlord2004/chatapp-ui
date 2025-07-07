@@ -15,6 +15,7 @@ const eslintConfig = [
 		rules: {
 			'@next/next/no-img-element': 'off',
 			'jsx-a11y/alt-text': [0],
+			'@typescript-eslint/no-explicit-any': '',
 		},
 	},
 ];

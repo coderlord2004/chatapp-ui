@@ -13,8 +13,8 @@ const iceConfig = {
 		{
 			urls: 'turn:relay1.expressturn.com:3480',
 			username: '000000002066046148',
-			credential: 's0j+DngvJr3dBUO30zdh9AqQLi4='
-		}
+			credential: 's0j+DngvJr3dBUO30zdh9AqQLi4=',
+		},
 	],
 };
 
@@ -102,8 +102,8 @@ export default function VideoCall({
 		};
 
 		stream.getTracks().forEach((track) => {
-			console.log('track: ', track)
-			pc.addTrack(track, stream)
+			console.log('track: ', track);
+			pc.addTrack(track, stream);
 		});
 
 		await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp!));

@@ -10,13 +10,9 @@ function ThemeToggle() {
 		<div>
 			<label htmlFor="toggleThemeInput" className="cursor-pointer">
 				{theme === 'dark' ? (
-					<IoIosSunny
-						className='text-[150%] text-amber-300'
-					/>
+					<IoIosSunny className="text-[150%] text-amber-300" />
 				) : (
-					<FaMoon
-						className='text-[150%] text-white'
-					/>
+					<FaMoon className="text-[150%] text-white" />
 				)}
 			</label>
 			<input

@@ -25,7 +25,6 @@ type UploadProgressType = {
 	percent: number;
 };
 
-
 export default function ChatRoom({
 	authUsername,
 	chatRoomInfo,
@@ -169,7 +168,7 @@ export default function ChatRoom({
 						scrollToBottomButton.current &&
 						e.target instanceof HTMLElement &&
 						e.target.scrollHeight - e.target.scrollTop >
-						e.target.clientHeight + 100
+							e.target.clientHeight + 100
 					) {
 						scrollToBottomButton.current.style.display = 'block';
 						if (
@@ -213,28 +212,28 @@ export default function ChatRoom({
 
 				{isLoading
 					? Array.from({ length: 5 }, (_, idx) => (
-						<div
-							key={idx}
-							className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
-						>
-							<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
-								<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
-								<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
-								<div className="h-[10px] w-[40%] bg-gray-700"></div>
+							<div
+								key={idx}
+								className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+							>
+								<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
+									<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
+									<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
+									<div className="h-[10px] w-[40%] bg-gray-700"></div>
+								</div>
 							</div>
-						</div>
-					))
+						))
 					: messages.map((msg, idx) => (
-						<Message
-							key={msg.id}
-							index={idx}
-							message={msg}
-							totalMessages={messages.length}
-							uploadProgress={uploadProgress}
-							updateMessage={updateMessage}
-							deleteMessage={deleteMessage}
-						/>
-					))}
+							<Message
+								key={msg.id}
+								index={idx}
+								message={msg}
+								totalMessages={messages.length}
+								uploadProgress={uploadProgress}
+								updateMessage={updateMessage}
+								deleteMessage={deleteMessage}
+							/>
+						))}
 
 				{/* Empty div for auto-scrolling */}
 				<div ref={messagesEndRef} />

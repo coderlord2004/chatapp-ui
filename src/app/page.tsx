@@ -15,25 +15,25 @@ const features = [
 		icon: <FiMessageSquare className="h-8 w-8" />,
 		title: 'Chat real-time',
 		desc: 'Nhắn tin tức thì với công nghệ WebSocket',
-		color: 'text-blue-500'
+		color: 'text-blue-500',
 	},
 	{
 		icon: <FiLock className="h-8 w-8" />,
 		title: 'Bảo mật',
 		desc: 'Mã hóa end-to-end cho tin nhắn',
-		color: 'text-green-500'
+		color: 'text-green-500',
 	},
 	{
 		icon: <FiGlobe className="h-8 w-8" />,
 		title: 'Đa nền tảng',
 		desc: 'Dùng mọi lúc, mọi nơi',
-		color: 'text-purple-500'
+		color: 'text-purple-500',
 	},
 ];
 
 const fadeIn = {
 	hidden: { opacity: 0, y: 20 },
-	visible: { opacity: 1, y: 0 }
+	visible: { opacity: 1, y: 0 },
 };
 
 function useIsAuthoized() {
@@ -51,8 +51,8 @@ export default function Page() {
 
 	return (
 		<div>
-			<div className="flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-black/50 dark:text-white z-10">
-				<header className="flex w-full items-center justify-between gap-[5px] rounded-[10px] pr-[10px] sm:pl-[70px] bg-black dark:bg-black/80 dark:text-white">
+			<div className="z-10 flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-black/50 dark:text-white">
+				<header className="flex w-full items-center justify-between gap-[5px] rounded-[10px] bg-black pr-[10px] sm:pl-[70px] dark:bg-black/80 dark:text-white">
 					<motion.div
 						initial={{ opacity: 0, x: -20 }}
 						animate={{ opacity: 1, x: 0 }}
@@ -66,26 +66,26 @@ export default function Page() {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ delay: 0.2 }}
-							className="hidden sm:flex items-center gap-4"
+							className="hidden items-center gap-4 sm:flex"
 						>
 							{isAuthorized ? (
 								<Link
 									href="/chat"
-									className="px-4 py-2 font-medium text-blue-600 hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
+									className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
 								>
 									Bắt đầu ngay
 								</Link>
 							) : (
 								<Link
 									href="/login"
-									className="px-4 py-2 font-medium text-blue-600 hover:text-blue-700 transition-colors dark:text-blue-400 dark:hover:text-blue-300"
+									className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
 								>
 									Đăng nhập
 								</Link>
 							)}
 							<Link
 								href="/signup"
-								className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-white shadow-md hover:shadow-lg transition-all hover:from-blue-700 hover:to-blue-600"
+								className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-white shadow-md transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-lg"
 							>
 								Đăng ký
 							</Link>
@@ -102,7 +102,7 @@ export default function Page() {
 				</header>
 
 				<main className="mt-[20px] flex w-full max-w-6xl flex-col items-start justify-center gap-x-[10px] gap-y-[10px] md:flex-row">
-					<div className="ml-[10px] mt-[40px] flex-1 space-y-6">
+					<div className="mt-[40px] ml-[10px] flex-1 space-y-6">
 						<h2 className="text-4xl font-bold md:text-5xl">
 							Kết nối mọi lúc, <br />
 							<span className="text-blue-600">
@@ -121,7 +121,8 @@ export default function Page() {
 							</span>
 						</h2>
 						<p className="text-lg text-gray-500">
-							NextChat - Nền tảng trò chuyện đơn giản, bảo mật và miễn phí cho mọi người.
+							NextChat - Nền tảng trò chuyện đơn giản, bảo mật và miễn phí cho
+							mọi người.
 						</p>
 						<div className="flex space-x-4">
 							<Link
@@ -171,8 +172,8 @@ export default function Page() {
 								Tính năng nổi bật
 							</h2>
 							<p className="mt-4 text-gray-600 dark:text-gray-300">
-								Khám phá những tính năng ưu việt giúp <strong>NextChat</strong> trở thành lựa chọn
-								hàng đầu
+								Khám phá những tính năng ưu việt giúp <strong>NextChat</strong>{' '}
+								trở thành lựa chọn hàng đầu
 							</p>
 						</motion.div>
 
@@ -187,11 +188,15 @@ export default function Page() {
 									transition={{ duration: 0.6, delay: index * 0.1 }}
 									className="group rounded-xl bg-gray-400 p-8 shadow-lg transition-all hover:-translate-y-2 hover:shadow-xl dark:bg-gray-800"
 								>
-									<div className={`mb-6 inline-flex rounded-lg p-3 ${feature.color} bg-opacity-10`}>
+									<div
+										className={`mb-6 inline-flex rounded-lg p-3 ${feature.color} bg-opacity-10`}
+									>
 										{feature.icon}
 									</div>
 									<h3 className="mb-3 text-xl font-bold">{feature.title}</h3>
-									<p className="text-gray-800 dark:text-gray-300">{feature.desc}</p>
+									<p className="text-gray-800 dark:text-gray-300">
+										{feature.desc}
+									</p>
 								</motion.div>
 							))}
 						</div>
@@ -213,7 +218,8 @@ export default function Page() {
 									Sẵn sàng trải nghiệm?
 								</h2>
 								<p className="mt-4 text-blue-100">
-									Đăng ký ngay để kết nối với bạn bè và gia đình một cách dễ dàng và bảo mật
+									Đăng ký ngay để kết nối với bạn bè và gia đình một cách dễ
+									dàng và bảo mật
 								</p>
 								<div className="mt-8">
 									<Link

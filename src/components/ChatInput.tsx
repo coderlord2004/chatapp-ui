@@ -1,11 +1,24 @@
 import React, { useState, useRef } from 'react';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
-import { FaPaperPlane } from 'react-icons/fa';
 import { useRequest } from '@/hooks/useRequest';
-import { MdAttachFile } from 'react-icons/md';
-import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { MessageResponseType } from '@/types/types';
+import { MdAttachFile, MdDeleteForever } from 'react-icons/md';
+import { IoIosMic, IoIosCloseCircleOutline } from 'react-icons/io';
+import { FaPaperPlane, FaMicrophone, FaStopCircle } from 'react-icons/fa';
+import { useNotification } from '@/hooks/useNotification';
+
+declare global {
+	interface Window {
+		SpeechRecognition: typeof SpeechRecognition;
+		webkitSpeechRecognition: typeof SpeechRecognition;
+	}
+}
+
+declare const SpeechRecognition: {
+	new (): typeof SpeechRecognition;
+	prototype: typeof SpeechRecognition;
+};
 
 type UploadProgressType = {
 	id: number | null;
@@ -19,10 +32,17 @@ type ChatRoomProps = {
 	onSetUploadProgress: (uploadProgress: UploadProgressType) => void;
 };
 
-type AttachmentTypes = {
-	imagePreview: string;
+type FileAttachmentTypes = {
+	urlPreview: string;
 	fileData: File;
 };
+
+type VoiceMenu = 'Ghi âm giọng nói' | 'Chuyển giọng nói thành văn bản';
+
+const voiceMenuValues: VoiceMenu[] = [
+	'Ghi âm giọng nói',
+	'Chuyển giọng nói thành văn bản',
+];
 
 export default function ChatInput({
 	authUsername,
@@ -31,13 +51,21 @@ export default function ChatInput({
 	onSetUploadProgress,
 }: ChatRoomProps) {
 	const { post } = useRequest();
+	const { showNotification } = useNotification();
 	const [message, setMessage] = useState('');
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const messageInputRef = useRef<HTMLInputElement>(null);
-	const [attachments, setAttachments] = useState<AttachmentTypes[] | null>(
+	const [attachments, setAttachments] = useState<FileAttachmentTypes[] | null>(
 		null,
 	);
-	const templeAttachments = useRef<AttachmentTypes[] | null>(null);
+
+	const templeAttachments = useRef<FileAttachmentTypes[] | null>(null);
+
+	const [isShowVoiceControl, setShowVoiceControl] = useState<boolean>(false);
+	const [voiceMenu, setVoiceMenu] = useState<VoiceMenu>(voiceMenuValues[0]);
+	const [isRecording, setIsRecording] = useState(false);
+	const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+	const audioChunksRef = useRef<Blob[]>([]);
 
 	const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -67,7 +95,7 @@ export default function ChatInput({
 			sentOn: new Date().toISOString(),
 			attachments:
 				attachments?.map((a) => ({
-					source: a.imagePreview,
+					source: a.urlPreview,
 					type: a.fileData.type.startsWith('video') ? 'VIDEO' : 'IMAGE',
 				})) || [],
 			sending: true,
@@ -104,7 +132,7 @@ export default function ChatInput({
 	const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = Array.from(e.target.files || []);
 		const newAttachments = files.map((file) => ({
-			imagePreview: URL.createObjectURL(file),
+			urlPreview: URL.createObjectURL(file),
 			fileData: file,
 		}));
 		setAttachments((prev) => [...(prev ?? []), ...newAttachments]);
@@ -125,7 +153,85 @@ export default function ChatInput({
 		}, 0);
 	};
 
-	console.log('attachments', attachments);
+	const speechToText = () => {
+		if (
+			!('SpeechRecognition' in window) &&
+			!('webkitSpeechRecognition' in window)
+		)
+			return;
+
+		const SpeechRecognition =
+			window.SpeechRecognition || window.webkitSpeechRecognition;
+
+		if (!SpeechRecognition) {
+			showNotification({
+				type: 'error',
+				message: 'Trình duyệt không hỗ trợ Speech Recognition',
+			});
+			return;
+		}
+
+		const recognition: any = new SpeechRecognition();
+		recognition.lang = 'vi-VN';
+
+		recognition.onresult = (event: any) => {
+			const transcript = event.results[0][0].transcript;
+			setMessage(transcript);
+		};
+
+		recognition.onerror = (event: any) => {
+			showNotification({
+				type: 'error',
+				message: `Lỗi nhận diện giọng nói: ${event.error}`,
+			});
+		};
+
+		recognition.start();
+	};
+
+	const startRecording = async () => {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+			const mediaRecorder = new MediaRecorder(stream);
+			mediaRecorderRef.current = mediaRecorder;
+			audioChunksRef.current = [];
+
+			mediaRecorder.ondataavailable = (e) => {
+				if (e.data.size > 0) audioChunksRef.current.push(e.data);
+			};
+
+			mediaRecorder.onstop = () => {
+				const audioBlob = new Blob(audioChunksRef.current, {
+					type: 'audio/webm',
+				});
+				const urlPreview = URL.createObjectURL(audioBlob);
+				const audioFile = new File([audioBlob], 'recording.webm', {
+					type: 'audio/webm',
+					lastModified: Date.now(),
+				});
+				setAttachments((prev) => [
+					...(prev || []),
+					{
+						fileData: audioFile,
+						urlPreview,
+					},
+				]);
+			};
+
+			mediaRecorder.start();
+			setIsRecording(true);
+		} catch (err) {
+			showNotification({
+				type: 'error',
+				message: 'Không thể truy cập microphone',
+			});
+		}
+	};
+
+	const stopRecording = () => {
+		mediaRecorderRef.current?.stop();
+		setIsRecording(false);
+	};
 
 	return (
 		<div className="relative flex flex-col gap-[15px] border-t border-gray-800 bg-gray-800/50 p-4">
@@ -171,6 +277,14 @@ export default function ChatInput({
 						)}
 					</div>
 				</div>
+
+				<div
+					className="flex cursor-pointer items-center justify-center text-2xl"
+					onClick={() => setShowVoiceControl(!isShowVoiceControl)}
+				>
+					<IoIosMic />
+				</div>
+
 				<button
 					type="submit"
 					disabled={!message.trim() && (attachments ? false : true)}
@@ -185,21 +299,24 @@ export default function ChatInput({
 					{attachments.map((attachment) => {
 						const isImage = attachment.fileData.type.startsWith('image/');
 						const isVideo = attachment.fileData.type.startsWith('video/');
-						const isDocument = !isImage && !isVideo;
+						const isAudio = attachment.fileData.type.startsWith('audio/');
+						const isDocument = !isImage && !isVideo && !isAudio;
+
+						if (isAudio) return null;
 
 						return (
 							<div
-								key={attachment.imagePreview}
-								className="relative h-[100px] w-[100px]"
+								key={attachment.urlPreview}
+								className="relative h-[100px] w-[30%]"
 							>
 								<div
 									className="absolute top-[-10px] right-[-10px] z-10 cursor-pointer text-[23px]"
 									onClick={() => {
-										URL.revokeObjectURL(attachment.imagePreview);
+										URL.revokeObjectURL(attachment.urlPreview);
 										setAttachments(
 											(prev) =>
 												prev?.filter(
-													(n) => n.imagePreview !== attachment.imagePreview,
+													(n) => n.urlPreview !== attachment.urlPreview,
 												) || null,
 										);
 									}}
@@ -209,7 +326,7 @@ export default function ChatInput({
 
 								{isImage && (
 									<img
-										src={attachment.imagePreview}
+										src={attachment.urlPreview}
 										alt="preview"
 										className="h-full w-full rounded-[10px] object-cover"
 									/>
@@ -217,7 +334,7 @@ export default function ChatInput({
 
 								{isVideo && (
 									<video
-										src={attachment.imagePreview}
+										src={attachment.urlPreview}
 										className="h-full w-full rounded-[10px] object-cover"
 										controls
 									/>
@@ -225,11 +342,11 @@ export default function ChatInput({
 
 								{isDocument && (
 									<div className="flex h-full w-full flex-col items-center justify-center rounded-[10px] bg-gray-100 px-1 text-center">
-										<div className="w-full truncate text-sm font-medium">
+										<div className="w-full truncate text-sm font-medium text-black">
 											{attachment.fileData.name}
 										</div>
 										<a
-											href={attachment.imagePreview}
+											href={attachment.urlPreview}
 											download={attachment.fileData.name}
 											className="mt-1 text-xs text-blue-600 underline"
 										>
@@ -240,6 +357,80 @@ export default function ChatInput({
 							</div>
 						);
 					})}
+
+					{attachments.map((attachment) => {
+						if (attachment.fileData.type.startsWith('audio/')) {
+							return (
+								<div className="flex items-center justify-center gap-[7px]">
+									<audio src={attachment.urlPreview} controls />
+
+									<div
+										className="cursor-pointer text-2xl text-red-600"
+										onClick={() => {
+											URL.revokeObjectURL(attachment.urlPreview);
+											setAttachments(
+												(prev) =>
+													prev?.filter(
+														(n) => n.urlPreview !== attachment.urlPreview,
+													) || null,
+											);
+										}}
+									>
+										<MdDeleteForever />
+									</div>
+								</div>
+							);
+						}
+					})}
+				</div>
+			)}
+
+			{isShowVoiceControl && (
+				<div className="flex h-full w-full flex-col items-center justify-center gap-[10px] rounded-[8px] bg-gray-900 p-[10px]">
+					<div
+						className={`cursor-pointer rounded-[50%] bg-blue-700 p-[20px] ${isRecording ? 'animate-ping' : ''}`}
+						onClick={() => {
+							if (voiceMenu === 'Ghi âm giọng nói') {
+								startRecording();
+							} else {
+								speechToText();
+							}
+						}}
+					>
+						<FaMicrophone />
+					</div>
+					<div className="flex cursor-pointer overflow-hidden rounded-[20px] bg-gray-700">
+						{voiceMenuValues.map((value) => (
+							<div
+								key={value}
+								className="px-[10px] py-[5px]"
+								style={
+									voiceMenu === value
+										? {
+												backgroundColor: 'blue',
+											}
+										: {}
+								}
+								onClick={() => setVoiceMenu(value)}
+							>
+								{value}
+							</div>
+						))}
+					</div>
+
+					{voiceMenu === 'Ghi âm giọng nói' && isRecording && (
+						<div className="space-y-2">
+							<div className="flex">
+								<p>đang ghi âm...</p>
+								<div
+									onClick={stopRecording}
+									className="cursor-pointer text-2xl text-red-600"
+								>
+									<FaStopCircle />
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 			)}
 		</div>

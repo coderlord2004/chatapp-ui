@@ -2,7 +2,7 @@ import { useRequest } from '@/hooks/useRequest';
 import { useEffect, useState } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { useAuth } from '@/contexts/AuthContext';
-import { MessageResponseType, UpdateMessageParams } from '@/types/types';
+import { MessageResponseType } from '@/types/types';
 
 export default function useMessages(roomId: string, page: number) {
 	const [messages, setMessages] = useState<MessageResponseType[]>([]);

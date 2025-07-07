@@ -60,11 +60,11 @@ type SignalMessage = {
 };
 
 type UpdateMessageParams = {
-	messageId: number,
-	newMessage: string,
-	sending: boolean,
-	isUpdated: boolean,
-}
+	messageId: number;
+	newMessage: string;
+	sending: boolean;
+	isUpdated: boolean;
+};
 
 export type {
 	ChatRoomInfo,
@@ -73,5 +73,5 @@ export type {
 	MessageResponseType,
 	LatestMessageType,
 	SignalMessage,
-	UpdateMessageParams
+	UpdateMessageParams,
 };
