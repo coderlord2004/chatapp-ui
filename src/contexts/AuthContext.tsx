@@ -15,8 +15,17 @@ import {
 	getNewAccessToken,
 	getRefreshToken,
 } from '@/utils/jwts';
+import { useRequest } from '@/hooks/useRequest';
+import { useNotification } from '@/hooks/useNotification';
+
+type AuthUserType = {
+	id: number,
+	username: string,
+	avatar: string | null
+}
 
 type AuthContextType = {
+	authUser: AuthUserType | null;
 	accessToken: string | null;
 	refreshToken: string | null;
 	login: (accessToken: string, refreshToken: string) => void;
@@ -27,6 +36,7 @@ type TokenTypes = {
 	accessToken: string | null;
 	refreshToken: string | null;
 };
+
 
 function isTokenValid(token: string | null) {
 	if (token === null) {
@@ -78,9 +88,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		accessToken: null,
 		refreshToken: null,
 	});
-
+	const [authUser, setAuthUser] = useState<AuthUserType | null>(null)
+	const { get } = useRequest()
 	const router = useRouter();
 	const pathname = usePathname();
+	const { showNotification } = useNotification()
 
 	const login = (accessToken: string, refreshToken: string) => {
 		localStorage.setItem('accessToken', accessToken);
@@ -94,6 +106,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		setToken({ accessToken: null, refreshToken: null });
 		router.push('/login');
 	}, [router]);
+
+	useEffect(() => {
+		const getAuthUser = async () => {
+			const data = await get('users/info/')
+			setAuthUser(data)
+		}
+
+		if (token.accessToken) {
+			getAuthUser()
+		}
+	}, [token])
 
 	useEffect(() => {
 		async function checkIfLoggedIn() {
@@ -125,6 +148,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	}, [token, router, pathname]);
 
 	const value = {
+		authUser,
 		accessToken: token.accessToken,
 		refreshToken: token.refreshToken,
 		login,

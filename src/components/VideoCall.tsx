@@ -3,19 +3,21 @@
 import React, { useEffect, useRef } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 
-const APP_ID = "f5aaad68939a4279876790a674790b94";
-const CHANNEL = "test-channel"; // có thể là bất kỳ string nào
-const TOKEN = '007eJxTYKhVP8Ozt+rBrieFvc3eC+cxhXYUan8Qqzc/Pv11dZjZo08KDGmmiYmJKWYWlsaWiSZG5pYW5mbmlgaJZuYmQCrJ0uSofU5GQyAjg7CSHzMjAwSC+DwMJanFJbrJGYl5eak5DAwAcQMh0g=='; // dùng null nếu không bật App Certificate
+type VideoCallProps = {
+	roomId: number,
+	senderId: number
+}
 
-const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
-export default function VideoCall() {
+export default function VideoCall({ roomId, senderId }: VideoCallProps) {
+	const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+	const AGORA_APP_ID: string = process.env.NEXT_PUBLIC_AGORA_APP_ID || "";
+	const AGORA_TOKEN = process.env.NEXT_PUBLIC_AGORA_TOKEN || null;
 	const localVideoRef = useRef<HTMLDivElement>(null);
 	const remoteVideoRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const init = async () => {
-			const uid = await client.join(APP_ID, CHANNEL, TOKEN || null);
+			await client.join(AGORA_APP_ID, `room_${roomId}`, AGORA_TOKEN, senderId);
 
 			const localTrack = await AgoraRTC.createMicrophoneAndCameraTracks();
 			localTrack[1].play(localVideoRef.current!);

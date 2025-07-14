@@ -294,7 +294,10 @@ export default function ChatRoom({
 				// 	}
 				// 	onClose={() => setIsStartVideoCall(false)}
 				// />
-				<VideoCall />
+				<VideoCall
+					roomId={roomId}
+					senderId={ }
+				/>
 			)}
 		</div>
 	);

@@ -29,7 +29,7 @@ type SearchUserContextType = {
 
 export const SearchUserContext = createContext<SearchUserContextType>({
 	searchUserModal: { isOpen: false, chatGroupId: null },
-	setSearchUserModal: () => {},
+	setSearchUserModal: () => { },
 });
 
 export function SearchUserProvider({ children }: PropsWithChildren) {
@@ -59,7 +59,11 @@ export function SearchUserProvider({ children }: PropsWithChildren) {
 			}
 
 			setSearchUserLoading(true);
-			const data = await get(`users/search/?q=${searchTerm}`);
+			const data = await get(`users/search/`, {
+				params: {
+					q: searchTerm
+				}
+			});
 			setUserSearchResults(data);
 			setSearchUserLoading(false);
 		}, 300);
