@@ -1,47 +1,179 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRequest } from "@/hooks/useRequest";
+import { CallInvitation } from "@/types/types";
 
-type VideoCallProps = {
-	roomId: number,
-	senderId: number
+import { IoCall } from "react-icons/io5";
+import { MdClear } from "react-icons/md";
+
+import {
+	LocalUser,
+	RemoteUser,
+	useIsConnected,
+	useJoin,
+	useLocalMicrophoneTrack,
+	useLocalCameraTrack,
+	usePublish,
+	useRemoteUsers,
+} from "agora-rtc-react";
+
+type CallModalProps = {
+	roomId: number | null | undefined,
+	isUseVideo: boolean,
+	membersUsername: string[],
+	callInvitation: CallInvitation | null
+	onClose: () => void
 }
 
-export default function VideoCall({ roomId, senderId }: VideoCallProps) {
-	const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+const avatarColors = [
+	'#FFB6C1', // light pink
+	'#FFD700', // gold
+	'#87CEFA', // light sky blue
+	'#90EE90', // light green
+	'#FFA07A', // light salmon
+	'#DDA0DD', // plum
+	'#00CED1', // dark turquoise
+	'#F4A460', // sandy brown
+	'#E6E6FA', // lavender
+	'#FFDEAD', // navajo white
+];
+
+export default function CallModal({ roomId, isUseVideo, membersUsername, callInvitation, onClose }: CallModalProps) {
 	const AGORA_APP_ID: string = process.env.NEXT_PUBLIC_AGORA_APP_ID || "";
-	const AGORA_TOKEN = process.env.NEXT_PUBLIC_AGORA_TOKEN || null;
-	const localVideoRef = useRef<HTMLDivElement>(null);
-	const remoteVideoRef = useRef<HTMLDivElement>(null);
+	const { authUser } = useAuth()
+	const { get, post } = useRequest()
+	const authUserId = authUser?.id;
+	const agoraToken = useRef<string>(null)
+	const [isLoading, setLoading] = useState<boolean>(true)
+
+	const [calling, setCalling] = useState<boolean>(callInvitation ? true : false);
+	const isConnected = useIsConnected();
+
+	const [micOn, setMic] = useState<boolean>(true);
+	const [cameraOn, setCamera] = useState<boolean>(isUseVideo);
+	const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
+	const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+	usePublish([localMicrophoneTrack, localCameraTrack]);
+
+	const remoteUsers = useRemoteUsers();
 
 	useEffect(() => {
-		const init = async () => {
-			await client.join(AGORA_APP_ID, `room_${roomId}`, AGORA_TOKEN, senderId);
+		const joinChannel = () => {
+			if (callInvitation) {
+				useJoin({
+					appid: AGORA_APP_ID,
+					channel: `room_${roomId}`,
+					token: callInvitation.agoraToken,
+					uid: authUserId,
+				}, calling);
+			} else {
+				useJoin(async function () {
+					const result = await get('agora/token', {
+						params: {
+							channelName: `room_${roomId}`,
+							uid: authUserId
+						}
+					})
+					agoraToken.current = result.token
+					return {
+						appid: AGORA_APP_ID,
+						channel: `room_${roomId}`,
+						token: result.token,
+						uid: authUserId,
+					};
+				}, calling);
+			}
+		}
 
-			const localTrack = await AgoraRTC.createMicrophoneAndCameraTracks();
-			localTrack[1].play(localVideoRef.current!);
-			await client.publish(localTrack);
+		if (calling) {
+			joinChannel()
+		}
+	}, [calling])
 
-			client.on("user-published", async (user, mediaType) => {
-				await client.subscribe(user, mediaType);
-				if (mediaType === "video") {
-					user.videoTrack?.play(remoteVideoRef.current!);
-				}
-			});
-		};
+	async function sendInvitationToChannel() {
+		if (!agoraToken.current) return
 
-		init();
+		await post('call/invitation/', {
+			channelId: roomId,
+			membersUsername: membersUsername,
+			agoraToken: agoraToken.current,
+			isUseVideo: isUseVideo
+		})
 
-		return () => {
-			client.leave();
-		};
-	}, []);
+		setCalling(true)
+	}
 
 	return (
-		<div className="flex gap-4">
-			<div ref={localVideoRef} className="w-1/2 h-64 bg-black" />
-			<div ref={remoteVideoRef} className="w-1/2 h-64 bg-black" />
+		<div className="flex flex-col justify-center items-center gap-4 fixed inset-0 p-[10px]">
+			{isConnected ? (
+				<div className="pt-4 p-4 md:p-10 flex flex-wrap justify-center gap-5 flex-1">
+					<div className="w-full sm:w-[288px] aspect-[4/3] relative border border-gray-600 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-[1.02] bg-black overflow-hidden animate-fade-in">
+						<LocalUser
+							audioTrack={localMicrophoneTrack}
+							cameraOn={cameraOn}
+							micOn={micOn}
+							videoTrack={localCameraTrack}
+							cover={authUser?.avatar || "https://www.agora.io/en/wp-content/uploads/2022/10/3d-spatial-audio-icon.svg"}
+						>
+							<samp className="text-white text-sm leading-5 px-1 bg-black/70 gap-1 inline-flex items-center absolute bottom-0 z-20 box-border rounded-t-md">
+								Bạn
+							</samp>
+						</LocalUser>
+					</div>
+
+					{remoteUsers.map((user) => (
+						<div
+							key={user.uid}
+							className="w-full sm:w-[288px] aspect-[4/3] relative border border-gray-600 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-[1.02] bg-black overflow-hidden animate-fade-in"
+						>
+							<RemoteUser
+								cover="https://www.agora.io/en/wp-content/uploads/2022/10/3d-spatial-audio-icon.svg"
+								user={user}
+							>
+								<samp className="text-white text-sm leading-5 px-1 bg-black/70 gap-1 inline-flex items-center absolute bottom-0 z-20 box-border rounded-t-md">
+									{user.uid}
+								</samp>
+							</RemoteUser>
+						</div>
+					))}
+				</div>
+			) : (
+				<div className="flex flex-wrap justify-center items-center gap-[10px]">
+					{membersUsername.map(username => (
+						<div className="w-[300px] h-[250px] flex justify-between items-center rounded-[8px] bg-slate-700">
+							<div
+								className="rounded-[50%]"
+								style={{
+									backgroundColor: `${avatarColors[Math.floor(Math.random() * avatarColors.length)]}`
+								}}
+							>
+								{username.substring(0, 1).toUpperCase()}
+							</div>
+						</div>
+					))}
+				</div>
+			)}
+
+			<div className="flex gap-[10px] text-4xl">
+				<button
+					className="bg-green-500 cursor-pointer rounded-[8px]"
+					onClick={sendInvitationToChannel}
+				>
+					<IoCall />
+				</button>
+
+				<button
+					className='bg-red-500 cursor-pointer rounded-[8px]'
+					onClick={onClose}
+				>
+					<MdClear />
+				</button>
+			</div>
+
+			<div className="overlay absolute inset-0 bg-black/60 cursor-pointer z-[-1]"></div>
 		</div>
 	);
 }
@@ -68,7 +200,7 @@ export default function VideoCall({ roomId, senderId }: VideoCallProps) {
 // 	],
 // };
 
-// interface VideoCallProps {
+// interface CallModalProps {
 // 	isMounted: boolean;
 // 	onMounted: () => void;
 // 	selfId: string | undefined;
@@ -76,13 +208,13 @@ export default function VideoCall({ roomId, senderId }: VideoCallProps) {
 // 	onClose: () => void;
 // }
 
-// export default function VideoCall({
+// export default function CallModal({
 // 	isMounted,
 // 	onMounted,
 // 	selfId,
 // 	targetId,
 // 	onClose,
-// }: VideoCallProps) {
+// }: CallModalProps) {
 // 	const localVideoRef = useRef<HTMLVideoElement>(null);
 // 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
 // 	const pcRef = useRef<RTCPeerConnection | null>(null);

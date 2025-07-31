@@ -4,15 +4,16 @@ import { decodeJwt } from 'jose';
 import useMessages from '@/hooks/useMessages';
 import { ChatRoomInfo } from '@/types/types';
 import ChatInput from './ChatInput';
-import { FaUserCircle, FaArrowDown } from 'react-icons/fa';
+
+import { FaPhoneAlt, FaUserCircle, FaArrowDown } from 'react-icons/fa';
 import { MdPersonAddAlt } from 'react-icons/md';
+import { HiUserGroup } from 'react-icons/hi2';
+import { IoIosVideocam, IoIosArrowBack } from 'react-icons/io';
+
 import { formatDateTime } from '@/utils/formatDateTime';
 import { useSearchUser } from '@/hooks/useSearchUser';
-import { HiUserGroup } from 'react-icons/hi2';
-import VideoCall from '@/components/VideoCall';
-import { IoIosVideocam, IoIosArrowBack } from 'react-icons/io';
 import Message from '@/components/Message';
-import AgoraRTC from "agora-rtc-sdk-ng";
+import CallModal from '@/components/CallModal';
 
 type ChatRoomProps = {
 	authUsername: string | undefined;
@@ -25,6 +26,11 @@ type UploadProgressType = {
 	id: number | null;
 	percent: number;
 };
+
+type InitCallModal = {
+	isOpen: boolean;
+	video: boolean;
+}
 
 export default function ChatRoom({
 	authUsername,
@@ -54,7 +60,10 @@ export default function ChatRoom({
 
 	const [isShowChatRoomInfo, setIsShowChatRoomInfo] = useState<boolean>(false);
 
-	const [isStartVideoCall, setIsStartVideoCall] = useState<boolean>(false);
+	const [initCallModal, setInitCallModal] = useState<InitCallModal>({
+		isOpen: false,
+		video: false
+	});
 
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -137,8 +146,21 @@ export default function ChatRoom({
 				{chatRoomInfo.type === 'DUO' && (
 					<div className="flex items-center gap-2 sm:gap-3">
 						<button
+							className="cursor-pointer hover:text-yellow-400"
+							onClick={() => setInitCallModal({
+								isOpen: true,
+								video: false
+							})}
+						>
+							<FaPhoneAlt />
+						</button>
+
+						<button
 							className="cursor-pointer text-xl hover:text-yellow-400 sm:text-2xl"
-							onClick={() => setIsStartVideoCall(!isStartVideoCall)}
+							onClick={() => setInitCallModal({
+								isOpen: true,
+								video: true
+							})}
 							aria-label="Video call"
 						>
 							<IoIosVideocam />
@@ -282,21 +304,16 @@ export default function ChatRoom({
 				onSetUploadProgress={setUploadProgress}
 			/>
 
-			{isStartVideoCall && (
-				// <VideoCall
-				// 	isMounted={isStartVideoCall}
-				// 	onMounted={() => setIsStartVideoCall(!isStartVideoCall)}
-				// 	selfId={authUsername}
-				// 	targetId={
-				// 		chatRoomInfo.membersUsername.find(
-				// 			(username) => username !== authUsername,
-				// 		) || ''
-				// 	}
-				// 	onClose={() => setIsStartVideoCall(false)}
-				// />
-				<VideoCall
+			{initCallModal.isOpen && (
+				<CallModal
 					roomId={roomId}
-					senderId={ }
+					isUseVideo={initCallModal.video}
+					membersUsername={chatRoomInfo.membersUsername}
+					callInvitation={null}
+					onClose={() => setInitCallModal({
+						isOpen: false,
+						video: false
+					})}
 				/>
 			)}
 		</div>

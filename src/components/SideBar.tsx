@@ -81,9 +81,9 @@ export function SideBar(props: SideBarProps) {
 
 	useEffect(() => {
 		const getChatRoom = async () => {
-			const results = await Promise.all([get('chatrooms/')]);
+			const results = await get('chatrooms/');
 			setIsLoading(false);
-			setChatRooms(results[0]);
+			setChatRooms(results);
 		};
 		getChatRoom();
 	}, [get]);
@@ -91,7 +91,7 @@ export function SideBar(props: SideBarProps) {
 	useEffect(() => {
 		if (invitationReply) {
 			const newChatRoom: ChatRoomInfo = {
-				id: invitationReply.chatRoomId,
+				id: invitationReply.chatRoomDto.id,
 				name: null,
 				avatar: invitationReply.sender.avatar,
 				membersUsername: [
@@ -255,11 +255,10 @@ export function SideBar(props: SideBarProps) {
 						<div
 							key={chatRoom.id}
 							onClick={() => props.onUpdateChatRoomActive(chatRoom)}
-							className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${
-								chatRoom === props.chatRoomActive
-									? 'bg-indigo-600'
-									: 'hover:bg-gray-700'
-							}`}
+							className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${chatRoom === props.chatRoomActive
+								? 'bg-indigo-600'
+								: 'hover:bg-gray-700'
+								}`}
 						>
 							{chatRoom.avatar ? (
 								<img

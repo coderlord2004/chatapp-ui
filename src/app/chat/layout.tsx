@@ -3,6 +3,7 @@
 import { PropsWithChildren } from 'react';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
+import AgoraRTC, { AgoraRTCProvider } from "agora-rtc-react";
 
 function WebSocketProvider({ children }: PropsWithChildren) {
 	const { accessToken } = useAuth();
@@ -11,9 +12,13 @@ function WebSocketProvider({ children }: PropsWithChildren) {
 		return null;
 	}
 
+	const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
 	return (
 		<WebSocketContextProvider token={accessToken}>
-			{children}
+			<AgoraRTCProvider client={client}>
+				{children}
+			</AgoraRTCProvider>
 		</WebSocketContextProvider>
 	);
 }
@@ -21,7 +26,9 @@ function WebSocketProvider({ children }: PropsWithChildren) {
 export default function Layout({ children }: PropsWithChildren) {
 	return (
 		<AuthProvider>
-			<WebSocketProvider>{children}</WebSocketProvider>
+			<WebSocketProvider>
+				{children}
+			</WebSocketProvider>
 		</AuthProvider>
 	);
 }

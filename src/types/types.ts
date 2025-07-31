@@ -24,6 +24,7 @@ type Invitation = {
 	sender: AuthUser;
 	receiver: AuthUser;
 	chatRoomId: number | null;
+	chatRoomDto: ChatRoomInfo;
 	status: 'PENDING' | 'REJECTED' | 'ACCEPTED';
 };
 
@@ -66,7 +67,19 @@ type UpdateMessageParams = {
 	isUpdated: boolean;
 };
 
+type CallInvitation = {
+	agoraToken: string;
+	chatRoom: {
+		id: number;
+		name: string | null;
+		avatar: string | null;
+		type: 'GROUP' | 'DUO'
+	};
+	video: boolean;
+}
+
 export type {
+	AuthUser,
 	ChatRoomInfo,
 	Invitation,
 	MessageRequestType,
@@ -74,4 +87,5 @@ export type {
 	LatestMessageType,
 	SignalMessage,
 	UpdateMessageParams,
+	CallInvitation
 };

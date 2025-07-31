@@ -6,7 +6,7 @@ import axios, {
 	type AxiosRequestHeaders,
 } from 'axios';
 import { decode, encode } from '@msgpack/msgpack';
-
+import camelcaseKeys from 'camelcase-keys';
 import {
 	getAccessToken,
 	getLocalStorage,
@@ -92,7 +92,10 @@ request.interceptors.request.use(
 );
 
 request.interceptors.response.use(
-	(response) => response,
+	(response) => {
+		response.data = camelcaseKeys(response.data, { deep: true });
+		return response;
+	},
 	async (error) => {
 		const originalRequest = error.config;
 		const accessTokenExpired = error.response?.status === 401;

@@ -7,6 +7,8 @@ import { ChatRoomInfo } from '@/types/types';
 import { SideBar } from '@/components/SideBar';
 import { useJwtDecoded } from '@/contexts/AuthContext';
 import { useSearchUser } from '@/hooks/useSearchUser';
+import useCallService from "@/hooks/useCallService";
+import CallAlert from '@/components/CallAlert';
 
 export default function Page() {
 	const [chatRoomActive, setChatRoomActive] = useState<ChatRoomInfo | null>(
@@ -16,10 +18,10 @@ export default function Page() {
 	const [isOpenSidebar, setOpenSidebar] = useState<boolean>(true);
 	const authUsername = jwt?.sub;
 	const { setSearchUserModal } = useSearchUser();
-
 	const toggleSidebar = () => {
 		setOpenSidebar(!isOpenSidebar);
 	};
+	const { callModal, onClose } = useCallService()
 
 	return (
 		<div className="relative flex h-screen overflow-hidden bg-gray-900 text-gray-100">
@@ -64,6 +66,10 @@ export default function Page() {
 						</p>
 					</div>
 				</div>
+			)}
+
+			{callModal.isOpen && (
+				
 			)}
 		</div>
 	);

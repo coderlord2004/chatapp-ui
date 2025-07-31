@@ -2,12 +2,10 @@ import { useRequest } from '@/hooks/useRequest';
 import { useState, useEffect } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { Invitation } from '@/types/types';
-import { useAuth } from '@/contexts/AuthContext';
 
 function useInvitations() {
 	const [invitations, setInvitations] = useState<Invitation[]>([]);
 	const { get } = useRequest();
-	const { accessToken } = useAuth();
 	const webSocketPath = `/user/queue/invitations/`;
 
 	useEffect(() => {
@@ -16,9 +14,10 @@ function useInvitations() {
 			setInvitations(data);
 		}
 		fetchInvitations();
-	}, [accessToken, get]);
+	}, [get]);
 
 	useWebSocket(webSocketPath, (message) => {
+		console.log('sender invitation: ', message)
 		setInvitations((prev) => [message as Invitation, ...prev]);
 	});
 

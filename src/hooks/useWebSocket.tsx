@@ -9,7 +9,7 @@ import {
 import { type Client } from '@stomp/stompjs';
 import { Mutex } from 'async-mutex';
 import { decodeJwt } from 'jose';
-
+import camelcaseKeys from 'camelcase-keys';
 import getStompClient from '@/services/websocket';
 
 interface ContextType {
@@ -81,7 +81,8 @@ function useWebSocket(destination: string, callback: Callback) {
 		}
 
 		const subscription = stompClient.subscribe(destination, (message) => {
-			const messageBody = JSON.parse(message.body);
+			let messageBody = JSON.parse(message.body);
+			messageBody = camelcaseKeys(messageBody, { deep: true })
 			callback(messageBody);
 		});
 
