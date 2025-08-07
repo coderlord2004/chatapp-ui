@@ -19,10 +19,10 @@ import { useRequest } from '@/hooks/useRequest';
 import { useNotification } from '@/hooks/useNotification';
 
 type AuthUserType = {
-	id: number,
-	username: string,
-	avatar: string | null
-}
+	id: number;
+	username: string;
+	avatar: string | null;
+};
 
 type AuthContextType = {
 	authUser: AuthUserType | null;
@@ -36,7 +36,6 @@ type TokenTypes = {
 	accessToken: string | null;
 	refreshToken: string | null;
 };
-
 
 function isTokenValid(token: string | null) {
 	if (token === null) {
@@ -88,11 +87,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		accessToken: null,
 		refreshToken: null,
 	});
-	const [authUser, setAuthUser] = useState<AuthUserType | null>(null)
-	const { get } = useRequest()
+	const [authUser, setAuthUser] = useState<AuthUserType | null>(null);
+	const { get } = useRequest();
 	const router = useRouter();
 	const pathname = usePathname();
-	const { showNotification } = useNotification()
+	const { showNotification } = useNotification();
 
 	const login = (accessToken: string, refreshToken: string) => {
 		localStorage.setItem('accessToken', accessToken);
@@ -109,14 +108,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 	useEffect(() => {
 		const getAuthUser = async () => {
-			const data = await get('users/info/')
-			setAuthUser(data)
-		}
+			const data = await get('users/info/');
+			setAuthUser(data);
+		};
 
 		if (token.accessToken) {
-			getAuthUser()
+			getAuthUser();
 		}
-	}, [token])
+	}, [token]);
 
 	useEffect(() => {
 		async function checkIfLoggedIn() {

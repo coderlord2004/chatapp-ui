@@ -30,7 +30,7 @@ type UploadProgressType = {
 type InitCallModal = {
 	isOpen: boolean;
 	video: boolean;
-}
+};
 
 export default function ChatRoom({
 	authUsername,
@@ -62,7 +62,7 @@ export default function ChatRoom({
 
 	const [initCallModal, setInitCallModal] = useState<InitCallModal>({
 		isOpen: false,
-		video: false
+		video: false,
 	});
 
 	const scrollToBottom = () => {
@@ -147,20 +147,24 @@ export default function ChatRoom({
 					<div className="flex items-center gap-2 sm:gap-3">
 						<button
 							className="cursor-pointer hover:text-yellow-400"
-							onClick={() => setInitCallModal({
-								isOpen: true,
-								video: false
-							})}
+							onClick={() =>
+								setInitCallModal({
+									isOpen: true,
+									video: false,
+								})
+							}
 						>
 							<FaPhoneAlt />
 						</button>
 
 						<button
 							className="cursor-pointer text-xl hover:text-yellow-400 sm:text-2xl"
-							onClick={() => setInitCallModal({
-								isOpen: true,
-								video: true
-							})}
+							onClick={() =>
+								setInitCallModal({
+									isOpen: true,
+									video: true,
+								})
+							}
 							aria-label="Video call"
 						>
 							<IoIosVideocam />
@@ -191,7 +195,7 @@ export default function ChatRoom({
 						scrollToBottomButton.current &&
 						e.target instanceof HTMLElement &&
 						e.target.scrollHeight - e.target.scrollTop >
-						e.target.clientHeight + 100
+							e.target.clientHeight + 100
 					) {
 						scrollToBottomButton.current.style.display = 'block';
 						if (
@@ -205,11 +209,11 @@ export default function ChatRoom({
 					}
 				}}
 			>
-				<div className="mx-auto mt-[10%] flex w-[200px] flex-col gap-y-[5px] rounded-[8px] bg-slate-800 px-[10px] py-[5px]">
+				<div className="mx-auto mt-[10%] flex h-auto w-[50%] flex-col items-center justify-center gap-y-[5px] rounded-[8px] bg-slate-800 px-[10px] py-[5px] md:w-[350px]">
 					<img
 						src="./bg_image_2.jpeg"
 						alt=""
-						className="h-auto w-[200px] rounded-[8px] object-cover"
+						className="h-auto w-full rounded-[8px] object-cover"
 					/>
 					<div className="flex items-center justify-center gap-x-[10px]">
 						{chatRoomInfo.avatar ? (
@@ -229,34 +233,34 @@ export default function ChatRoom({
 						</div>
 					</div>
 					<p className="text-[75%] text-gray-500">
-						{formatDateTime(chatRoomInfo.createdOn)}
+						Kết bạn lúc: {formatDateTime(chatRoomInfo.createdOn)}
 					</p>
 				</div>
 
 				{isLoading
 					? Array.from({ length: 5 }, (_, idx) => (
-						<div
-							key={idx}
-							className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
-						>
-							<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
-								<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
-								<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
-								<div className="h-[10px] w-[40%] bg-gray-700"></div>
+							<div
+								key={idx}
+								className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+							>
+								<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
+									<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
+									<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
+									<div className="h-[10px] w-[40%] bg-gray-700"></div>
+								</div>
 							</div>
-						</div>
-					))
+						))
 					: messages.map((msg, idx) => (
-						<Message
-							key={msg.id}
-							index={idx}
-							message={msg}
-							totalMessages={messages.length}
-							uploadProgress={uploadProgress}
-							updateMessage={updateMessage}
-							deleteMessage={deleteMessage}
-						/>
-					))}
+							<Message
+								key={msg.id}
+								index={idx}
+								message={msg}
+								totalMessages={messages.length}
+								uploadProgress={uploadProgress}
+								updateMessage={updateMessage}
+								deleteMessage={deleteMessage}
+							/>
+						))}
 
 				{/* Empty div for auto-scrolling */}
 				<div ref={messagesEndRef} />
@@ -310,10 +314,12 @@ export default function ChatRoom({
 					isUseVideo={initCallModal.video}
 					membersUsername={chatRoomInfo.membersUsername}
 					callInvitation={null}
-					onClose={() => setInitCallModal({
-						isOpen: false,
-						video: false
-					})}
+					onClose={() =>
+						setInitCallModal({
+							isOpen: false,
+							video: false,
+						})
+					}
 				/>
 			)}
 		</div>

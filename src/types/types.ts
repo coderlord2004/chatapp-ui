@@ -68,15 +68,14 @@ type UpdateMessageParams = {
 };
 
 type CallInvitation = {
-	agoraToken: string;
-	chatRoom: {
+	chatRoomDto: {
 		id: number;
 		name: string | null;
 		avatar: string | null;
-		type: 'GROUP' | 'DUO'
+		type: 'GROUP' | 'DUO';
 	};
 	video: boolean;
-}
+};
 
 export type {
 	AuthUser,
@@ -87,5 +86,5 @@ export type {
 	LatestMessageType,
 	SignalMessage,
 	UpdateMessageParams,
-	CallInvitation
+	CallInvitation,
 };

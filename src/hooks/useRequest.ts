@@ -16,7 +16,11 @@ export const useRequest = () => {
 			}
 
 			console.log('error: ', error);
-			const message = error.message || error.response?.data?.detail || 'Lỗi từ máy chủ.';
+			const message =
+				error.response?.data.title ||
+				error.response?.data?.detail ||
+				error.message ||
+				'Lỗi từ máy chủ.';
 			showNotification({ type: 'error', message });
 		},
 		[showNotification],

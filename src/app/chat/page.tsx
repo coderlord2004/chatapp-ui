@@ -7,7 +7,7 @@ import { ChatRoomInfo } from '@/types/types';
 import { SideBar } from '@/components/SideBar';
 import { useJwtDecoded } from '@/contexts/AuthContext';
 import { useSearchUser } from '@/hooks/useSearchUser';
-import useCallService from "@/hooks/useCallService";
+import useCallService from '@/hooks/useCallService';
 import CallAlert from '@/components/CallAlert';
 
 export default function Page() {
@@ -21,7 +21,7 @@ export default function Page() {
 	const toggleSidebar = () => {
 		setOpenSidebar(!isOpenSidebar);
 	};
-	const { callModal, onClose } = useCallService()
+	const { callModal, onClose } = useCallService();
 
 	return (
 		<div className="relative flex h-screen overflow-hidden bg-gray-900 text-gray-100">
@@ -69,7 +69,7 @@ export default function Page() {
 			)}
 
 			{callModal.isOpen && (
-				
+				<CallAlert callInvitation={callModal.data} onClose={onClose} />
 			)}
 		</div>
 	);

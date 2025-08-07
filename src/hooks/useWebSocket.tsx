@@ -82,7 +82,7 @@ function useWebSocket(destination: string, callback: Callback) {
 
 		const subscription = stompClient.subscribe(destination, (message) => {
 			let messageBody = JSON.parse(message.body);
-			messageBody = camelcaseKeys(messageBody, { deep: true })
+			messageBody = camelcaseKeys(messageBody, { deep: true });
 			callback(messageBody);
 		});
 

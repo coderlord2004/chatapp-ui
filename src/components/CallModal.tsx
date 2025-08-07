@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef, useState } from "react";
-import AgoraRTC from "agora-rtc-sdk-ng";
-import { useAuth } from "@/contexts/AuthContext";
-import { useRequest } from "@/hooks/useRequest";
-import { CallInvitation } from "@/types/types";
+import React, { useEffect, useRef, useState } from 'react';
+import AgoraRTC from 'agora-rtc-sdk-ng';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRequest } from '@/hooks/useRequest';
+import { CallInvitation } from '@/types/types';
 
-import { IoCall } from "react-icons/io5";
-import { MdClear } from "react-icons/md";
+import { IoCall } from 'react-icons/io5';
+import { MdClear } from 'react-icons/md';
+import { IoMdPersonAdd } from 'react-icons/io';
 
 import {
 	LocalUser,
@@ -18,15 +19,15 @@ import {
 	useLocalCameraTrack,
 	usePublish,
 	useRemoteUsers,
-} from "agora-rtc-react";
+} from 'agora-rtc-react';
 
 type CallModalProps = {
-	roomId: number | null | undefined,
-	isUseVideo: boolean,
-	membersUsername: string[],
-	callInvitation: CallInvitation | null
-	onClose: () => void
-}
+	roomId: number | null | undefined;
+	isUseVideo: boolean;
+	membersUsername: string[];
+	callInvitation: CallInvitation | null;
+	onClose: () => void;
+};
 
 const avatarColors = [
 	'#FFB6C1', // light pink
@@ -41,17 +42,24 @@ const avatarColors = [
 	'#FFDEAD', // navajo white
 ];
 
-export default function CallModal({ roomId, isUseVideo, membersUsername, callInvitation, onClose }: CallModalProps) {
-	const AGORA_APP_ID: string = process.env.NEXT_PUBLIC_AGORA_APP_ID || "";
-	const { authUser } = useAuth()
-	const { get, post } = useRequest()
+export default function CallModal({
+	roomId,
+	isUseVideo,
+	membersUsername,
+	callInvitation,
+	onClose,
+}: CallModalProps) {
+	const AGORA_APP_ID: string = process.env.NEXT_PUBLIC_AGORA_APP_ID || '';
+	const { authUser } = useAuth();
+	const { get, post } = useRequest();
 	const authUserId = authUser?.id;
-	const agoraToken = useRef<string>(null)
-	const [isLoading, setLoading] = useState<boolean>(true)
+	const [isLoading, setLoading] = useState<boolean>(true);
 
-	const [calling, setCalling] = useState<boolean>(callInvitation ? true : false);
+	const [calling, setCalling] = useState<boolean>(
+		callInvitation ? true : false,
+	);
 	const isConnected = useIsConnected();
-
+	console.log('connected:', isConnected);
 	const [micOn, setMic] = useState<boolean>(true);
 	const [cameraOn, setCamera] = useState<boolean>(isUseVideo);
 	const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
@@ -59,66 +67,53 @@ export default function CallModal({ roomId, isUseVideo, membersUsername, callInv
 	usePublish([localMicrophoneTrack, localCameraTrack]);
 
 	const remoteUsers = useRemoteUsers();
+	console.log('remote user:', remoteUsers);
 
-	useEffect(() => {
-		const joinChannel = () => {
-			if (callInvitation) {
-				useJoin({
-					appid: AGORA_APP_ID,
-					channel: `room_${roomId}`,
-					token: callInvitation.agoraToken,
-					uid: authUserId,
-				}, calling);
-			} else {
-				useJoin(async function () {
-					const result = await get('agora/token', {
-						params: {
-							channelName: `room_${roomId}`,
-							uid: authUserId
-						}
-					})
-					agoraToken.current = result.token
-					return {
-						appid: AGORA_APP_ID,
-						channel: `room_${roomId}`,
-						token: result.token,
-						uid: authUserId,
-					};
-				}, calling);
-			}
-		}
+	async function getAgoraTokenAndInitChannel() {
+		const result = await get('agora/token', {
+			params: {
+				channelName: `room_${roomId}`,
+				uid: authUserId,
+			},
+		});
 
-		if (calling) {
-			joinChannel()
-		}
-	}, [calling])
-
-	async function sendInvitationToChannel() {
-		if (!agoraToken.current) return
-
-		await post('call/invitation/', {
-			channelId: roomId,
-			membersUsername: membersUsername,
-			agoraToken: agoraToken.current,
-			isUseVideo: isUseVideo
-		})
-
-		setCalling(true)
+		return {
+			appid: AGORA_APP_ID,
+			channel: `room_${roomId}`,
+			token: result.token,
+			uid: authUserId,
+		};
 	}
 
+	useEffect(() => {
+		if (!callInvitation && calling) {
+			async function sendInvitationToChannel() {
+				await post('call/invitation/', {
+					channelId: roomId,
+					membersUsername: membersUsername,
+					isUseVideo: isUseVideo,
+				});
+			}
+
+			sendInvitationToChannel();
+		}
+	}, [calling]);
+
+	useJoin(getAgoraTokenAndInitChannel, calling);
+
 	return (
-		<div className="flex flex-col justify-center items-center gap-4 fixed inset-0 p-[10px]">
+		<div className="fixed inset-0 flex flex-col items-center justify-center gap-[10px] p-[10px]">
 			{isConnected ? (
-				<div className="pt-4 p-4 md:p-10 flex flex-wrap justify-center gap-5 flex-1">
-					<div className="w-full sm:w-[288px] aspect-[4/3] relative border border-gray-600 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-[1.02] bg-black overflow-hidden animate-fade-in">
+				<div className="flex flex-1 flex-wrap justify-center gap-5 p-4 pt-4 md:p-10">
+					<div className="animate-fade-in relative aspect-[4/3] w-full transform overflow-hidden rounded-xl border border-gray-600 bg-black shadow-md transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl sm:w-[288px]">
 						<LocalUser
 							audioTrack={localMicrophoneTrack}
 							cameraOn={cameraOn}
 							micOn={micOn}
 							videoTrack={localCameraTrack}
-							cover={authUser?.avatar || "https://www.agora.io/en/wp-content/uploads/2022/10/3d-spatial-audio-icon.svg"}
+							cover={authUser?.avatar || '/next_chat_logo.jpg'}
 						>
-							<samp className="text-white text-sm leading-5 px-1 bg-black/70 gap-1 inline-flex items-center absolute bottom-0 z-20 box-border rounded-t-md">
+							<samp className="absolute bottom-[5px] left-[50%] z-20 box-border inline-flex translate-x-[-50%] transform items-center gap-1 rounded-t-md bg-black/70 px-1 text-center text-2xl leading-5 text-white">
 								Bạn
 							</samp>
 						</LocalUser>
@@ -127,13 +122,10 @@ export default function CallModal({ roomId, isUseVideo, membersUsername, callInv
 					{remoteUsers.map((user) => (
 						<div
 							key={user.uid}
-							className="w-full sm:w-[288px] aspect-[4/3] relative border border-gray-600 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-[1.02] bg-black overflow-hidden animate-fade-in"
+							className="animate-fade-in relative aspect-[4/3] w-full transform overflow-hidden rounded-xl border border-gray-600 bg-black shadow-md transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl sm:w-[288px]"
 						>
-							<RemoteUser
-								cover="https://www.agora.io/en/wp-content/uploads/2022/10/3d-spatial-audio-icon.svg"
-								user={user}
-							>
-								<samp className="text-white text-sm leading-5 px-1 bg-black/70 gap-1 inline-flex items-center absolute bottom-0 z-20 box-border rounded-t-md">
+							<RemoteUser cover="/next_chat_logo.jpg" user={user}>
+								<samp className="absolute bottom-[5px] left-[50%] z-20 box-border inline-flex translate-x-[-50%] transform items-center gap-1 rounded-t-md bg-black/70 px-1 text-sm leading-5 text-white">
 									{user.uid}
 								</samp>
 							</RemoteUser>
@@ -141,13 +133,16 @@ export default function CallModal({ roomId, isUseVideo, membersUsername, callInv
 					))}
 				</div>
 			) : (
-				<div className="flex flex-wrap justify-center items-center gap-[10px]">
-					{membersUsername.map(username => (
-						<div className="w-[300px] h-[250px] flex justify-between items-center rounded-[8px] bg-slate-700">
+				<div className="flex flex-wrap items-center justify-center gap-[10px]">
+					{membersUsername.map((username) => (
+						<div
+							key={username}
+							className="flex h-[250px] w-[300px] items-center justify-center rounded-[8px] bg-slate-700"
+						>
 							<div
-								className="rounded-[50%]"
+								className="flex h-[150px] w-[150px] items-center justify-center rounded-[50%] text-3xl"
 								style={{
-									backgroundColor: `${avatarColors[Math.floor(Math.random() * avatarColors.length)]}`
+									backgroundColor: `${avatarColors[Math.floor(Math.random() * avatarColors.length)]}`,
 								}}
 							>
 								{username.substring(0, 1).toUpperCase()}
@@ -157,28 +152,34 @@ export default function CallModal({ roomId, isUseVideo, membersUsername, callInv
 				</div>
 			)}
 
-			<div className="flex gap-[10px] text-4xl">
-				<button
-					className="bg-green-500 cursor-pointer rounded-[8px]"
-					onClick={sendInvitationToChannel}
-				>
-					<IoCall />
-				</button>
+			<div className="flex items-center justify-center gap-[10px] text-4xl">
+				{calling ? (
+					<div className="flex gap-[7px]">
+						<div className="text-3xl">
+							<IoMdPersonAdd />
+						</div>
+					</div>
+				) : (
+					<button
+						className="cursor-pointer rounded-[8px] bg-green-500"
+						onClick={() => setCalling(true)}
+					>
+						<IoCall />
+					</button>
+				)}
 
 				<button
-					className='bg-red-500 cursor-pointer rounded-[8px]'
+					className="cursor-pointer rounded-[8px] bg-red-500"
 					onClick={onClose}
 				>
 					<MdClear />
 				</button>
 			</div>
 
-			<div className="overlay absolute inset-0 bg-black/60 cursor-pointer z-[-1]"></div>
+			<div className="overlay absolute inset-0 z-[-1] bg-black/60"></div>
 		</div>
 	);
 }
-
-
 
 // 'use client';
 

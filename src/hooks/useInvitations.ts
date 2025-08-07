@@ -17,7 +17,7 @@ function useInvitations() {
 	}, [get]);
 
 	useWebSocket(webSocketPath, (message) => {
-		console.log('sender invitation: ', message)
+		console.log('sender invitation: ', message);
 		setInvitations((prev) => [message as Invitation, ...prev]);
 	});
 

@@ -1,44 +1,52 @@
-import React, { useState } from 'react'
-import { CallInvitation } from '@/types/types'
+import React, { useState } from 'react';
+import { CallInvitation } from '@/types/types';
 import CallModal from '@/components/CallModal';
-import { TiTick } from "react-icons/ti";
-import { MdClear } from "react-icons/md";
+import { TiTick } from 'react-icons/ti';
+import { MdClear } from 'react-icons/md';
 
 type Props = {
-    callInvitation: CallInvitation;
-    onClose: () => void;
-}
+	callInvitation: CallInvitation | null;
+	onClose: () => void;
+};
 
 export default function CallAlert({ callInvitation, onClose }: Props) {
-    const [isAccepted, setIsAccepted] = useState<boolean>(false)
+	const [isAccepted, setIsAccepted] = useState<boolean>(false);
 
-    return (
-        <div>
-            <div className="flex gap-[10px] text-4xl">
-                <button
-                    className="bg-green-500 cursor-pointer rounded-[8px]"
-                    onClick={() => setIsAccepted(true)}
-                >
-                    <TiTick />
-                </button>
+	return (
+		<div className="fixed inset-0 flex items-center justify-center bg-black/70">
+			{isAccepted ? (
+				<CallModal
+					roomId={callInvitation?.chatRoomDto.id}
+					isUseVideo={callInvitation?.video || false}
+					membersUsername={[]}
+					callInvitation={callInvitation}
+					onClose={onClose}
+				/>
+			) : (
+				<div className="flex items-center justify-center gap-[10px] text-4xl">
+					<button
+						className="cursor-pointer rounded-[8px] bg-green-500"
+						onClick={() => setIsAccepted(true)}
+					>
+						<TiTick />
+					</button>
 
-                <button
-                    className='bg-red-500 cursor-pointer rounded-[8px]'
-                    onClick={onClose}
-                >
-                    <MdClear />
-                </button>
-            </div>
+					<button
+						className="cursor-pointer rounded-[8px] bg-red-500"
+						onClick={onClose}
+					>
+						<MdClear />
+					</button>
 
-            {isAccepted && (
-                <CallModal
-                    roomId={callInvitation.chatRoom.id}
-                    isUseVideo={callInvitation.video}
-                    membersUsername={callInvitation.chatRoom.membersUsername}
-                    callInvitation={callInvitation}
-                    onClose={onClose}
-                />
-            )}
-        </div>
-    )
+					<audio
+						src="/nhac_chuong_iphone-www_tiengdong_com.mp3"
+						autoPlay
+						className="hidden"
+					>
+						Your browser does not support the audio element.
+					</audio>
+				</div>
+			)}
+		</div>
+	);
 }
