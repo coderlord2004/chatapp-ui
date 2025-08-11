@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import AgoraRTC from 'agora-rtc-sdk-ng';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRequest } from '@/hooks/useRequest';
 import { CallInvitation } from '@/types/types';
@@ -88,9 +87,8 @@ export default function CallModal({
 	useEffect(() => {
 		if (!callInvitation && calling) {
 			async function sendInvitationToChannel() {
-				await post('call/invitation/', {
+				await post('call/invitation/send/', {
 					channelId: roomId,
-					membersUsername: membersUsername,
 					isUseVideo: isUseVideo,
 				});
 			}

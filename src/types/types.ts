@@ -68,13 +68,10 @@ type UpdateMessageParams = {
 };
 
 type CallInvitation = {
-	chatRoomDto: {
-		id: number;
-		name: string | null;
-		avatar: string | null;
-		type: 'GROUP' | 'DUO';
-	};
-	video: boolean;
+	channelId: number;
+	caller: AuthUser;
+	membersUsername: string[];
+	isUseVideo: boolean;
 };
 
 export type {

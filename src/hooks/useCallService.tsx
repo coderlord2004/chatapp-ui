@@ -1,21 +1,18 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { CallInvitation } from '@/types/types';
-
-type Props = {};
 
 type CallModal = {
 	isOpen: boolean;
 	data: CallInvitation | null;
 };
 
-function useCallService() {
+function useIncomingCallInvitation() {
 	const [callModal, setCallModal] = useState<CallModal>({
 		isOpen: false,
 		data: null,
 	});
-	const callInvitationPath = '/user/queue/call_invitation';
+	const callInvitationPath = '/user/queue/send_call_invitation';
 
 	useWebSocket(callInvitationPath, (message) => {
 		console.log('call invitation: ', message);
@@ -35,4 +32,29 @@ function useCallService() {
 	};
 }
 
-export default useCallService;
+function useCallInvitationRefused() {
+	const [callModal, setCallModal] = useState<CallModal>({
+		isOpen: false,
+		data: null,
+	});
+	const callInvitationPath = '/user/queue/refuse_call_invitation';
+
+	useWebSocket(callInvitationPath, (message) => {
+		console.log('call invitation refused: ', message);
+		setCallModal({
+			isOpen: true,
+			data: message as CallInvitation,
+		});
+	});
+
+	return {
+		callModal: callModal,
+		onClose: () =>
+			setCallModal((prev) => ({
+				...prev,
+				isOpen: false,
+			})),
+	};
+}
+
+export { useIncomingCallInvitation, useCallInvitationRefused };
