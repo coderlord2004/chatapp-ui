@@ -256,18 +256,18 @@ const UniverseCanvas = () => {
 
 		animate();
 
-		const handleResize = () => {
-			resizeCanvas();
-			stars.forEach((star) => {
-				star.x = Math.random() * canvas.width;
-				star.y = Math.random() * canvas.height;
-			});
-		};
+		// const handleResize = () => {
+		// 	resizeCanvas();
+		// 	stars.forEach((star) => {
+		// 		star.x = Math.random() * canvas.width;
+		// 		star.y = Math.random() * canvas.height;
+		// 	});
+		// };
 
-		window.addEventListener('resize', handleResize);
+		// window.addEventListener('resize', handleResize);
 
 		return () => {
-			window.removeEventListener('resize', handleResize);
+			// window.removeEventListener('resize', handleResize);
 			cancelAnimationFrame(animationFrameId);
 		};
 	}, []);
