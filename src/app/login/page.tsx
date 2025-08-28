@@ -69,7 +69,7 @@ export default function Login() {
 						/>
 					</Link>
 					<h1 className="w-full text-center">
-						Log in connect with your friend!
+						Log in to connect with your friend!
 					</h1>
 				</div>
 				<form

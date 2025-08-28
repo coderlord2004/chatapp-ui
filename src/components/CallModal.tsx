@@ -7,7 +7,8 @@ import { CallInvitation } from '@/types/types';
 
 import { IoCall } from 'react-icons/io5';
 import { MdClear } from 'react-icons/md';
-import { IoMdPersonAdd } from 'react-icons/io';
+import { IoMdPersonAdd, IoMdMicOff, IoMdMic } from 'react-icons/io';
+import { LuCamera, LuCameraOff } from 'react-icons/lu';
 
 import {
 	LocalUser,

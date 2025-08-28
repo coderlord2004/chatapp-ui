@@ -1,6 +1,13 @@
-function formatDateTime(isoString: string) {
+function formatDateTime(isoString: string | undefined) {
 	if (!isoString) return;
 	const date = new Date(isoString);
+	const currentDate = new Date();
+	const formattedCurrentDate = currentDate.toLocaleDateString('en-GB', {
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+		timeZone: 'UTC',
+	});
 
 	const weekday = date.toLocaleDateString('en-US', {
 		weekday: 'long',
@@ -22,7 +29,9 @@ function formatDateTime(isoString: string) {
 		timeZone: 'UTC',
 	});
 
-	return `${weekday}, ${formattedDate} ${formattedTime}`;
+	return formattedCurrentDate === formattedDate
+		? `${formattedTime}`
+		: `${weekday}, ${formattedDate} ${formattedTime}`;
 }
 
 function formatTime(isoString: string) {

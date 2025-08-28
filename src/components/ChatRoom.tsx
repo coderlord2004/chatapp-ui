@@ -143,48 +143,46 @@ export default function ChatRoom({
 				</div>
 
 				{/* Action buttons */}
-				{chatRoomInfo.type === 'DUO' && (
-					<div className="flex items-center gap-2 sm:gap-3">
-						<button
-							className="cursor-pointer hover:text-yellow-400"
-							onClick={() =>
-								setInitCallModal({
-									isOpen: true,
-									video: false,
-								})
-							}
-						>
-							<FaPhoneAlt />
-						</button>
+				<div className="flex items-center gap-2 sm:gap-3">
+					<button
+						className="cursor-pointer hover:text-yellow-400"
+						onClick={() =>
+							setInitCallModal({
+								isOpen: true,
+								video: false,
+							})
+						}
+					>
+						<FaPhoneAlt />
+					</button>
 
-						<button
-							className="cursor-pointer text-xl hover:text-yellow-400 sm:text-2xl"
-							onClick={() =>
-								setInitCallModal({
-									isOpen: true,
-									video: true,
-								})
-							}
-							aria-label="Video call"
-						>
-							<IoIosVideocam />
-						</button>
+					<button
+						className="cursor-pointer text-xl hover:text-yellow-400 sm:text-2xl"
+						onClick={() =>
+							setInitCallModal({
+								isOpen: true,
+								video: true,
+							})
+						}
+						aria-label="Video call"
+					>
+						<IoIosVideocam />
+					</button>
 
-						<button
-							title="Thêm bạn bè"
-							className="cursor-pointer text-xl hover:text-yellow-400 sm:text-2xl"
-							onClick={() =>
-								setSearchUserModal({
-									isOpen: true,
-									chatGroupId: chatRoomInfo.id,
-								})
-							}
-							aria-label="Add friend"
-						>
-							<MdPersonAddAlt />
-						</button>
-					</div>
-				)}
+					<button
+						title="Thêm bạn bè"
+						className="cursor-pointer text-xl hover:text-yellow-400 sm:text-2xl"
+						onClick={() =>
+							setSearchUserModal({
+								isOpen: true,
+								chatGroupId: chatRoomInfo.id,
+							})
+						}
+						aria-label="Add friend"
+					>
+						<MdPersonAddAlt />
+					</button>
+				</div>
 			</div>
 
 			{/* Messages Container */}
@@ -233,7 +231,8 @@ export default function ChatRoom({
 						</div>
 					</div>
 					<p className="text-[75%] text-gray-500">
-						Kết bạn lúc: {formatDateTime(chatRoomInfo.createdOn)}
+						{chatRoomInfo.type === 'DUO' ? 'Kết bạn lúc: ' : 'Đã tạo lúc: '}{' '}
+						{formatDateTime(chatRoomInfo.createdOn)}
 					</p>
 				</div>
 

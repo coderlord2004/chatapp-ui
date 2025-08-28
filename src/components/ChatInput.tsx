@@ -7,6 +7,7 @@ import { MdAttachFile, MdDeleteForever } from 'react-icons/md';
 import { IoIosMic, IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaPaperPlane, FaMicrophone, FaStopCircle } from 'react-icons/fa';
 import { useNotification } from '@/hooks/useNotification';
+import TextInput from './TextInput';
 
 declare global {
 	interface Window {
@@ -252,17 +253,17 @@ export default function ChatInput({
 						<MdAttachFile />
 					</label>
 				</div>
-				<div className="flex h-full flex-1 items-center rounded-lg border border-gray-600 bg-gray-700 focus-within:ring-2 focus-within:ring-indigo-500">
-					<input
-						ref={messageInputRef}
-						type="text"
+
+				<div className="relative h-[40px] w-full">
+					<TextInput
+						externalRef={messageInputRef}
 						name="message"
 						value={message}
 						onChange={(e) => setMessage(e.target.value)}
-						placeholder="Type a message..."
-						className="h-full w-full rounded-lg px-4 py-2 text-gray-100 focus:border-transparent focus:outline-none"
+						placeHolder="Type a message..."
+						className="h-full w-full"
 					/>
-					<div className="relative flex cursor-pointer items-center text-[23px]">
+					<div className="absolute top-[50%] right-[2px] flex translate-y-[-50%] transform cursor-pointer items-center text-[23px]">
 						<p
 							className="select-none"
 							onClick={() => setShowEmojiPicker((prev) => !prev)}

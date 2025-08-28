@@ -1,22 +1,28 @@
 import React from 'react';
-import { FaUser } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
+import { HiUserGroup } from 'react-icons/hi2';
 
 type Props = {
-	src: string | Blob | undefined;
+	src: string | Blob | undefined | null;
 	className: string;
+	isGroupAvatar?: boolean;
 };
 
-export default function Avatar({ src, className }: Props) {
+export default function Avatar({ src, className, isGroupAvatar }: Props) {
 	return (
-		<div className={'' + className}>
+		<div
+			className={'flex items-center justify-center rounded-[50%] ' + className}
+		>
 			{src ? (
 				<img
 					src={src}
 					alt=""
 					className="h-full w-full rounded-[50%] object-cover"
 				/>
+			) : isGroupAvatar ? (
+				<HiUserGroup className="h-full w-full text-3xl" />
 			) : (
-				<FaUser className="text-3xl" />
+				<FaUserCircle className="h-full w-full text-3xl" />
 			)}
 		</div>
 	);

@@ -17,6 +17,7 @@ export const useRequest = () => {
 
 			console.log('error: ', error);
 			const message =
+				error.response?.data.message ||
 				error.response?.data.title ||
 				error.response?.data?.detail ||
 				error.message ||

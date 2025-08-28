@@ -5,12 +5,13 @@ type ChatRoomInfo = {
 	membersUsername: string[];
 	type: 'GROUP' | 'DUO';
 	createdOn: string;
-	latestMessage: LatestMessageType | null;
+	latestMessage: MessageResponseType | null;
 };
 
 type AttachmentType = {
 	source: string;
 	type: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'RAW' | 'DOCUMENT';
+	format: string;
 };
 
 type AuthUser = {
@@ -45,11 +46,9 @@ type MessageResponseType = {
 	isUpdated?: boolean;
 };
 
-type LatestMessageType = {
-	sender: string;
-	message: string;
-	sentOn: string;
-	attachments: AttachmentType[];
+type GlobalMessageResponse = {
+	roomId: number;
+	message: MessageResponseType;
 };
 
 type SignalMessage = {
@@ -74,14 +73,29 @@ type CallInvitation = {
 	isUseVideo: boolean;
 };
 
+type CreateChatRoom = {
+	name: string | null;
+	avatar: AttachmentType | null;
+	membersUsername: string[];
+	type: 'GROUP' | 'DUO';
+	createdOn: string;
+};
+
+type CreateChatRoomInvitation = {
+	sender: string;
+	chatRoom: ChatRoomInfo;
+};
+
 export type {
 	AuthUser,
 	ChatRoomInfo,
 	Invitation,
 	MessageRequestType,
 	MessageResponseType,
-	LatestMessageType,
+	GlobalMessageResponse,
 	SignalMessage,
 	UpdateMessageParams,
 	CallInvitation,
+	CreateChatRoom,
+	CreateChatRoomInvitation,
 };
