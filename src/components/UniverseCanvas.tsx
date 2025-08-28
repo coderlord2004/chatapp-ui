@@ -12,12 +12,12 @@ const UniverseCanvas = () => {
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
-		const resizeCanvas = () => {
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-		};
+		// const resizeCanvas = () => {
+		// 	canvas.width = window.innerWidth;
+		// 	canvas.height = window.innerHeight;
+		// };
 
-		resizeCanvas();
+		// resizeCanvas();
 
 		const stars: Star[] = [];
 		const shootingStars: ShootingStar[] = [];
