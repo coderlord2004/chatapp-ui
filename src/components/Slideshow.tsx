@@ -55,22 +55,22 @@ const Slideshow: React.FC<SlideshowProps> = ({
         return () => clearInterval(timer);
     }, [isPlaying, interval, nextSlide]);
 
-    // useEffect(() => {
-    //     if (typeof window === "undefined") return;
+    useEffect(() => {
+        if (typeof window === "undefined") return;
 
-    //     const handleKeyDown = (e: KeyboardEvent) => {
-    //         if (e.key === 'ArrowLeft') {
-    //             prevSlide();
-    //         } else if (e.key === 'ArrowRight') {
-    //             nextSlide();
-    //         } else if (e.key === ' ') {
-    //             setIsPlaying((prev) => !prev);
-    //         }
-    //     };
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'ArrowRight') {
+                nextSlide();
+            } else if (e.key === ' ') {
+                setIsPlaying((prev) => !prev);
+            }
+        };
 
-    //     window.addEventListener('keydown', handleKeyDown);
-    //     return () => window.removeEventListener('keydown', handleKeyDown);
-    // }, [nextSlide, prevSlide]);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [nextSlide, prevSlide]);
 
     return (
         <div className="relative h-[300px] w-[50%] min-w-[400px]">
