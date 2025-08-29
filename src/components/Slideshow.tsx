@@ -69,7 +69,11 @@ const Slideshow: React.FC<SlideshowProps> = ({
         };
 
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        return () => {
+            if (typeof window === 'undefined') return;
+
+            window.removeEventListener('keydown', handleKeyDown)
+        };
     }, [nextSlide, prevSlide]);
 
     return (
