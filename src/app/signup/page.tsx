@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRequest } from '@/hooks/useRequest';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import Spinner from '@/components/Spinner';
+import Spinner from '@/components/Loading/Spinner';
 import { normalRequest } from '@/utils/request';
 
 type FormData = {

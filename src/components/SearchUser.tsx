@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Spinner from './Spinner';
+import Spinner from './Loading/Spinner';
 import { MdPersonAddAlt1 } from 'react-icons/md';
 import { useRequest } from '@/hooks/useRequest';
 

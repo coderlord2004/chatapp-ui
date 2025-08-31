@@ -6,10 +6,11 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import Spinner from '@/components/Spinner';
+import Spinner from '@/components/Loading/Spinner';
 import { useRequest } from '@/hooks/useRequest';
 import { isAuthorized } from '@/utils/jwts';
 import { normalRequest } from '@/utils/request';
+import BinaryMatrixLoader from '@/components/Loading/BinaryMatrixLoader';
 
 type FormData = {
 	username: string;
@@ -59,7 +60,7 @@ export default function Login() {
 
 	return (
 		<div className="flex min-h-screen w-full items-center justify-center bg-[url('/image.jpg')] bg-cover bg-center bg-no-repeat p-[10px]">
-			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] text-white sm:flex-row">
+			<div className="relative flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] text-white sm:flex-row">
 				<div className="flex w-[200px] flex-col items-center">
 					<Link href="/">
 						<img
@@ -113,7 +114,7 @@ export default function Login() {
 						disabled={loading}
 						type="submit"
 					>
-						{loading ? <Spinner /> : 'Log in'}
+						Login
 					</button>
 
 					<div className="relative my-[10px] flex h-[1px] w-full items-center justify-center bg-slate-500">
@@ -124,6 +125,16 @@ export default function Login() {
 						Log in with Google
 					</button>
 				</form>
+
+				{loading && (
+					<div className='absolute inset-0 flex bg-black/70 rounded-[10px] cursor-progress'>
+						<BinaryMatrixLoader
+							className="w-[120px] h-[140px] mx-auto my-auto"
+							title="Đang đăng nhập..."
+						/>
+						<div className='overlay'></div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

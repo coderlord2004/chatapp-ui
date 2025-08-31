@@ -9,6 +9,8 @@
 	--animate-fadeInUp: fadeInUp 0.3s forwards;
 	--animate-shimmer: shimmer 1s linear infinite;
 	--animate-skeleton: skeleton 1.5s linear infinite;
+	--animate-matrix-fall-flicker: matrix-fall 2s infinite, matrix-flicker 0.5s infinite;
+	--animate-matrix-pulse: matrix-pulse 2s infinite;
 
 	@keyframes cursor {
 		50% {
@@ -79,6 +81,50 @@
 
 		100% {
 			background-color: #424242;
+		}
+	}
+
+	@keyframes matrix-fall {
+		0% {
+			transform: translateY(-50px) rotateX(90deg);
+			opacity: 0;
+		}
+
+		20%,
+		80% {
+			transform: translateY(0) rotateX(0deg);
+			opacity: 0.8;
+		}
+
+		100% {
+			transform: translateY(50px) rotateX(-90deg);
+			opacity: 0;
+		}
+	}
+
+	@keyframes matrix-flicker {
+
+		0%,
+		19%,
+		21%,
+		100% {
+			opacity: 0.8;
+		}
+
+		20% {
+			opacity: 0.2;
+		}
+	}
+
+	@keyframes matrix-pulse {
+
+		0%,
+		100% {
+			opacity: 0.3;
+		}
+
+		50% {
+			opacity: 0.7;
 		}
 	}
 }

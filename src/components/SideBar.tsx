@@ -8,6 +8,7 @@ import useCreateChatRoomInvitation from '@/hooks/useCreateChatRoomInvitation';
 import useGlobalMessages from '@/hooks/useGlobalMessages';
 import Avatar from './Avatar';
 import { ChatRoomsContext } from '@/hooks/useChatRooms';
+import { useNotification } from '@/hooks/useNotification';
 
 type SideBarProps = {
 	isOpenSidebar: boolean;
@@ -25,6 +26,7 @@ export function SideBar(props: SideBarProps) {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const globalMessage = useGlobalMessages();
 	const { createChatRoomInvitation } = useCreateChatRoomInvitation();
+	const { showNotification } = useNotification()
 
 	function getChatRoomName(info: ChatRoomInfo) {
 		const { membersUsername, name } = info;
@@ -64,6 +66,16 @@ export function SideBar(props: SideBarProps) {
 	function updateLatestChatRoom(chatRoom: ChatRoomInfo) {
 		setChatRooms((prev) => [chatRoom, ...prev]);
 	}
+
+	useEffect(() => {
+		if (createChatRoomInvitation) {
+			showNotification({
+				type: 'info',
+				message: `${createChatRoomInvitation.sender} đã gửi cho bạn lời mời vào nhóm.`
+			})
+			updateLatestChatRoom(createChatRoomInvitation.chatRoom)
+		}
+	}, [createChatRoomInvitation])
 
 	useEffect(() => {
 		if (!globalMessage) return;
@@ -145,8 +157,8 @@ export function SideBar(props: SideBarProps) {
 								key={chatRoom.id}
 								onClick={() => props.onUpdateChatRoomActive(chatRoom)}
 								className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${chatRoom === props.chatRoomActive
-										? 'bg-indigo-600'
-										: 'hover:bg-gray-700'
+									? 'bg-indigo-600'
+									: 'hover:bg-gray-700'
 									}`}
 							>
 								<Avatar
