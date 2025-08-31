@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import ChatRoom from '@/components/ChatRoom';
-import { FaComment } from 'react-icons/fa';
 import { ChatRoomInfo } from '@/types/types';
 import { SideBar } from '@/components/SideBar';
 import { useJwtDecoded } from '@/contexts/AuthContext';
-import { useSearchUser } from '@/hooks/useSearchUser';
 import { useIncomingCallInvitation } from '@/hooks/useCallService';
 import CallAlert from '@/components/CallAlert';
 import Slideshow from '@/components/Slideshow';
@@ -31,7 +29,6 @@ export default function Page() {
 	const jwt = useJwtDecoded();
 	const [isOpenSidebar, setOpenSidebar] = useState<boolean>(true);
 	const authUsername = jwt?.sub;
-	const { setSearchUserModal } = useSearchUser();
 	const toggleSidebar = () => {
 		setOpenSidebar(!isOpenSidebar);
 	};
@@ -62,7 +59,7 @@ export default function Page() {
 					<Slideshow
 						slides={slides}
 						autoPlay={true}
-						interval={5000}
+						interval={4000}
 						showControls={true}
 						showIndicators={true}
 					/>
@@ -75,3 +72,4 @@ export default function Page() {
 		</div>
 	);
 }
+

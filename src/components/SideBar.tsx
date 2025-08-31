@@ -44,6 +44,7 @@ export function SideBar(props: SideBarProps) {
 	}
 
 	function updateDocumentTitle() {
+		if (typeof document === 'undefined') return;
 		if (globalMessage!.message.sender === props.authUsername) return undefined;
 
 		let count = 1;
@@ -143,11 +144,10 @@ export function SideBar(props: SideBarProps) {
 							<div
 								key={chatRoom.id}
 								onClick={() => props.onUpdateChatRoomActive(chatRoom)}
-								className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${
-									chatRoom === props.chatRoomActive
+								className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${chatRoom === props.chatRoomActive
 										? 'bg-indigo-600'
 										: 'hover:bg-gray-700'
-								}`}
+									}`}
 							>
 								<Avatar
 									src={chatRoom.avatar}

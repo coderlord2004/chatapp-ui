@@ -1,22 +1,19 @@
 'use client';
 
-import { PropsWithChildren } from 'react';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { WebSocketContextProvider } from '@/hooks/useWebSocket';
-import AgoraRTC, { AgoraRTCProvider } from 'agora-rtc-react';
+import { PropsWithChildren } from "react";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { WebSocketContextProvider } from "@/hooks/useWebSocket";
+import dynamic from "next/dynamic";
+
+const AgoraProvider = dynamic(() => import("@/contexts/AgoraRTCProvider"), { ssr: false });
 
 function WebSocketProvider({ children }: PropsWithChildren) {
 	const { accessToken } = useAuth();
-
-	if (!accessToken) {
-		return null;
-	}
-
-	const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+	if (!accessToken) return null;
 
 	return (
 		<WebSocketContextProvider token={accessToken}>
-			<AgoraRTCProvider client={client}>{children}</AgoraRTCProvider>
+			<AgoraProvider>{children}</AgoraProvider>
 		</WebSocketContextProvider>
 	);
 }

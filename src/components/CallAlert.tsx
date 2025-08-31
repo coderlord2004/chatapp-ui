@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { CallInvitation } from '@/types/types';
 import CallModal from '@/components/CallModal';

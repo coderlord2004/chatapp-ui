@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import CreateChatRoom from './CreateChatRoom';
 import { MdGroupAdd } from 'react-icons/md';
+import CreateChatRoom from './CreateChatRoom';
 
 type Props = {};
 
-export default function CreateChatRoomIcon({}: Props) {
+export default function CreateChatRoomIcon({ }: Props) {
 	const [isOpenCreateChatRoom, setIsOpenCreateChatRoom] =
 		useState<boolean>(false);
 
