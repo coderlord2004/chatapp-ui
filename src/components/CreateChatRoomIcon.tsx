@@ -4,7 +4,7 @@ import CreateChatRoom from './CreateChatRoom';
 
 type Props = {};
 
-export default function CreateChatRoomIcon({ }: Props) {
+export default function CreateChatRoomIcon({}: Props) {
 	const [isOpenCreateChatRoom, setIsOpenCreateChatRoom] =
 		useState<boolean>(false);
 

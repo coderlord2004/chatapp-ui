@@ -114,7 +114,7 @@ export default function Login() {
 						disabled={loading}
 						type="submit"
 					>
-						Login
+						Đăng nhập
 					</button>
 
 					<div className="relative my-[10px] flex h-[1px] w-full items-center justify-center bg-slate-500">
@@ -127,12 +127,12 @@ export default function Login() {
 				</form>
 
 				{loading && (
-					<div className='absolute inset-0 flex bg-black/70 rounded-[10px] cursor-progress'>
+					<div className="absolute inset-0 flex cursor-progress rounded-[10px] bg-black/70">
 						<BinaryMatrixLoader
-							className="w-[120px] h-[140px] mx-auto my-auto"
+							className="mx-auto my-auto h-[140px] w-[120px]"
 							title="Đang đăng nhập..."
 						/>
-						<div className='overlay'></div>
+						<div className="overlay"></div>
 					</div>
 				)}
 			</div>

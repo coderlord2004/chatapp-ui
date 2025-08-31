@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { useRequest } from '@/hooks/useRequest';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import Spinner from '@/components/Loading/Spinner';
 import { normalRequest } from '@/utils/request';
+import BinaryMatrixLoader from '@/components/Loading/BinaryMatrixLoader';
 
 type FormData = {
 	username: string;
@@ -49,7 +49,7 @@ export default function Signup() {
 
 	return (
 		<div className="flex min-h-screen w-full items-center justify-center bg-[url('/image.jpg')] bg-cover bg-center bg-no-repeat p-[10px]">
-			<div className="flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] text-white sm:flex-row">
+			<div className="relative flex h-auto w-auto flex-col items-center justify-center rounded-[10px] border-[1px] border-solid border-white bg-black/70 p-[10px] text-white sm:flex-row">
 				<div className="flex w-[250px] flex-col items-center p-[10px]">
 					<Link href="/">
 						<img
@@ -115,7 +115,7 @@ export default function Signup() {
 						className="flex h-[30px] w-full cursor-pointer items-center justify-center rounded-[8px] bg-blue-600 text-white"
 						type="submit"
 					>
-						{loading ? <Spinner /> : 'Đăng kí'}
+						Đăng kí
 					</button>
 
 					<div className="relative my-[10px] flex h-[1px] w-full items-center justify-center bg-slate-500">
@@ -127,6 +127,16 @@ export default function Signup() {
 						<p className="ml-[5px]">Sign up with Google</p>
 					</button>
 				</form>
+
+				{loading && (
+					<div className="absolute inset-0 flex cursor-progress rounded-[10px] bg-black/70">
+						<BinaryMatrixLoader
+							className="mx-auto my-auto h-[140px] w-[120px]"
+							title="Đang đăng nhập..."
+						/>
+						<div className="overlay"></div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

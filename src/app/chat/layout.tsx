@@ -1,11 +1,13 @@
 'use client';
 
-import { PropsWithChildren } from "react";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { WebSocketContextProvider } from "@/hooks/useWebSocket";
-import dynamic from "next/dynamic";
+import { PropsWithChildren } from 'react';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { WebSocketContextProvider } from '@/hooks/useWebSocket';
+import dynamic from 'next/dynamic';
 
-const AgoraProvider = dynamic(() => import("@/contexts/AgoraRTCProvider"), { ssr: false });
+const AgoraProvider = dynamic(() => import('@/contexts/AgoraRTCProvider'), {
+	ssr: false,
+});
 
 function WebSocketProvider({ children }: PropsWithChildren) {
 	const { accessToken } = useAuth();
