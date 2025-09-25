@@ -32,7 +32,7 @@ export function TextInput({
 			ref={externalRef}
 			className={
 				className +
-				' flex flex-1 items-center rounded-lg border border-gray-600 bg-gray-700 focus-within:ring-2 focus-within:ring-indigo-500'
+				' flex flex-1 cursor-pointer items-center rounded-lg border border-gray-600 bg-gray-700 focus-within:ring-2 focus-within:ring-indigo-500'
 			}
 		>
 			<input

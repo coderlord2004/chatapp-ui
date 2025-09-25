@@ -35,7 +35,7 @@ export default function Page() {
 	const { callModal, onClose } = useIncomingCallInvitation();
 
 	return (
-		<div className="relative flex h-screen overflow-hidden bg-gray-900 text-gray-100">
+		<div className="relative flex h-screen overflow-hidden dark:bg-gray-900 dark:text-gray-100">
 			<SideBar
 				isOpenSidebar={isOpenSidebar}
 				onOpenSidebar={toggleSidebar}

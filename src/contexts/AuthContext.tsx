@@ -16,7 +16,7 @@ import {
 	getRefreshToken,
 } from '@/utils/jwts';
 import { useRequest } from '@/hooks/useRequest';
-import { UserInfo } from '@/types/types';
+import { UserInfo } from '@/types/User';
 
 type AuthContextType = {
 	authUser: UserInfo | null;
@@ -105,7 +105,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			setAuthUser(data);
 		};
 
-		if (token.accessToken) {
+		if (token.accessToken && !authUser) {
 			getAuthUser();
 		}
 	}, [token]);
@@ -130,14 +130,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		checkIfLoggedIn();
 	}, [logout]);
-
-	useEffect(() => {
-		if (!token.accessToken || !token.refreshToken) return;
-
-		if (token.accessToken && pathname !== '/nextchat') {
-			router.push('/nextchat');
-		}
-	}, [token, router, pathname]);
 
 	const value = {
 		authUser,

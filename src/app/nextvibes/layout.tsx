@@ -6,24 +6,24 @@ import { WebSocketContextProvider } from '@/hooks/useWebSocket';
 import dynamic from 'next/dynamic';
 
 const AgoraProvider = dynamic(() => import('@/contexts/AgoraRTCProvider'), {
-    ssr: false,
+	ssr: false,
 });
 
 function WebSocketProvider({ children }: PropsWithChildren) {
-    const { accessToken } = useAuth();
-    if (!accessToken) return null;
+	const { accessToken } = useAuth();
+	if (!accessToken) return null;
 
-    return (
-        <WebSocketContextProvider token={accessToken}>
-            <AgoraProvider>{children}</AgoraProvider>
-        </WebSocketContextProvider>
-    );
+	return (
+		<WebSocketContextProvider token={accessToken}>
+			<AgoraProvider>{children}</AgoraProvider>
+		</WebSocketContextProvider>
+	);
 }
 
 export default function Layout({ children }: PropsWithChildren) {
-    return (
-        <AuthProvider>
-            <WebSocketProvider>{children}</WebSocketProvider>
-        </AuthProvider>
-    );
+	return (
+		<AuthProvider>
+			<WebSocketProvider>{children}</WebSocketProvider>
+		</AuthProvider>
+	);
 }

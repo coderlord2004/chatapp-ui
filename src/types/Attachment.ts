@@ -1,9 +1,10 @@
 type AttachmentType = {
-    source: string;
-    type: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'RAW' | 'DOCUMENT';
-    format: string;
+	id: number;
+	name: string;
+	source: string;
+	type: 'IMAGE' | 'VIDEO' | 'AUDIO' | 'RAW' | 'DOCUMENT';
+	format: string;
+	description: string | null;
 };
 
-export type {
-    AttachmentType
-}
+export type { AttachmentType };

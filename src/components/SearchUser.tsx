@@ -71,7 +71,7 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 					/>
 				</div>
 
-				<div className='w-full flex flex-col gap-[10px] overflow-y-auto'>
+				<div className="flex w-full flex-col gap-[10px] overflow-y-auto">
 					{userSearchResults &&
 						(searchUserLoading ? (
 							<Spinner />
@@ -79,24 +79,21 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 							userSearchResults.map((user) => (
 								<div
 									key={user.userDto.id}
-									className="flex w-full items-center justify-between rounded-[8px] bg-slate-700 py-[7px] px-[10px]"
+									className="flex w-full items-center justify-between rounded-[8px] bg-slate-700 px-[10px] py-[7px]"
 								>
-									<div className='flex gap-[10px] items-center justify-center'>
+									<div className="flex items-center justify-center gap-[10px]">
 										<Avatar
 											src={user.userDto.avatar}
-											className='w-[40px] h-[40px]'
+											className="h-[40px] w-[40px]"
 											controls={true}
 											onClose={onClose}
 										/>
 										<p>{user.userDto.username}</p>
 									</div>
 
-									{user.invitationDto && user.invitationDto.status === 'PENDING' ? (
-										<div
-											className="cursor-pointer"
-										>
-											Đã gửi kết bạn.
-										</div>
+									{user.invitationDto &&
+									user.invitationDto.status === 'PENDING' ? (
+										<div className="cursor-pointer">Đã gửi kết bạn.</div>
 									) : (
 										<div
 											className="cursor-pointer"

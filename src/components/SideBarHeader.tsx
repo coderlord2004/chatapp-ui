@@ -58,14 +58,14 @@ export default function SideBarHeader({
 
 					{isShowSetting && (
 						<div className="absolute top-[120%] right-0 flex transform cursor-pointer flex-col gap-[10px] rounded-[8px] bg-slate-600 p-[10px] sm:right-1/2 sm:translate-x-[50%]">
-							<div className='flex gap-[10px] justify-center items-center'>
+							<div className="flex items-center justify-center gap-[10px]">
 								<Avatar
 									redirectByUsername={authUser?.username || ''}
 									src={authUser?.avatar || ''}
 									controls={true}
-									className='w-10 h-10'
+									className="h-10 w-10"
 								/>
-								<div className='whitespace-nowrap'>me: {authUsername}</div>
+								<div className="whitespace-nowrap">me: {authUsername}</div>
 							</div>
 							<div
 								className="flex items-center justify-center gap-[7px] p-[5px] transition-all duration-200 hover:transform hover:bg-slate-500 hover:text-red-700"

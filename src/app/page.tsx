@@ -69,7 +69,7 @@ export default function Page() {
 							className="hidden items-center gap-4 sm:flex"
 						>
 							{isAuthorized ? (
-								<div className='flex gap-[10px]'>
+								<div className="flex gap-[10px]">
 									<Link
 										href="/nextvibes"
 										className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"

@@ -17,7 +17,7 @@ declare global {
 }
 
 declare const SpeechRecognition: {
-	new(): typeof SpeechRecognition;
+	new (): typeof SpeechRecognition;
 	prototype: typeof SpeechRecognition;
 };
 
@@ -96,9 +96,12 @@ export default function ChatInput({
 			sentOn: new Date().toISOString(),
 			attachments:
 				attachments?.map((a) => ({
+					id: -Date.now(),
+					name: '',
 					source: a.urlPreview,
 					type: a.fileData.type.startsWith('video') ? 'VIDEO' : 'IMAGE',
 					format: (a.fileData.name.split('.').pop() ?? '').toLowerCase(),
+					description: '',
 				})) || [],
 			sending: true,
 			isFake: true,
@@ -112,15 +115,15 @@ export default function ChatInput({
 				},
 				onUploadProgress: templeAttachments.current
 					? (progressEvent) => {
-						const percent = Math.round(
-							(progressEvent.loaded * 100) / (progressEvent.total || 1),
-						);
-						onSetUploadProgress({
-							id: fakeId,
-							percent: percent,
-						});
-					}
-					: () => { },
+							const percent = Math.round(
+								(progressEvent.loaded * 100) / (progressEvent.total || 1),
+							);
+							onSetUploadProgress({
+								id: fakeId,
+								percent: percent,
+							});
+						}
+					: () => {},
 			});
 		} catch (err) {
 			console.error('Send failed:', err);
@@ -409,8 +412,8 @@ export default function ChatInput({
 								style={
 									voiceMenu === value
 										? {
-											backgroundColor: 'blue',
-										}
+												backgroundColor: 'blue',
+											}
 										: {}
 								}
 								onClick={() => setVoiceMenu(value)}

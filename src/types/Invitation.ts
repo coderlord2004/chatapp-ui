@@ -1,22 +1,19 @@
-import { ChatRoomInfo } from "./ChatRoom";
-import { UserWithAvatar } from "./User";
+import { ChatRoomInfo } from './ChatRoom';
+import { UserWithAvatar } from './User';
 
 type Invitation = {
-    id: number;
-    sender: UserWithAvatar;
-    receiver: UserWithAvatar;
-    chatRoomId: number | null;
-    chatRoomDto: ChatRoomInfo;
-    status: 'PENDING' | 'REJECTED' | 'ACCEPTED';
+	id: number;
+	sender: UserWithAvatar;
+	receiver: UserWithAvatar;
+	chatRoomId: number | null;
+	chatRoomDto: ChatRoomInfo;
+	status: 'PENDING' | 'REJECTED' | 'ACCEPTED';
 };
 type CallInvitation = {
-    channelId: number;
-    caller: UserWithAvatar;
-    membersUsername: string[];
-    isUseVideo: boolean;
+	channelId: number;
+	caller: UserWithAvatar;
+	membersUsername: string[];
+	isUseVideo: boolean;
 };
 
-export type {
-    Invitation,
-    CallInvitation
-}
+export type { Invitation, CallInvitation };

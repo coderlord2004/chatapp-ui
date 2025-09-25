@@ -15,15 +15,15 @@ export default function useMessages(roomId: number | null) {
 		const data = await get(`messages/`, {
 			params: { page, room: roomId },
 		});
-		return data
+		return data;
 	}
 
 	useEffect(() => {
 		const fetch = async () => {
-			const data = await getChatRoomMessage(1)
-			setIsLoading(false)
-			setMessages(data)
-		}
+			const data = await getChatRoomMessage(1);
+			setIsLoading(false);
+			setMessages(data);
+		};
 		fetch();
 	}, [roomId]);
 
@@ -80,8 +80,8 @@ export default function useMessages(roomId: number | null) {
 
 	async function handleFetchNewMessages(page: number) {
 		// setIsLoading(page)
-		const data = await getChatRoomMessage(page)
-		setMessages(prev => [...data, ...prev])
+		const data = await getChatRoomMessage(page);
+		setMessages((prev) => [...data, ...prev]);
 		// setIsLoading(false)
 	}
 
