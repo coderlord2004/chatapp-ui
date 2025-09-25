@@ -2,15 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import Spinner from './Loading/Spinner';
 import { MdPersonAddAlt1 } from 'react-icons/md';
 import { useRequest } from '@/hooks/useRequest';
+import { UserSearchResult } from '@/types/User';
+import Avatar from './Avatar';
 
 type Props = {
 	chatGroupId: number | null;
 	onClose: () => void;
-};
-
-type UserSearchResult = {
-	id: number;
-	username: string;
 };
 
 export default function SearchUser({ chatGroupId, onClose }: Props) {
@@ -61,7 +58,7 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 				className="overlay h-full w-full cursor-pointer"
 				onClick={onClose}
 			></div>
-			<div className="absolute top-1/4 left-1/2 flex h-auto w-[90%] translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] overflow-y-auto sm:w-[300px]">
+			<div className="absolute top-1/4 left-1/2 flex h-auto w-[90%] translate-x-[-50%] translate-y-[-50%] transform flex-col items-center justify-center gap-[10px] sm:w-[300px]">
 				<div className="flex w-full items-center justify-between border-[1px] border-solid border-slate-600">
 					<input
 						ref={searchInput}
@@ -74,27 +71,46 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 					/>
 				</div>
 
-				{userSearchResults &&
-					(searchUserLoading ? (
-						<Spinner />
-					) : userSearchResults.length !== 0 ? (
-						userSearchResults.map((user) => (
-							<div
-								key={user.id}
-								className="flex w-full items-center justify-between rounded-[8px] bg-slate-700 p-[10px]"
-							>
-								<p>{user.username}</p>
+				<div className='w-full flex flex-col gap-[10px] overflow-y-auto'>
+					{userSearchResults &&
+						(searchUserLoading ? (
+							<Spinner />
+						) : userSearchResults.length !== 0 ? (
+							userSearchResults.map((user) => (
 								<div
-									className="cursor-pointer"
-									onClick={() => sendInvitation(user.username)}
+									key={user.userDto.id}
+									className="flex w-full items-center justify-between rounded-[8px] bg-slate-700 py-[7px] px-[10px]"
 								>
-									<MdPersonAddAlt1 />
+									<div className='flex gap-[10px] items-center justify-center'>
+										<Avatar
+											src={user.userDto.avatar}
+											className='w-[40px] h-[40px]'
+											controls={true}
+											onClose={onClose}
+										/>
+										<p>{user.userDto.username}</p>
+									</div>
+
+									{user.invitationDto && user.invitationDto.status === 'PENDING' ? (
+										<div
+											className="cursor-pointer"
+										>
+											Đã gửi kết bạn.
+										</div>
+									) : (
+										<div
+											className="cursor-pointer"
+											onClick={() => sendInvitation(user.userDto.username)}
+										>
+											<MdPersonAddAlt1 />
+										</div>
+									)}
 								</div>
-							</div>
-						))
-					) : (
-						<div className="w-full text-center">No results!</div>
-					))}
+							))
+						) : (
+							<div className="w-full text-center">No results!</div>
+						))}
+				</div>
 			</div>
 		</div>
 	);

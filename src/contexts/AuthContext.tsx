@@ -16,16 +16,10 @@ import {
 	getRefreshToken,
 } from '@/utils/jwts';
 import { useRequest } from '@/hooks/useRequest';
-import { useNotification } from '@/hooks/useNotification';
-
-type AuthUserType = {
-	id: number;
-	username: string;
-	avatar: string | null;
-};
+import { UserInfo } from '@/types/types';
 
 type AuthContextType = {
-	authUser: AuthUserType | null;
+	authUser: UserInfo | null;
 	accessToken: string | null;
 	refreshToken: string | null;
 	login: (accessToken: string, refreshToken: string) => void;
@@ -87,11 +81,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		accessToken: null,
 		refreshToken: null,
 	});
-	const [authUser, setAuthUser] = useState<AuthUserType | null>(null);
+	const [authUser, setAuthUser] = useState<UserInfo | null>(null);
 	const { get } = useRequest();
 	const router = useRouter();
 	const pathname = usePathname();
-	const { showNotification } = useNotification();
 
 	const login = (accessToken: string, refreshToken: string) => {
 		localStorage.setItem('accessToken', accessToken);
@@ -108,7 +101,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 	useEffect(() => {
 		const getAuthUser = async () => {
-			const data = await get('users/info/');
+			const data = await get('users/my-info/');
 			setAuthUser(data);
 		};
 
@@ -141,8 +134,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	useEffect(() => {
 		if (!token.accessToken || !token.refreshToken) return;
 
-		if (token.accessToken && pathname !== '/chat') {
-			router.push('/chat');
+		if (token.accessToken && pathname !== '/nextchat') {
+			router.push('/nextchat');
 		}
 	}, [token, router, pathname]);
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useWebSocket } from './useWebSocket';
-import { CreateChatRoomInvitation } from '@/types/types';
+import { CreateChatRoomInvitation } from '@/types/ChatRoom';
 
 export default function useCreateChatRoomInvitation() {
 	const [createChatRoomInvitation, setCreateChatRoomInvitation] =

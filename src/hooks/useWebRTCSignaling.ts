@@ -1,6 +1,6 @@
 import { useEffect, useContext } from 'react';
 import { WebSocketContext } from '@/hooks/useWebSocket';
-import { SignalMessage } from '@/types/types';
+import { SignalMessage } from '@/types/Message';
 
 type Props = {
 	selfId: string | undefined;

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { decodeJwt } from 'jose';
 import useMessages from '@/hooks/useMessages';
-import { ChatRoomInfo } from '@/types/types';
+import { ChatRoomInfo } from '@/types/ChatRoom';
 import ChatInput from './ChatInput';
 
 import { FaPhoneAlt, FaUserCircle, FaArrowDown } from 'react-icons/fa';
@@ -39,15 +39,15 @@ export default function ChatRoom({
 	onOpenSidebar,
 }: ChatRoomProps) {
 	const roomId = chatRoomInfo.id;
-	const [messagePage, setMessagePage] = useState<number>(1);
 	const {
 		messages,
 		insertFakeMessage,
 		updateMessage,
 		deleteMessage,
+		handleFetchNewMessages,
 		isLoading,
-	} = useMessages(`${roomId}`, messagePage);
-
+	} = useMessages(roomId);
+	const messagePage = useRef<number>(1)
 	const { accessToken } = useAuth();
 	const decodedJwt = accessToken && decodeJwt(accessToken);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -57,6 +57,7 @@ export default function ChatRoom({
 		id: null,
 		percent: 0,
 	});
+	console.log('messages:', messages);
 
 	const [isShowChatRoomInfo, setIsShowChatRoomInfo] = useState<boolean>(false);
 
@@ -64,13 +65,16 @@ export default function ChatRoom({
 		isOpen: false,
 		video: false,
 	});
-
+	const messageContainerRef = useRef<HTMLDivElement | null>(null)
+	const messageContainerScrollHeightRef = useRef<number>(0)
 	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
 	};
 
 	useEffect(() => {
-		setMessagePage(1);
+		if (messageContainerRef.current) {
+			messageContainerScrollHeightRef.current = messageContainerRef.current.scrollHeight
+		}
 	}, []);
 
 	useEffect(() => {
@@ -187,21 +191,26 @@ export default function ChatRoom({
 
 			{/* Messages Container */}
 			<div
+				ref={messageContainerRef}
 				className="message-container flex flex-1 flex-col gap-[5px] overflow-y-auto bg-gray-900/50 p-[10px] transition-all duration-200"
 				onScroll={(e) => {
+					const div = e.target;
 					if (
 						scrollToBottomButton.current &&
-						e.target instanceof HTMLElement &&
-						e.target.scrollHeight - e.target.scrollTop >
-							e.target.clientHeight + 100
+						messageContainerRef.current &&
+						div instanceof HTMLElement &&
+						div.scrollHeight - div.scrollTop >
+						div.clientHeight + 100
 					) {
 						scrollToBottomButton.current.style.display = 'block';
-						if (
-							e.target.scrollHeight - e.target.scrollTop ===
-							e.target.scrollHeight
-						) {
-							setMessagePage((prev) => prev + 1);
+						console.log('scroll top: ', div.scrollTop);
+						console.log('messageContainerRef: ', messageContainerRef.current.scrollHeight);
+
+						if (div.scrollTop <= 0) {
+							messagePage.current += 1
+							handleFetchNewMessages(messagePage.current)
 						}
+
 					} else if (scrollToBottomButton.current) {
 						scrollToBottomButton.current.style.display = 'none';
 					}
@@ -236,30 +245,30 @@ export default function ChatRoom({
 					</p>
 				</div>
 
-				{isLoading
+				{(isLoading === messagePage.current && isLoading === 1)
 					? Array.from({ length: 5 }, (_, idx) => (
-							<div
-								key={idx}
-								className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
-							>
-								<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
-									<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
-									<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
-									<div className="h-[10px] w-[40%] bg-gray-700"></div>
-								</div>
+						<div
+							key={idx}
+							className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+						>
+							<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
+								<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
+								<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
+								<div className="h-[10px] w-[40%] bg-gray-700"></div>
 							</div>
-						))
+						</div>
+					))
 					: messages.map((msg, idx) => (
-							<Message
-								key={msg.id}
-								index={idx}
-								message={msg}
-								totalMessages={messages.length}
-								uploadProgress={uploadProgress}
-								updateMessage={updateMessage}
-								deleteMessage={deleteMessage}
-							/>
-						))}
+						<Message
+							key={msg.id}
+							index={idx}
+							message={msg}
+							totalMessages={messages.length}
+							uploadProgress={uploadProgress}
+							updateMessage={updateMessage}
+							deleteMessage={deleteMessage}
+						/>
+					))}
 
 				{/* Empty div for auto-scrolling */}
 				<div ref={messagesEndRef} />

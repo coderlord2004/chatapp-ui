@@ -69,12 +69,20 @@ export default function Page() {
 							className="hidden items-center gap-4 sm:flex"
 						>
 							{isAuthorized ? (
-								<Link
-									href="/chat"
-									className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-								>
-									Bắt đầu ngay
-								</Link>
+								<div className='flex gap-[10px]'>
+									<Link
+										href="/nextvibes"
+										className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+									>
+										Mạng xã hội
+									</Link>
+									<Link
+										href="/nextchat"
+										className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+									>
+										Chat với bạn bè
+									</Link>
+								</div>
 							) : (
 								<Link
 									href="/login"
@@ -114,6 +122,8 @@ export default function Page() {
 										2000,
 										'Gọi video miễn phí.',
 										2000,
+										'Lướt mạng xã hội.',
+										2000,
 									]}
 									speed={50}
 									repeat={Infinity}
@@ -126,7 +136,7 @@ export default function Page() {
 						</p>
 						<div className="flex space-x-4">
 							<Link
-								href={isAuthorized ? '/chat' : '/login'}
+								href={isAuthorized ? '/nextchat' : '/login'}
 								className="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-xl"
 							>
 								Bắt đầu ngay

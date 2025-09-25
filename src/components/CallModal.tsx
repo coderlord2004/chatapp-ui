@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRequest } from '@/hooks/useRequest';
-import { CallInvitation } from '@/types/types';
+import { CallInvitation } from '@/types/Invitation';
 
 import { IoCall } from 'react-icons/io5';
 import { MdClear } from 'react-icons/md';

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useInvitations } from '@/hooks/useInvitations';
 import { useRequest } from '@/hooks/useRequest';
-import { ChatRoomInfo } from '@/types/types';
+import { ChatRoomInfo } from '@/types/ChatRoom';
 
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';

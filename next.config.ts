@@ -2,7 +2,6 @@ import type { NextConfig } from 'next';
 import TerserPlugin from 'terser-webpack-plugin';
 
 const nextConfig: NextConfig = {
-	output: 'export',
 	images: {
 		unoptimized: true, // Tắt tối ưu hóa hình ảnh
 	},

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRequest } from '@/hooks/useRequest';
 import { useInvitationReply } from '@/hooks/useInvitations';
-import { ChatRoomInfo, MessageResponseType } from '@/types/types';
+import { ChatRoomInfo } from '@/types/ChatRoom';
+import { MessageResponseType } from '@/types/Message';
 import { formatDateTime } from '@/utils/formatDateTime';
 import SideBarHeader from './SideBarHeader';
 import useCreateChatRoomInvitation from '@/hooks/useCreateChatRoomInvitation';
@@ -156,11 +157,10 @@ export function SideBar(props: SideBarProps) {
 							<div
 								key={chatRoom.id}
 								onClick={() => props.onUpdateChatRoomActive(chatRoom)}
-								className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${
-									chatRoom === props.chatRoomActive
-										? 'bg-indigo-600'
-										: 'hover:bg-gray-700'
-								}`}
+								className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${chatRoom === props.chatRoomActive
+									? 'bg-indigo-600'
+									: 'hover:bg-gray-700'
+									}`}
 							>
 								<Avatar
 									src={chatRoom.avatar}

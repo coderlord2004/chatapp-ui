@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CallInvitation } from '@/types/types';
+import { CallInvitation } from '@/types/Invitation';
 import CallModal from '@/components/CallModal';
 import Avatar from './Avatar';
 import { useRequest } from '@/hooks/useRequest';
@@ -9,7 +9,7 @@ import { TiTick } from 'react-icons/ti';
 import { MdClear } from 'react-icons/md';
 
 type Props = {
-	callInvitation: CallInvitation | null;
+	callInvitation: CallInvitation;
 	onClose: () => void;
 };
 
@@ -40,7 +40,11 @@ export default function CallAlert({ callInvitation, onClose }: Props) {
 			) : (
 				<div className="flex flex-col items-center justify-center gap-[10px] text-4xl">
 					<div>
-						<Avatar src={callInvitation?.caller.avatar} className="" />
+						<Avatar
+							src={callInvitation.caller.avatar}
+							className=""
+							onClose={onClose}
+						/>
 						{callInvitation?.caller.username} đã gọi cho bạn
 					</div>
 

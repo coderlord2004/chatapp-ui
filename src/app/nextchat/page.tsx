@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import ChatRoom from '@/components/ChatRoom';
-import { ChatRoomInfo } from '@/types/types';
+import { ChatRoomInfo } from '@/types/ChatRoom';
 import { SideBar } from '@/components/SideBar';
 import { useJwtDecoded } from '@/contexts/AuthContext';
 import { useIncomingCallInvitation } from '@/hooks/useCallService';
@@ -66,7 +66,7 @@ export default function Page() {
 				</div>
 			)}
 
-			{callModal.isOpen && (
+			{callModal && (
 				<CallAlert callInvitation={callModal.data} onClose={onClose} />
 			)}
 		</div>

@@ -1,5 +1,5 @@
 import { createContext, useContext, Dispatch, SetStateAction } from 'react';
-import { ChatRoomInfo } from '@/types/types';
+import { ChatRoomInfo } from '@/types/ChatRoom';
 
 type ChatRoomContextType = {
 	chatRooms: ChatRoomInfo[];

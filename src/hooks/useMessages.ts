@@ -2,26 +2,30 @@ import { useRequest } from '@/hooks/useRequest';
 import { useEffect, useState } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { useAuth } from '@/contexts/AuthContext';
-import { MessageResponseType } from '@/types/types';
+import { MessageResponseType } from '@/types/Message';
 
-export default function useMessages(roomId: string, page: number) {
+export default function useMessages(roomId: number | null) {
 	const [messages, setMessages] = useState<MessageResponseType[]>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isLoading, setIsLoading] = useState<boolean | number>(1);
 	const { accessToken } = useAuth();
 	const { get } = useRequest();
 	const webSocketPath = `/user/queue/chat/${roomId}`;
 
-	useEffect(() => {
-		async function getChatRoomMessage() {
-			const data = await get(`messages/`, {
-				params: { page, room: roomId },
-			});
+	async function getChatRoomMessage(page: number) {
+		const data = await get(`messages/`, {
+			params: { page, room: roomId },
+		});
+		return data
+	}
 
-			setIsLoading(false);
-			setMessages(data);
+	useEffect(() => {
+		const fetch = async () => {
+			const data = await getChatRoomMessage(1)
+			setIsLoading(false)
+			setMessages(data)
 		}
-		getChatRoomMessage();
-	}, [roomId, page, accessToken, get]);
+		fetch();
+	}, [roomId]);
 
 	useWebSocket(webSocketPath, (response) => {
 		const message = response as MessageResponseType;
@@ -74,11 +78,19 @@ export default function useMessages(roomId: string, page: number) {
 		);
 	}
 
+	async function handleFetchNewMessages(page: number) {
+		// setIsLoading(page)
+		const data = await getChatRoomMessage(page)
+		setMessages(prev => [...data, ...prev])
+		// setIsLoading(false)
+	}
+
 	return {
 		messages,
 		insertFakeMessage,
 		updateMessage,
 		deleteMessage,
+		handleFetchNewMessages,
 		isLoading,
 	};
 }

@@ -132,7 +132,7 @@ export default function Signup() {
 					<div className="absolute inset-0 flex cursor-progress rounded-[10px] bg-black/70">
 						<BinaryMatrixLoader
 							className="mx-auto my-auto h-[140px] w-[120px]"
-							title="Đang đăng nhập..."
+							title="Đang đăng ký..."
 						/>
 						<div className="overlay"></div>
 					</div>

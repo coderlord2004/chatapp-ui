@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { MessageResponseType } from '@/types/types';
+import { MessageResponseType } from '@/types/Message';
 import { useAuth } from '@/contexts/AuthContext';
 import { decodeJwt } from 'jose';
 import Image from '@/components/Image';
@@ -83,20 +83,18 @@ export default function Message({
 	return (
 		<div
 			key={message.id}
-			className={`flex ${
-				isAuthUser(message.sender) ? 'justify-end' : 'justify-start'
-			}`}
+			className={`flex ${isAuthUser(message.sender) ? 'justify-end' : 'justify-start'
+				}`}
 		>
 			<div
 				className={`animate-fadeInUp flex h-full max-w-[85%] transform flex-col items-end justify-center gap-[12px] opacity-0 transition-all duration-150 md:max-w-md lg:max-w-lg ${isAuthUser(message.sender) ? 'items-end' : 'items-start'}`}
 			>
 				{message.message && (
 					<div
-						className={`group relative rounded-lg p-[8px] text-gray-100 ${
-							isAuthUser(message.sender)
+						className={`group relative rounded-lg p-[8px] text-gray-100 ${isAuthUser(message.sender)
 								? 'rounded-br-none bg-indigo-600'
 								: 'rounded-bl-none bg-gray-800'
-						}`}
+							}`}
 					>
 						{!isAuthUser(message.sender) && (
 							<p className="mb-1 text-xs font-semibold text-indigo-300">
@@ -199,11 +197,10 @@ export default function Message({
 									<a
 										href={attachment.source}
 										download={attachment.source}
-										className={`group relative flex gap-[10px] rounded-lg p-[8px] text-gray-100 ${
-											isAuthUser(message.sender)
+										className={`group relative flex gap-[10px] rounded-lg p-[8px] text-gray-100 ${isAuthUser(message.sender)
 												? 'rounded-br-none bg-indigo-600'
 												: 'rounded-bl-none bg-gray-800'
-										}`}
+											}`}
 									>
 										Tải xuống
 										<FaDownload className="text-[20px]" />

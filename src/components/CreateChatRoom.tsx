@@ -8,19 +8,13 @@ import SelectableFriendItem from './SelectableFriendItem';
 import { useChatRooms } from '@/hooks/useChatRooms';
 import { useNotification } from '@/hooks/useNotification';
 import { useAuth } from '@/contexts/AuthContext';
-
-import { ChatRoomInfo } from '@/types/types';
-
+import { ChatRoomInfo } from '@/types/ChatRoom';
+import { UserWithAvatar } from '@/types/User';
 import { MdClear, MdGroupAdd, MdPersonAdd } from 'react-icons/md';
 import { IoSearchCircleOutline, IoClose } from 'react-icons/io5';
 
 type Props = {
 	onClose: () => void;
-};
-
-type FriendType = {
-	username: string;
-	avatar: string | null;
 };
 
 type CreateChatRoomRequest = {
@@ -34,7 +28,7 @@ export default function CreateChatRoom({ onClose }: Props) {
 		chatRoomName: null,
 		friends: new Set<string>(),
 	});
-	const [friends, setFriends] = useState<FriendType[] | null>(null);
+	const [friends, setFriends] = useState<UserWithAvatar[] | null>(null);
 	const [searchVisible, setSearchVisible] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const { post, get } = useRequest();

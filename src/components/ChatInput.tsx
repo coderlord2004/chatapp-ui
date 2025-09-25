@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
 import { useRequest } from '@/hooks/useRequest';
-import { MessageResponseType } from '@/types/types';
+import { MessageResponseType } from '@/types/Message';
 import { MdAttachFile, MdDeleteForever } from 'react-icons/md';
 import { IoIosMic, IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaPaperPlane, FaMicrophone, FaStopCircle } from 'react-icons/fa';
@@ -17,7 +17,7 @@ declare global {
 }
 
 declare const SpeechRecognition: {
-	new (): typeof SpeechRecognition;
+	new(): typeof SpeechRecognition;
 	prototype: typeof SpeechRecognition;
 };
 
@@ -112,15 +112,15 @@ export default function ChatInput({
 				},
 				onUploadProgress: templeAttachments.current
 					? (progressEvent) => {
-							const percent = Math.round(
-								(progressEvent.loaded * 100) / (progressEvent.total || 1),
-							);
-							onSetUploadProgress({
-								id: fakeId,
-								percent: percent,
-							});
-						}
-					: () => {},
+						const percent = Math.round(
+							(progressEvent.loaded * 100) / (progressEvent.total || 1),
+						);
+						onSetUploadProgress({
+							id: fakeId,
+							percent: percent,
+						});
+					}
+					: () => { },
 			});
 		} catch (err) {
 			console.error('Send failed:', err);
@@ -409,8 +409,8 @@ export default function ChatInput({
 								style={
 									voiceMenu === value
 										? {
-												backgroundColor: 'blue',
-											}
+											backgroundColor: 'blue',
+										}
 										: {}
 								}
 								onClick={() => setVoiceMenu(value)}
