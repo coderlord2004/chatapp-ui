@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRequest } from '@/hooks/useRequest';
 import { CallInvitation } from '@/types/Invitation';
+import { UserWithAvatar } from '@/types/User';
 
 import { IoCall } from 'react-icons/io5';
 import { MdClear } from 'react-icons/md';
@@ -24,7 +25,7 @@ import {
 type CallModalProps = {
 	roomId: number | null | undefined;
 	isUseVideo: boolean;
-	membersUsername: string[];
+	members: UserWithAvatar[];
 	callInvitation: CallInvitation | null;
 	onClose: () => void;
 };
@@ -45,7 +46,7 @@ const avatarColors = [
 export default function CallModal({
 	roomId,
 	isUseVideo,
-	membersUsername,
+	members,
 	callInvitation,
 	onClose,
 }: CallModalProps) {
@@ -133,9 +134,9 @@ export default function CallModal({
 				</div>
 			) : (
 				<div className="flex flex-wrap items-center justify-center gap-[10px]">
-					{membersUsername.map((username) => (
+					{members.map((user) => (
 						<div
-							key={username}
+							key={user.id}
 							className="flex h-[250px] w-[300px] items-center justify-center rounded-[8px] bg-slate-700"
 						>
 							<div
@@ -144,7 +145,7 @@ export default function CallModal({
 									backgroundColor: `${avatarColors[Math.floor(Math.random() * avatarColors.length)]}`,
 								}}
 							>
-								{username.substring(0, 1).toUpperCase()}
+								{user.username.substring(0, 1).toUpperCase()}
 							</div>
 						</div>
 					))}

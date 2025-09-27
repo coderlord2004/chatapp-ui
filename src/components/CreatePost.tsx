@@ -19,14 +19,16 @@ type AttachmentType = {
 	description: string | null;
 };
 
+type VisibilityType = 'PUBLIC' | 'FRIEND' | 'PRIVATE';
+
 type CreatePostData = {
 	caption: string;
 	captionBackground: number;
-	visibility: 'PUBLIC' | 'FRIEND' | 'PRIVATE';
+	visibility: VisibilityType;
 	attachments: AttachmentType[];
 };
 
-type VisibilityType = {
+type VisibilityMenuType = {
 	title: 'Công khai' | 'Bạn bè' | 'Chỉ mình tôi';
 	icon: React.ReactElement;
 	action: (index: number) => void;
@@ -49,7 +51,7 @@ export default function CreatePost({ onClose }: Props) {
 		visibility: 'PUBLIC',
 		attachments: [],
 	});
-	const visibilities: VisibilityType[] = [
+	const visibilities: VisibilityMenuType[] = [
 		{
 			title: 'Công khai',
 			icon: <MdPublic />,
@@ -67,11 +69,7 @@ export default function CreatePost({ onClose }: Props) {
 		},
 	];
 	function updateVisibility(index: number) {
-		const visibilityValues: Array<'PUBLIC' | 'FRIEND' | 'PRIVATE'> = [
-			'PUBLIC',
-			'FRIEND',
-			'PRIVATE',
-		];
+		const visibilityValues: VisibilityType[] = ['PUBLIC', 'FRIEND', 'PRIVATE'];
 		createPostDataRef.current.visibility = visibilityValues[index];
 		setVisibility(index);
 	}

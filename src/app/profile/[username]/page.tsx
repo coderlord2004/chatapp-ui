@@ -3,8 +3,18 @@
 import { useEffect, useState, use } from 'react';
 import { useRequest } from '@/hooks/useRequest';
 import { UserInfo } from '@/types/User';
+import { PostType } from '@/types/Post';
 import { FiCamera, FiEdit, FiLink, FiMapPin, FiCalendar } from 'react-icons/fi';
+import { IoMdPersonAdd } from 'react-icons/io';
 import Skeleton from '@/components/Loading/Skeleton';
+import { useAuth } from '@/contexts/AuthContext';
+import Post from '@/components/Post';
+import Link from 'next/link';
+
+type ProfileType = {
+	user: UserInfo | null;
+	posts: PostType[];
+};
 
 export default function Page({
 	params,
@@ -13,27 +23,52 @@ export default function Page({
 }) {
 	const { username } = use(params);
 	const { get } = useRequest();
-	const [user, setUser] = useState<UserInfo | null>(null);
+	const [profile, setProfile] = useState<ProfileType>({
+		user: null,
+		posts: [],
+	});
+	const [page, setPage] = useState<number>(1);
 	const [isLoading, setIsLoading] = useState(true);
+	const { authUser } = useAuth();
 
 	useEffect(() => {
 		const getUser = async () => {
-			try {
-				setIsLoading(true);
-				const data = await get('users/info/', {
-					params: {
-						username: username,
-					},
-				});
-				setUser(data);
-			} catch (error) {
-				console.error('Failed to fetch user data:', error);
-			} finally {
-				setIsLoading(false);
-			}
+			const data = await get('users/info/', {
+				params: {
+					username: username,
+				},
+			});
+			setIsLoading(false);
+			setProfile((prev) => ({
+				...prev,
+				user: data,
+			}));
 		};
-		getUser();
+		if (authUser && authUser.username !== username) {
+			getUser();
+		} else if (authUser && authUser.username === username) {
+			setIsLoading(false);
+			setProfile((prev) => ({
+				...prev,
+				user: authUser,
+			}));
+		}
 	}, [username]);
+
+	useEffect(() => {
+		const getPosts = async () => {
+			const data = await get(`posts/get/${username}`, {
+				params: {
+					page: page,
+				},
+			});
+			setProfile((prev) => ({
+				...prev,
+				posts: data,
+			}));
+		};
+		getPosts();
+	}, [username, page]);
 
 	return (
 		<div className="min-h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
@@ -41,9 +76,9 @@ export default function Page({
 			<div className="relative h-64 w-full overflow-hidden md:h-80">
 				{isLoading ? (
 					<Skeleton height="100%" className="rounded-none" />
-				) : user?.coverPicture ? (
+				) : profile.user?.coverPicture ? (
 					<img
-						src={user.coverPicture}
+						src={profile.user.coverPicture}
 						alt="Cover"
 						className="h-full w-full object-cover"
 					/>
@@ -65,16 +100,16 @@ export default function Page({
 						<div className="relative h-32 w-32 overflow-hidden rounded-full bg-white ring-4 ring-white md:h-40 md:w-40 dark:bg-gray-800 dark:ring-gray-900">
 							{isLoading ? (
 								<Skeleton circle height="100%" className="rounded-full" />
-							) : user?.avatar ? (
+							) : profile.user?.avatar ? (
 								<img
-									src={user.avatar}
-									alt={user.username}
+									src={profile.user.avatar}
+									alt={profile.user.username}
 									className="h-full w-full object-cover"
 								/>
 							) : (
 								<div className="flex h-full w-full items-center justify-center bg-gradient-to-r from-cyan-400 to-blue-500">
 									<span className="text-4xl font-bold text-white">
-										{user?.username?.charAt(0).toUpperCase()}
+										{profile.user?.username?.charAt(0).toUpperCase()}
 									</span>
 								</div>
 							)}
@@ -98,23 +133,33 @@ export default function Page({
 						) : (
 							<>
 								<h1 className="text-2xl font-bold text-gray-900 md:text-3xl dark:text-white">
-									{user?.username}
+									{profile.user?.username}
 								</h1>
 								<p className="mt-1 text-gray-600 dark:text-gray-400">
-									@{user?.username}
+									@{profile.user?.username}
 								</p>
 							</>
 						)}
 
 						{/* Action Buttons */}
 						<div className="mt-4 flex justify-center gap-3 md:justify-start">
-							<button className="flex transform items-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-700 hover:shadow-purple-500/25">
-								<FiEdit size={14} />
-								Edit Profile
-							</button>
-							<button className="flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600">
-								Message
-							</button>
+							{authUser?.username === username ? (
+								<button className="flex transform cursor-pointer items-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-700 hover:shadow-purple-500/25">
+									<FiEdit size={14} />
+									Chỉnh sửa hồ sơ
+								</button>
+							) : (
+								<button className="flex transform cursor-pointer items-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-700 hover:shadow-purple-500/25">
+									Kết bạn
+									<IoMdPersonAdd size={14} />
+								</button>
+							)}
+							<Link
+								href={`/nextchat`}
+								className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600"
+							>
+								Nhắn tin
+							</Link>
 						</div>
 					</div>
 				</div>
@@ -132,9 +177,11 @@ export default function Page({
 						</>
 					) : (
 						<>
-							<p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-								{user?.bio || "This user hasn't written a bio yet."}
-							</p>
+							{profile.user && (
+								<p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+									{profile.user.bio}
+								</p>
+							)}
 
 							{/* Details */}
 							<div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -161,7 +208,7 @@ export default function Page({
 							<div className="mt-6 flex gap-6 border-t border-gray-100 pt-6 dark:border-gray-700">
 								<div className="text-center">
 									<div className="text-2xl font-bold text-gray-900 dark:text-white">
-										128
+										{profile.user?.totalPosts}
 									</div>
 									<div className="text-sm text-gray-600 dark:text-gray-400">
 										Posts
@@ -169,7 +216,7 @@ export default function Page({
 								</div>
 								<div className="text-center">
 									<div className="text-2xl font-bold text-gray-900 dark:text-white">
-										3.2K
+										{profile.user?.totalFollowers}
 									</div>
 									<div className="text-sm text-gray-600 dark:text-gray-400">
 										Followers
@@ -177,7 +224,7 @@ export default function Page({
 								</div>
 								<div className="text-center">
 									<div className="text-2xl font-bold text-gray-900 dark:text-white">
-										458
+										{profile.user?.totalFollowing}
 									</div>
 									<div className="text-sm text-gray-600 dark:text-gray-400">
 										Following
@@ -205,26 +252,8 @@ export default function Page({
 
 				{/* Posts Grid (Placeholder) */}
 				<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-					{[1, 2, 3, 4, 5, 6].map((item) => (
-						<div
-							key={item}
-							className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
-						>
-							<div className="h-48 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30"></div>
-							<div className="p-4">
-								<h3 className="font-medium text-gray-900 dark:text-white">
-									Post Title #{item}
-								</h3>
-								<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-								</p>
-								<div className="mt-4 flex items-center text-xs text-gray-500 dark:text-gray-500">
-									<span>April 15, 2023</span>
-									<span className="mx-2">•</span>
-									<span>5 min read</span>
-								</div>
-							</div>
-						</div>
+					{profile.posts.map((post) => (
+						<Post key={post.id} post={post} />
 					))}
 				</div>
 			</div>

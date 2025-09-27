@@ -272,9 +272,7 @@ const UniverseCanvas = () => {
 		};
 	}, []);
 
-	return (
-		<canvas ref={canvasRef} className="fixed inset-0 -z-10 hidden dark:block" />
-	);
+	return <canvas ref={canvasRef} className="fixed inset-0 hidden dark:block" />;
 };
 
 export default UniverseCanvas;

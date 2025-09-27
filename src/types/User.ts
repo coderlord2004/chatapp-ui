@@ -14,7 +14,6 @@ type UserWithAvatar = {
 	id: number;
 	username: string;
 	avatar: string | null;
-	coverPicture: string | null;
 };
 type UserSearchResult = {
 	userDto: UserWithAvatar;

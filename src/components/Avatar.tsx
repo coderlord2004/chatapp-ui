@@ -17,7 +17,7 @@ export default function Avatar({
 	redirectByUsername,
 	src,
 	className,
-	controls = false,
+	controls = true,
 	isGroupAvatar = false,
 	onClose,
 }: Props) {

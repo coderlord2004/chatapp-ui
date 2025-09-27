@@ -23,13 +23,30 @@ interface SlideshowProps {
 	showIndicators?: boolean;
 }
 
-const Slideshow: React.FC<SlideshowProps> = ({
-	slides,
+const slides = [
+	{
+		id: 1,
+		title: 'Nhắn tin tức thì với công nghệ WebSocket',
+		src: '/next_chat_logo.jpg',
+	},
+	{
+		id: 2,
+		title: 'Mã hóa end-to-end cho tin nhắn',
+		src: '/fast.jpg',
+	},
+	{
+		id: 3,
+		title: 'Mã hóa end-to-end cho tin nhắn',
+		src: '/secure.jpg',
+	},
+];
+
+export default function Slideshow({
 	autoPlay = true,
 	interval = 5000,
 	showControls = true,
 	showIndicators = true,
-}) => {
+}) {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(autoPlay);
 
@@ -171,6 +188,4 @@ const Slideshow: React.FC<SlideshowProps> = ({
 			</p>
 		</div>
 	);
-};
-
-export default Slideshow;
+}

@@ -24,7 +24,7 @@ export default function Header({ className }: Props) {
 				className="ml-[5%] h-full w-auto rounded-[50%] border-[1px] border-solid border-white"
 			/>
 			<div className="mx-auto flex w-[50%] items-center justify-evenly">
-				<Link href="/home" className="group relative cursor-pointer text-white">
+				<Link href="/" className="group relative cursor-pointer text-white">
 					Home
 					<span className="absolute bottom-[-2px] left-0 h-[2px] w-0 bg-blue-600 transition-all duration-100 group-hover:w-full"></span>
 				</Link>

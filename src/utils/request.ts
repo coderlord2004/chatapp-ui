@@ -13,6 +13,7 @@ import {
 	getNewAccessToken,
 	getRefreshToken,
 } from './jwts';
+import { routes } from '@/lib/routes';
 
 const logout = () => {
 	if (typeof window === 'undefined') {
@@ -21,7 +22,7 @@ const logout = () => {
 
 	localStorage.removeItem('accessToken');
 	localStorage.removeItem('refreshToken');
-	window.location.href = '/login';
+	window.location.href = routes.login;
 };
 
 const refreshAccessToken = async () => {

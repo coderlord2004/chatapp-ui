@@ -1,15 +1,18 @@
 import { MessageResponseType } from './Message';
 import { AttachmentType } from './Attachment';
+import { UserWithAvatar } from './User';
 
 type ChatRoomInfo = {
 	id: number | null;
 	name: string | null;
 	avatar: string | null;
-	membersUsername: string[];
+	members: UserWithAvatar[];
 	type: 'GROUP' | 'DUO';
 	createdOn: string;
 	latestMessage: MessageResponseType | null;
+	firstMessagePage: MessageResponseType[] | null;
 };
+
 type CreateChatRoom = {
 	name: string | null;
 	avatar: AttachmentType | null;

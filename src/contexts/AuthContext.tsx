@@ -17,6 +17,7 @@ import {
 } from '@/utils/jwts';
 import { useRequest } from '@/hooks/useRequest';
 import { UserInfo } from '@/types/User';
+import { routes } from '@/lib/routes';
 
 type AuthContextType = {
 	authUser: UserInfo | null;
@@ -84,7 +85,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [authUser, setAuthUser] = useState<UserInfo | null>(null);
 	const { get } = useRequest();
 	const router = useRouter();
-	const pathname = usePathname();
 
 	const login = (accessToken: string, refreshToken: string) => {
 		localStorage.setItem('accessToken', accessToken);
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
 		setToken({ accessToken: null, refreshToken: null });
-		router.push('/login');
+		router.push(routes.login);
 	}, [router]);
 
 	useEffect(() => {

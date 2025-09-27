@@ -6,11 +6,11 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import Spinner from '@/components/Loading/Spinner';
 import { useRequest } from '@/hooks/useRequest';
 import { isAuthorized } from '@/utils/jwts';
 import { normalRequest } from '@/utils/request';
 import BinaryMatrixLoader from '@/components/Loading/BinaryMatrixLoader';
+import { routes } from '@/lib/routes';
 
 type FormData = {
 	username: string;
@@ -40,7 +40,7 @@ export default function Login() {
 			});
 
 			login(result.access, result.refresh);
-			router.push('/chat');
+			router.push(routes.nextchat);
 		} catch (err) {
 			handleError(err);
 		} finally {
@@ -49,13 +49,13 @@ export default function Login() {
 	};
 
 	useEffect(() => {
-		async function redirectIfAuthoized() {
+		async function redirectIfAuthorized() {
 			if (await isAuthorized()) {
-				router.push('/chat');
+				router.push(routes.nextchat);
 			}
 		}
 
-		redirectIfAuthoized();
+		redirectIfAuthorized();
 	}, [router]);
 
 	return (
@@ -127,7 +127,7 @@ export default function Login() {
 				</form>
 
 				{loading && (
-					<div className="absolute inset-0 flex cursor-progress rounded-[10px] bg-black/70">
+					<div className="absolute inset-0 flex cursor-progress rounded-[10px] bg-black/90">
 						<BinaryMatrixLoader
 							className="mx-auto my-auto h-[140px] w-[120px]"
 							title="Đang đăng nhập..."

@@ -1,9 +1,12 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { decodeJwt } from 'jose';
 import useMessages from '@/hooks/useMessages';
 import { ChatRoomInfo } from '@/types/ChatRoom';
 import ChatInput from './ChatInput';
+import Avatar from './Avatar';
 
 import { FaPhoneAlt, FaUserCircle, FaArrowDown } from 'react-icons/fa';
 import { MdPersonAddAlt } from 'react-icons/md';
@@ -16,7 +19,6 @@ import Message from '@/components/Message';
 import CallModal from '@/components/CallModal';
 
 type ChatRoomProps = {
-	authUsername: string | undefined;
 	chatRoomInfo: ChatRoomInfo;
 	isOpenSidebar: boolean;
 	onOpenSidebar: () => void;
@@ -33,7 +35,6 @@ type InitCallModal = {
 };
 
 export default function ChatRoom({
-	authUsername,
 	chatRoomInfo,
 	isOpenSidebar,
 	onOpenSidebar,
@@ -48,7 +49,7 @@ export default function ChatRoom({
 		isLoading,
 	} = useMessages(roomId);
 	const messagePage = useRef<number>(1);
-	const { accessToken } = useAuth();
+	const { authUser, accessToken } = useAuth();
 	const decodedJwt = accessToken && decodeJwt(accessToken);
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollToBottomButton = useRef<HTMLDivElement>(null);
@@ -57,7 +58,6 @@ export default function ChatRoom({
 		id: null,
 		percent: 0,
 	});
-	console.log('messages:', messages);
 
 	const [isShowChatRoomInfo, setIsShowChatRoomInfo] = useState<boolean>(false);
 
@@ -92,19 +92,26 @@ export default function ChatRoom({
 	}, [uploadProgress]);
 
 	function getChatRoomName(info: ChatRoomInfo) {
-		const { membersUsername, name } = info;
+		const { members, name } = info;
 		if (name) {
 			return name;
 		}
-		return membersUsername
-			.filter((username) => username !== authUsername)
+		if (info.type === 'DUO' && members.length === 2) {
+			return (
+				members.find((member) => member.username !== authUser?.username)
+					?.username || 'Unknown'
+			);
+		}
+		return members
+			.filter((member) => member.username !== authUser?.username)
+			.map((member) => member.username)
 			.slice(0, 3)
 			.join(', ');
 	}
 
 	return (
 		<div
-			className={`chatroom ${isOpenSidebar ? 'w-0' : 'w-full'} relative z-[5] flex h-screen flex-col bg-gray-900`}
+			className={`chatroom relative z-[5] flex h-screen w-full flex-col bg-gray-900`}
 		>
 			{/* Chat Header */}
 			<div className="header flex max-h-[60px] items-center justify-between border-b border-gray-800 bg-gray-800/50 px-4 py-3 sm:px-4 sm:py-3">
@@ -140,7 +147,7 @@ export default function ChatRoom({
 							</h2>
 							{chatRoomInfo.type === 'GROUP' && (
 								<p className="text-xs text-gray-400">
-									{chatRoomInfo.membersUsername.length} members
+									{chatRoomInfo.members.length} members
 								</p>
 							)}
 						</div>
@@ -288,12 +295,17 @@ export default function ChatRoom({
 						&times;
 					</button>
 
-					{chatRoomInfo.membersUsername.map((username) => (
+					{chatRoomInfo.members.map((user) => (
 						<div
-							key={username}
-							className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 text-left hover:bg-gray-800"
+							key={user.id}
+							className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 text-left transition-colors duration-200 hover:bg-gray-800"
 						>
-							{username}
+							<Avatar
+								redirectByUsername={user.username}
+								src={user.avatar}
+								className="h-10 w-10"
+							/>
+							<p>{user.username}</p>
 						</div>
 					))}
 				</div>
@@ -322,7 +334,7 @@ export default function ChatRoom({
 				<CallModal
 					roomId={roomId}
 					isUseVideo={initCallModal.video}
-					membersUsername={chatRoomInfo.membersUsername}
+					members={chatRoomInfo.members}
 					callInvitation={null}
 					onClose={() =>
 						setInitCallModal({

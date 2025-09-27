@@ -6,57 +6,131 @@ import Logo from '@/components/Logo';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useEffect, useState } from 'react';
 import { isAuthorized } from '@/utils/jwts';
-import { motion } from 'framer-motion';
-import { FiArrowRight, FiMessageSquare, FiLock, FiGlobe } from 'react-icons/fi';
-import UniverseCanvas from '@/components/UniverseCanvas';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+	FiArrowRight,
+	FiMessageSquare,
+	FiLock,
+	FiGlobe,
+	FiUsers,
+	FiVideo,
+	FiHeart,
+} from 'react-icons/fi';
+import { routes } from '@/lib/routes';
+import ProjectionBox from '@/components/ProjectionBox';
+import Button from '@/components/Button';
 
 const features = [
 	{
 		icon: <FiMessageSquare className="h-8 w-8" />,
 		title: 'Chat real-time',
-		desc: 'Nhắn tin tức thì với công nghệ WebSocket',
+		desc: 'Nhắn tin tức thì với công nghệ WebSocket tốc độ cao',
 		color: 'text-blue-500',
+		bgColor: 'bg-blue-500/10',
 	},
 	{
 		icon: <FiLock className="h-8 w-8" />,
-		title: 'Bảo mật',
-		desc: 'Mã hóa end-to-end cho tin nhắn',
+		title: 'Bảo mật tuyệt đối',
+		desc: 'Mã hóa end-to-end cho tin nhắn an toàn',
 		color: 'text-green-500',
+		bgColor: 'bg-green-500/10',
 	},
 	{
 		icon: <FiGlobe className="h-8 w-8" />,
 		title: 'Đa nền tảng',
-		desc: 'Dùng mọi lúc, mọi nơi',
+		desc: 'Dùng mọi lúc, mọi nơi trên mọi thiết bị',
 		color: 'text-purple-500',
+		bgColor: 'bg-purple-500/10',
+	},
+	{
+		icon: <FiUsers className="h-8 w-8" />,
+		title: 'Trò chuyện nhóm',
+		desc: 'Tạo nhóm chat với bạn bè và gia đình',
+		color: 'text-orange-500',
+		bgColor: 'bg-orange-500/10',
+	},
+	{
+		icon: <FiVideo className="h-8 w-8" />,
+		title: 'Gọi video HD',
+		desc: 'Gọi video chất lượng cao hoàn toàn miễn phí',
+		color: 'text-red-500',
+		bgColor: 'bg-red-500/10',
+	},
+	{
+		icon: <FiHeart className="h-8 w-8" />,
+		title: 'Giao diện thân thiện',
+		desc: 'Trải nghiệm người dùng tuyệt vời và intuitive',
+		color: 'text-pink-500',
+		bgColor: 'bg-pink-500/10',
 	},
 ];
 
+const stats = [
+	{ value: '10K+', label: 'Người dùng' },
+	{ value: '99.9%', label: 'Uptime' },
+	{ value: '256-bit', label: 'Mã hóa' },
+	{ value: '24/7', label: 'Hỗ trợ' },
+];
+
 const fadeIn = {
-	hidden: { opacity: 0, y: 20 },
-	visible: { opacity: 1, y: 0 },
+	hidden: { opacity: 0, y: 30 },
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: { duration: 0.6, ease: 'easeOut' as const },
+	},
+};
+
+const staggerContainer = {
+	hidden: { opacity: 0 },
+	visible: {
+		opacity: 1,
+		transition: {
+			staggerChildren: 0.1,
+		},
+	},
+};
+
+const scaleIn = {
+	hidden: { opacity: 0, scale: 0.8 },
+	visible: {
+		opacity: 1,
+		scale: 1,
+		transition: { duration: 0.5, ease: 'easeOut' as const },
+	},
 };
 
 function useIsAuthoized() {
 	const [isAuthorizedState, setIsAuthoized] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		isAuthorized().then(setIsAuthoized);
+		isAuthorized().then((auth) => {
+			setIsAuthoized(auth);
+			setLoading(false);
+		});
 	}, []);
 
-	return isAuthorizedState;
+	return { isAuthorized: isAuthorizedState, loading };
 }
 
 export default function Page() {
-	const isAuthorized = useIsAuthoized();
+	const { isAuthorized, loading } = useIsAuthoized();
 
 	return (
-		<div>
-			<div className="z-10 flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-black/50 dark:text-white">
-				<header className="flex w-full items-center justify-between gap-[5px] rounded-[10px] bg-black pr-[10px] sm:pl-[70px] dark:bg-black/80 dark:text-white">
+		<div className="relative overflow-hidden">
+			<div className="absolute inset-0 overflow-hidden">
+				<div className="absolute -top-40 -right-32 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl"></div>
+				<div className="absolute -bottom-40 -left-32 h-80 w-80 rounded-full bg-purple-500/10 blur-3xl"></div>
+				<div className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-blue-500/5 to-purple-500/5 blur-3xl"></div>
+			</div>
+
+			<div className="z-10 flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-gradient-to-br dark:from-black dark:via-gray-900 dark:to-black dark:text-white">
+				<header className="flex w-full max-w-7xl items-center justify-between rounded-2xl bg-slate-500 p-4 backdrop-blur-md sm:p-6 dark:bg-gray-900/80">
 					<motion.div
 						initial={{ opacity: 0, x: -20 }}
 						animate={{ opacity: 1, x: 0 }}
-						transition={{ duration: 0.5 }}
+						transition={{ duration: 0.6, ease: 'easeOut' }}
 					>
 						<Logo />
 					</motion.div>
@@ -65,188 +139,278 @@ export default function Page() {
 						<motion.div
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
-							transition={{ delay: 0.2 }}
-							className="hidden items-center gap-4 sm:flex"
+							transition={{ delay: 0.3, duration: 0.5 }}
+							className="flex items-center gap-4"
 						>
-							{isAuthorized ? (
-								<div className="flex gap-[10px]">
-									<Link
-										href="/nextvibes"
-										className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-									>
-										Mạng xã hội
-									</Link>
-									<Link
-										href="/nextchat"
-										className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-									>
-										Chat với bạn bè
-									</Link>
-								</div>
-							) : (
-								<Link
-									href="/login"
-									className="px-4 py-2 font-medium text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-								>
-									Đăng nhập
-								</Link>
+							{!loading && (
+								<AnimatePresence mode="wait">
+									{isAuthorized ? (
+										<motion.div
+											key="auth"
+											initial={{ opacity: 0, scale: 0.9 }}
+											animate={{ opacity: 1, scale: 1 }}
+											exit={{ opacity: 0, scale: 0.9 }}
+											className="flex gap-3"
+										>
+											<Link
+												href={routes.nextvibes}
+												className="group relative overflow-hidden rounded-lg px-4 py-2 font-medium text-blue-600 transition-all duration-300 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-300"
+											>
+												<span className="relative z-10">Mạng xã hội</span>
+												<div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+											</Link>
+											<Link
+												href={routes.nextchat}
+												className="group relative overflow-hidden rounded-lg px-4 py-2 font-medium text-blue-600 transition-all duration-300 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-300"
+											>
+												<span className="relative z-10">Chat với bạn bè</span>
+												<div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+											</Link>
+										</motion.div>
+									) : (
+										<motion.div
+											key="unauth"
+											initial={{ opacity: 0, scale: 0.9 }}
+											animate={{ opacity: 1, scale: 1 }}
+											exit={{ opacity: 0, scale: 0.9 }}
+											className="flex items-center gap-3"
+										>
+											<Link
+												href={routes.login}
+												className="rounded-lg px-4 py-2 font-medium text-blue-600 transition-all duration-300 hover:bg-blue-50 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-300"
+											>
+												Đăng nhập
+											</Link>
+											<Link
+												href={routes.register}
+												className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-2 text-white shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-600 hover:shadow-xl"
+											>
+												<span className="relative z-10">Đăng ký</span>
+												<div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+											</Link>
+										</motion.div>
+									)}
+								</AnimatePresence>
 							)}
-							<Link
-								href="/signup"
-								className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-white shadow-md transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-lg"
-							>
-								Đăng ký
-							</Link>
 						</motion.div>
 
 						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ delay: 0.3 }}
+							initial={{ opacity: 0, scale: 0.8 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{ delay: 0.4, duration: 0.5 }}
 						>
 							<ThemeToggle />
 						</motion.div>
 					</div>
 				</header>
 
-				<main className="mt-[20px] flex w-full max-w-6xl flex-col items-start justify-center gap-x-[10px] gap-y-[10px] md:flex-row">
-					<div className="mt-[40px] ml-[10px] flex-1 space-y-6">
-						<h2 className="text-4xl font-bold md:text-5xl">
-							Kết nối mọi lúc, <br />
-							<span className="text-blue-600">
-								<TypeAnimation
-									sequence={[
-										'Nhắn tin với bạn bè.',
-										2000,
-										'Trò chuyện nhóm.',
-										2000,
-										'Gọi video miễn phí.',
-										2000,
-										'Lướt mạng xã hội.',
-										2000,
-									]}
-									speed={50}
-									repeat={Infinity}
-								/>
-							</span>
-						</h2>
-						<p className="text-lg text-gray-500">
-							NextChat - Nền tảng trò chuyện đơn giản, bảo mật và miễn phí cho
-							mọi người.
-						</p>
-						<div className="flex space-x-4">
-							<Link
-								href={isAuthorized ? '/nextchat' : '/login'}
-								className="group flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-xl"
+				<main className="mt-8 flex w-full max-w-7xl flex-col items-center justify-center gap-8 lg:flex-row lg:gap-12">
+					<motion.div
+						initial="hidden"
+						animate="visible"
+						variants={fadeIn}
+						className="flex-1 space-y-8 text-center lg:text-left"
+					>
+						<div className="space-y-6">
+							<motion.h1
+								className="text-4xl leading-tight font-bold sm:text-5xl lg:text-6xl"
+								variants={fadeIn}
 							>
-								Bắt đầu ngay
-								<FiArrowRight className="transition-transform group-hover:translate-x-1" />
-							</Link>
-							<a
-								href="#special-feature"
-								className="cursor-pointer rounded-lg border border-blue-600 px-6 py-3 text-blue-600 transition hover:bg-blue-500 hover:text-white"
+								Kết nối mọi lúc, <br />
+								<span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+									<TypeAnimation
+										sequence={[
+											'Nhắn tin với bạn bè.',
+											2000,
+											'Trò chuyện nhóm.',
+											2000,
+											'Gọi video miễn phí.',
+											2000,
+											'Lướt mạng xã hội.',
+											2000,
+										]}
+										speed={50}
+										repeat={Infinity}
+										wrapper="span"
+									/>
+								</span>
+							</motion.h1>
+
+							<motion.p
+								className="text-xl text-gray-600 dark:text-gray-300"
+								variants={fadeIn}
+								transition={{ delay: 0.2 }}
 							>
-								Xem demo
-							</a>
+								NextChat - Nền tảng trò chuyện đơn giản, bảo mật và miễn phí cho
+								mọi người. Trải nghiệm giao tiếp thế hệ mới.
+							</motion.p>
 						</div>
-					</div>
+
+						<motion.div
+							className="flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start"
+							variants={fadeIn}
+							transition={{ delay: 0.4 }}
+						>
+							<Link
+								href={isAuthorized ? routes.nextchat : routes.login}
+								className="group hover:shadow-3xl relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-8 py-4 text-white shadow-2xl transition-all duration-300 hover:from-blue-700 hover:to-blue-600"
+							>
+								<span className="relative z-10 flex items-center justify-center gap-2 text-lg font-semibold">
+									Bắt đầu ngay
+									<FiArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+								</span>
+								<div className="absolute inset-0 -z-10 bg-gradient-to-r from-blue-700 to-blue-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+							</Link>
+
+							<motion.a
+								href="#features"
+								className="group relative overflow-hidden rounded-xl border-2 border-blue-600 px-8 py-4 text-blue-600 transition-all duration-300 hover:bg-blue-600 hover:text-white dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-400 dark:hover:text-white"
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								<span className="relative z-10 font-semibold">
+									Khám phá tính năng
+								</span>
+							</motion.a>
+						</motion.div>
+
+						<motion.div
+							className="grid grid-cols-2 gap-4 pt-8 sm:grid-cols-4"
+							variants={staggerContainer}
+							initial="hidden"
+							animate="visible"
+						>
+							{stats.map((stat, index) => (
+								<motion.div
+									key={index}
+									variants={fadeIn}
+									className="text-center"
+								>
+									<div className="text-2xl font-bold text-blue-600 sm:text-3xl dark:text-blue-400">
+										{stat.value}
+									</div>
+									<div className="text-sm text-gray-600 dark:text-gray-400">
+										{stat.label}
+									</div>
+								</motion.div>
+							))}
+						</motion.div>
+					</motion.div>
 
 					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ duration: 0.8, delay: 0.2 }}
+						initial="hidden"
+						animate="visible"
+						variants={scaleIn}
+						transition={{ duration: 0.8, delay: 0.3 }}
 						className="flex-1"
 					>
-						<div className="relative">
-							<div className="absolute -inset-4 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-500 opacity-20 blur-xl"></div>
-							<img
-								src="/next_chat_logo.jpg"
-								alt="NextChat App"
-								className="relative rounded-xl shadow-2xl ring-1 ring-gray-900/10 dark:ring-gray-100/10"
-							/>
+						<div className="relative h-[300px]">
+							<div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-3xl"></div>
+							<div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-blue-400 to-purple-400 opacity-10 blur-xl"></div>
+
+							<div className="relative rounded-2xl bg-white/5 backdrop-blur-md">
+								<ProjectionBox />
+							</div>
+							<Button />
 						</div>
 					</motion.div>
 				</main>
 
-				<section id="features" className="py-16 sm:py-24">
+				<section id="features" className="w-full py-20 sm:py-32">
 					<div className="mx-auto max-w-7xl px-6">
 						<motion.div
 							initial="hidden"
 							whileInView="visible"
 							viewport={{ once: true }}
 							variants={fadeIn}
-							transition={{ duration: 0.6 }}
-							className="mx-auto max-w-3xl text-center"
+							transition={{ duration: 0.8 }}
+							className="mx-auto max-w-4xl text-center"
 						>
-							<h2 className="text-3xl font-bold sm:text-4xl">
-								Tính năng nổi bật
+							<h2 className="text-4xl font-bold sm:text-5xl">
+								Tính năng <span className="text-blue-600">nổi bật</span>
 							</h2>
-							<p className="mt-4 text-gray-600 dark:text-gray-300">
+							<p className="mt-4 text-xl text-gray-600 dark:text-gray-300">
 								Khám phá những tính năng ưu việt giúp <strong>NextChat</strong>{' '}
 								trở thành lựa chọn hàng đầu
 							</p>
 						</motion.div>
 
-						<div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+						<motion.div
+							className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+							variants={staggerContainer}
+							initial="hidden"
+							whileInView="visible"
+							viewport={{ once: true }}
+						>
 							{features.map((feature, index) => (
 								<motion.div
 									key={index}
-									initial="hidden"
-									whileInView="visible"
-									viewport={{ once: true }}
 									variants={fadeIn}
-									transition={{ duration: 0.6, delay: index * 0.1 }}
-									className="group rounded-xl bg-gray-400 p-8 shadow-lg transition-all hover:-translate-y-2 hover:shadow-xl dark:bg-gray-800"
+									whileHover={{
+										y: -8,
+										transition: { duration: 0.3 },
+									}}
+									className="group relative overflow-hidden rounded-2xl bg-white/50 p-8 shadow-lg backdrop-blur-md transition-all duration-300 hover:shadow-2xl dark:bg-gray-800/50"
 								>
-									<div
-										className={`mb-6 inline-flex rounded-lg p-3 ${feature.color} bg-opacity-10`}
-									>
-										{feature.icon}
+									<div className="relative z-10">
+										<div
+											className={`mb-6 inline-flex rounded-2xl p-4 ${feature.bgColor} transition-transform duration-300 group-hover:scale-110`}
+										>
+											<div className={feature.color}>{feature.icon}</div>
+										</div>
+										<h3 className="mb-4 text-2xl font-bold">{feature.title}</h3>
+										<p className="text-gray-700 dark:text-gray-300">
+											{feature.desc}
+										</p>
 									</div>
-									<h3 className="mb-3 text-xl font-bold">{feature.title}</h3>
-									<p className="text-gray-800 dark:text-gray-300">
-										{feature.desc}
-									</p>
+									<div className="absolute inset-0 -z-10 bg-gradient-to-br from-white/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-gray-700/20"></div>
 								</motion.div>
 							))}
-						</div>
+						</motion.div>
 					</div>
 				</section>
 
-				<section className="py-[10px] sm:py-[20px]">
+				<section className="w-full py-20">
 					<div className="mx-auto max-w-7xl px-6">
-						<div className="rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 px-8 py-12 text-center shadow-xl">
+						<motion.div
+							initial="hidden"
+							whileInView="visible"
+							viewport={{ once: true }}
+							variants={scaleIn}
+							className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-12 text-center shadow-2xl"
+						>
+							<div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-white/10"></div>
+							<div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-white/10"></div>
+
 							<motion.div
-								initial="hidden"
-								whileInView="visible"
-								viewport={{ once: true }}
 								variants={fadeIn}
-								transition={{ duration: 0.6 }}
-								className="mx-auto max-w-3xl"
+								className="relative z-10 mx-auto max-w-4xl"
 							>
-								<h2 className="text-3xl font-bold text-white sm:text-4xl">
+								<h2 className="text-4xl font-bold text-white sm:text-5xl">
 									Sẵn sàng trải nghiệm?
 								</h2>
-								<p className="mt-4 text-blue-100">
+								<p className="mt-4 text-xl text-blue-100">
 									Đăng ký ngay để kết nối với bạn bè và gia đình một cách dễ
 									dàng và bảo mật
 								</p>
-								<div className="mt-8">
+								<motion.div
+									className="mt-8"
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+								>
 									<Link
-										href="/signup"
-										className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 font-medium text-blue-600 shadow-lg transition-all hover:bg-gray-100 hover:shadow-xl"
+										href={routes.register}
+										className="hover:shadow-3xl inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-lg font-semibold text-blue-600 shadow-2xl transition-all duration-300 hover:bg-gray-100"
 									>
 										Đăng ký miễn phí
-										<FiArrowRight className="transition-transform group-hover:translate-x-1" />
+										<FiArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
 									</Link>
-								</div>
+								</motion.div>
 							</motion.div>
-						</div>
+						</motion.div>
 					</div>
 				</section>
 			</div>
-
-			<UniverseCanvas />
 		</div>
 	);
 }

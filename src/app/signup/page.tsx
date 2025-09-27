@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { normalRequest } from '@/utils/request';
 import BinaryMatrixLoader from '@/components/Loading/BinaryMatrixLoader';
+import { routes } from '@/lib/routes';
 
 type FormData = {
 	username: string;
@@ -39,7 +40,7 @@ export default function Signup() {
 				password: formData.password,
 			});
 
-			router.push('/login');
+			router.push(routes.login);
 		} catch (err) {
 			handleError(err);
 		} finally {

@@ -1,4 +1,5 @@
 import { AttachmentType } from './Attachment';
+import { UserInfo } from './User';
 
 type PostType = {
 	id: number;
@@ -10,9 +11,10 @@ type PostType = {
 	topReactionTypes: string[];
 	totalComments: number;
 	totalShares: number;
-	attachments: AttachmentType;
-	sharedPost: PostType;
+	attachments: AttachmentType[];
+	sharedPost: PostType | null;
 	postAttachmentType: 'MEDIA' | 'POST';
+	author: UserInfo;
 };
 
 export type { PostType };

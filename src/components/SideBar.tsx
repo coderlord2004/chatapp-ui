@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useRequest } from '@/hooks/useRequest';
 import { useInvitationReply } from '@/hooks/useInvitations';
@@ -10,17 +12,18 @@ import useGlobalMessages from '@/hooks/useGlobalMessages';
 import Avatar from './Avatar';
 import { ChatRoomsContext } from '@/hooks/useChatRooms';
 import { useNotification } from '@/hooks/useNotification';
+import { useAuth } from '@/contexts/AuthContext';
 
 type SideBarProps = {
 	isOpenSidebar: boolean;
 	onOpenSidebar: () => void;
-	authUsername: string | undefined;
 	chatRoomActive: ChatRoomInfo | null;
 	onUpdateChatRoomActive: (activeValue: ChatRoomInfo) => void;
 };
 
 export function SideBar(props: SideBarProps) {
 	const { get } = useRequest();
+	const { authUser } = useAuth();
 	const [chatRooms, setChatRooms] = useState<ChatRoomInfo[]>([]);
 	const sideBarRef = useRef<HTMLDivElement>(null);
 	const invitationReply = useInvitationReply();
@@ -30,12 +33,19 @@ export function SideBar(props: SideBarProps) {
 	const { showNotification } = useNotification();
 
 	function getChatRoomName(info: ChatRoomInfo) {
-		const { membersUsername, name } = info;
+		const { members, name } = info;
 		if (name) {
 			return name;
 		}
-		return membersUsername
-			.filter((username) => username !== props.authUsername)
+		if (info.type === 'DUO' && members.length === 2) {
+			return (
+				members.find((member) => member.username !== authUser?.username)
+					?.username || 'Unknown'
+			);
+		}
+		return members
+			.filter((member) => member.username !== authUser?.username)
+			.map((member) => member.username)
 			.slice(0, 3)
 			.join(', ');
 	}
@@ -48,7 +58,7 @@ export function SideBar(props: SideBarProps) {
 
 	function updateDocumentTitle() {
 		if (typeof document === 'undefined') return;
-		if (globalMessage!.message.sender === props.authUsername) return undefined;
+		if (globalMessage!.message.sender === authUser?.username) return undefined;
 
 		let count = 1;
 		const intervalId = setInterval(() => {
@@ -113,13 +123,11 @@ export function SideBar(props: SideBarProps) {
 				id: invitationReply.chatRoomDto.id,
 				name: null,
 				avatar: invitationReply.sender.avatar,
-				membersUsername: [
-					invitationReply.sender.username,
-					invitationReply.receiver.username,
-				],
+				members: [invitationReply.sender, invitationReply.receiver],
 				type: 'DUO',
 				createdOn: Date.now().toString(),
 				latestMessage: null,
+				firstMessagePage: null,
 			};
 			setChatRooms((prev) => [newChatRoom, ...prev]);
 		}
@@ -132,7 +140,6 @@ export function SideBar(props: SideBarProps) {
 				className={`sidebar ${props.isOpenSidebar ? 'w-full sm:w-auto' : 'w-0'} relative flex h-full flex-col justify-between border-r border-gray-700 bg-gray-800 sm:max-w-[300px] sm:min-w-[230px] md:w-[500px]`}
 			>
 				<SideBarHeader
-					authUsername={props.authUsername}
 					onUpdateChatRoom={(newChatRoom) =>
 						setChatRooms((prev) => [newChatRoom, ...prev])
 					}
@@ -158,7 +165,7 @@ export function SideBar(props: SideBarProps) {
 								key={chatRoom.id}
 								onClick={() => props.onUpdateChatRoomActive(chatRoom)}
 								className={`mx-2 my-1 flex cursor-pointer items-center rounded-lg p-3 transition-all duration-200 ${
-									chatRoom === props.chatRoomActive
+									chatRoom.id === props.chatRoomActive?.id
 										? 'bg-indigo-600'
 										: 'hover:bg-gray-700'
 								}`}
@@ -177,7 +184,7 @@ export function SideBar(props: SideBarProps) {
 										<div className="flex items-center justify-between gap-[5px] text-[80%] text-gray-400">
 											<div className="truncate">
 												<b>
-													{props.authUsername
+													{authUser?.username === chatRoom.latestMessage.sender
 														? 'Bạn'
 														: chatRoom.latestMessage.sender}
 													:
@@ -194,7 +201,7 @@ export function SideBar(props: SideBarProps) {
 
 									{chatRoom.type === 'GROUP' && (
 										<p className="text-xs text-gray-400">
-											{chatRoom.membersUsername.length} members
+											{chatRoom.members.length} members
 										</p>
 									)}
 								</div>
