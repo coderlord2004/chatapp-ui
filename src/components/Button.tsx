@@ -1,8 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import React from 'react';
 import { routes } from '@/lib/routes';
 
-const NextvibesButton = () => {
+const Button = () => {
 	return (
 		<Link
 			href={routes.nextvibes}
@@ -98,4 +100,4 @@ const NextvibesButton = () => {
 	);
 };
 
-export default NextvibesButton;
+export default Button;

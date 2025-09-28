@@ -72,7 +72,6 @@ export default function Page({
 
 	return (
 		<div className="min-h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
-			{/* Cover Photo */}
 			<div className="relative h-64 w-full overflow-hidden md:h-80">
 				{isLoading ? (
 					<Skeleton height="100%" className="rounded-none" />
@@ -86,15 +85,12 @@ export default function Page({
 					<div className="h-full w-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500"></div>
 				)}
 
-				{/* Edit Cover Button */}
 				<button className="group absolute right-4 bottom-4 rounded-full bg-white/80 p-2.5 backdrop-blur-sm transition-all duration-300 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-700">
 					<FiCamera className="text-gray-700 group-hover:text-purple-600 dark:text-gray-300 dark:group-hover:text-purple-400" />
 				</button>
 			</div>
 
-			{/* Profile Content */}
 			<div className="relative z-10 mx-auto -mt-16 max-w-4xl px-4 sm:px-6 md:-mt-24 lg:px-8">
-				{/* Avatar Section */}
 				<div className="flex flex-col items-center gap-6 pb-6 md:flex-row md:items-end">
 					<div className="relative">
 						<div className="relative h-32 w-32 overflow-hidden rounded-full bg-white ring-4 ring-white md:h-40 md:w-40 dark:bg-gray-800 dark:ring-gray-900">
@@ -119,7 +115,6 @@ export default function Page({
 						</button>
 					</div>
 
-					{/* User Info */}
 					<div className="flex-1 text-center md:text-left">
 						{isLoading ? (
 							<>
@@ -141,7 +136,6 @@ export default function Page({
 							</>
 						)}
 
-						{/* Action Buttons */}
 						<div className="mt-4 flex justify-center gap-3 md:justify-start">
 							{authUser?.username === username ? (
 								<button className="flex transform cursor-pointer items-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-700 hover:shadow-purple-500/25">
@@ -164,7 +158,6 @@ export default function Page({
 					</div>
 				</div>
 
-				{/* Bio and Details */}
 				<div className="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
 					{isLoading ? (
 						<>
@@ -183,7 +176,6 @@ export default function Page({
 								</p>
 							)}
 
-							{/* Details */}
 							<div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
 								<div className="flex items-center gap-1.5">
 									<FiMapPin size={16} />
@@ -204,7 +196,6 @@ export default function Page({
 								</div>
 							</div>
 
-							{/* Stats */}
 							<div className="mt-6 flex gap-6 border-t border-gray-100 pt-6 dark:border-gray-700">
 								<div className="text-center">
 									<div className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -235,7 +226,6 @@ export default function Page({
 					)}
 				</div>
 
-				{/* Content Tabs */}
 				<div className="mt-6 border-b border-gray-200 dark:border-gray-700">
 					<nav className="flex space-x-8">
 						<button className="border-b-2 border-purple-500 px-1 py-4 text-sm font-medium text-purple-600 dark:text-purple-400">
@@ -250,10 +240,9 @@ export default function Page({
 					</nav>
 				</div>
 
-				{/* Posts Grid (Placeholder) */}
 				<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{profile.posts.map((post) => (
-						<Post key={post.id} post={post} />
+						<Post key={post.id} data={post} />
 					))}
 				</div>
 			</div>

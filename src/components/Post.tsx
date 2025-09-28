@@ -25,6 +25,25 @@ export default function Post({ data }: Props) {
 		setShowComments(!showComments);
 	};
 
+	const handleReactionPost = async (targetId: number, reactionType: string) => {
+		await post('reaction/post/save/', {
+			body: {
+				targetId: targetId,
+				targetType: "POST",
+				reactionType: reactionType
+			}
+		})
+	}
+
+	const handleCommentPost = async (targetId: number, content: string) => {
+		await post('comment/create/', {
+			body: {
+				targetId: targetId,
+				targetType: "POST",
+				content: content
+			}
+		})
+	}
 	const handleSharePost = async () => {
 
 	}

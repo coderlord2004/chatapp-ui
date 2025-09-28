@@ -10,7 +10,7 @@ import Post from '@/components/Post';
 
 type Props = {};
 
-export default function Page({}: Props) {
+export default function Page({ }: Props) {
 	const [newsFeeds, setNewsFeeds] = useState<PostType[]>([]);
 	const { get } = useRequest();
 
@@ -27,7 +27,7 @@ export default function Page({}: Props) {
 			<Header className="h-[70px]" />
 			<div className="w-full max-w-2xl space-y-6 overflow-y-auto p-4">
 				{newsFeeds.map((post, index) => (
-					<Post post={post} />
+					<Post data={post} />
 				))}
 			</div>
 		</div>
