@@ -33,7 +33,7 @@ export default function CallAlert({ callInvitation, onClose }: Props) {
 				<CallModal
 					roomId={callInvitation?.channelId}
 					isUseVideo={callInvitation?.isUseVideo || false}
-					membersUsername={callInvitation?.membersUsername || []}
+					members={callInvitation.members}
 					callInvitation={callInvitation}
 					onClose={onClose}
 				/>

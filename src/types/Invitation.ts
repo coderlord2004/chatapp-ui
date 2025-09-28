@@ -12,7 +12,7 @@ type Invitation = {
 type CallInvitation = {
 	channelId: number;
 	caller: UserWithAvatar;
-	membersUsername: string[];
+	members: UserWithAvatar[];
 	isUseVideo: boolean;
 };
 
