@@ -41,6 +41,7 @@ export default function CallAlert({ callInvitation, onClose }: Props) {
 				<div className="flex flex-col items-center justify-center gap-[10px] text-4xl">
 					<div>
 						<Avatar
+							author={callInvitation?.caller.username}
 							src={callInvitation.caller.avatar}
 							className=""
 							onClose={onClose}

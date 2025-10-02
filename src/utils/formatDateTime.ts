@@ -47,4 +47,20 @@ function formatTime(isoString: string) {
 	});
 }
 
-export { formatDateTime, formatTime };
+const formatDate = (dateString: string) => {
+	const date = new Date(dateString);
+	const now = new Date();
+	const diffInHours = Math.floor(
+		(now.getTime() - date.getTime()) / (1000 * 60 * 60),
+	);
+
+	if (diffInHours < 1) {
+		return 'Vừa xong';
+	} else if (diffInHours < 24) {
+		return `${diffInHours} giờ trước`;
+	} else {
+		return date.toLocaleDateString('vi-VN');
+	}
+};
+
+export { formatDateTime, formatDate, formatTime };

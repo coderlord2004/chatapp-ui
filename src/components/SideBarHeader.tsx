@@ -28,11 +28,12 @@ export default function SideBarHeader({ onUpdateChatRoom }: Props) {
 	const settingMenu = [
 		{
 			title: 'Trang cá nhân',
+			accepted: true,
 			icon: (
 				<Avatar
-					redirectByUsername={authUser?.username || ''}
+					author={authUser?.username || ''}
 					src={authUser?.avatar || ''}
-					controls={true}
+					controls
 					className="h-10 w-10"
 				/>
 			),
@@ -42,10 +43,12 @@ export default function SideBarHeader({ onUpdateChatRoom }: Props) {
 		},
 		{
 			title: 'Cài đặt',
-			action: () => {},
+			accepted: true,
+			action: () => { },
 		},
 		{
 			title: 'logout',
+			accepted: true,
 			icon: <FaPowerOff className="text-[120%]" title="logout" />,
 			action: () => {
 				logout();

@@ -9,11 +9,13 @@ type UserInfo = {
 	totalFollowers: number;
 	totalFollowing: number;
 	totalPosts: number;
+	createdAt: string;
 };
 type UserWithAvatar = {
 	id: number;
 	username: string;
 	avatar: string | null;
+	isOnline: boolean;
 };
 type UserSearchResult = {
 	userDto: UserWithAvatar;

@@ -83,16 +83,17 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 								>
 									<div className="flex items-center justify-center gap-[10px]">
 										<Avatar
+											author={user.userDto.username}
 											src={user.userDto.avatar}
 											className="h-[40px] w-[40px]"
-											controls={true}
+											controls
 											onClose={onClose}
 										/>
 										<p>{user.userDto.username}</p>
 									</div>
 
 									{user.invitationDto &&
-									user.invitationDto.status === 'PENDING' ? (
+										user.invitationDto.status === 'PENDING' ? (
 										<div className="cursor-pointer">Đã gửi kết bạn.</div>
 									) : (
 										<div

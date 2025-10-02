@@ -30,7 +30,7 @@ export default function Header({ className }: Props) {
 				</Link>
 				<div className="flex items-center justify-center gap-[10px]">
 					<Avatar
-						redirectByUsername={authUser?.username}
+						author={authUser?.username || ''}
 						src={authUser?.avatar || ''}
 						className="h-full"
 						controls={true}

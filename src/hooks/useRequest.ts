@@ -15,14 +15,27 @@ export const useRequest = () => {
 				return;
 			}
 
-			console.log('error: ', error);
-			const message =
-				error.response?.data.message ||
-				error.response?.data.title ||
-				error.response?.data?.detail ||
-				error.message ||
-				'Lỗi từ máy chủ.';
-			showNotification({ type: 'error', message });
+			if (error.response) {
+				// Server trả về lỗi (4xx, 5xx)
+				console.log('Response error: ', error.response);
+				const message =
+					error.response.data?.message ||
+					error.response.data?.title ||
+					error.response.data?.detail ||
+					`Lỗi ${error.response.status}`;
+				showNotification({ type: 'error', message });
+			} else if (error.request) {
+				// Request gửi đi nhưng không nhận được phản hồi hợp lệ
+				console.log('No response received: ', error.request);
+				showNotification({
+					type: 'error',
+					message: 'Không nhận được phản hồi từ máy chủ (có thể do CORS hoặc mất kết nối).',
+				});
+			} else {
+				// Lỗi khác (cấu hình, v.v.)
+				console.log('Axios config error: ', error.message);
+				showNotification({ type: 'error', message: error.message });
+			}
 		},
 		[showNotification],
 	);
@@ -54,9 +67,9 @@ export const useRequest = () => {
 	);
 
 	const remove = useCallback(
-		async (url: string) => {
+		async (url: string, config = {}) => {
 			try {
-				const response = await request.delete(url);
+				const response = await request.delete(url, config);
 				return response.data;
 			} catch (error) {
 				handleError(error);

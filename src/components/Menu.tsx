@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 type MenuDataType = {
 	title: string;
+	accepted?: boolean;
 	icon?: React.ReactElement;
 	action: (index: number) => void;
 };
@@ -11,9 +12,10 @@ type Props = {
 	children: ReactNode;
 	data: MenuDataType[];
 	position?: 'top' | 'left' | 'right' | 'bottom';
+	className?: string;
 };
 
-export default function Menu({ children, data, position = 'bottom' }: Props) {
+export default function Menu({ children, data, position = 'bottom', className = "w-full h-full relative" }: Props) {
 	const [open, setOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 
@@ -47,14 +49,15 @@ export default function Menu({ children, data, position = 'bottom' }: Props) {
 	const getArrowPosition = () => {
 		switch (position) {
 			case 'top':
-				return 'bottom-[-6px] left-3 border-t-slate-700 border-x-transparent border-b-0';
+				return 'bottom-[-10px] left-3 border-t-slate-700 border-x-transparent border-b-0';
 			case 'left':
-				return 'right-[-6px] top-2.5 border-l-slate-700 border-y-transparent border-r-0';
+				return 'right-[-10px] top-2.5 border-l-slate-700 border-y-transparent border-r-0';
 			case 'right':
-				return 'left-[-6px] top-2.5 border-r-slate-700 border-y-transparent border-l-0';
+				return 'left-[-10px] top-2.5 border-r-slate-700 border-y-transparent border-l-0';
 			case 'bottom':
+				return 'top-[-10px] left-3 border-b-slate-700 border-x-transparent border-t-0';
 			default:
-				return 'top-[-6px] left-3 border-b-slate-700 border-x-transparent border-t-0';
+				return 'top-[-10px] left-3 border-b-slate-700 border-x-transparent border-t-0';
 		}
 	};
 
@@ -79,18 +82,14 @@ export default function Menu({ children, data, position = 'bottom' }: Props) {
 	};
 
 	return (
-		<div className="relative inline-block" ref={menuRef}>
-			<div onClick={toggleMenu} className="cursor-pointer select-none">
+		<div className={className} ref={menuRef}>
+			<div onClick={toggleMenu} className="w-full h-full cursor-pointer select-none">
 				{children}
 			</div>
 
 			<AnimatePresence>
 				{open && (
 					<>
-						<div
-							className={`absolute ${getArrowPosition()} z-50 h-0 w-0 border-4 border-solid`}
-						/>
-
 						<motion.div
 							initial="hidden"
 							animate="visible"
@@ -99,15 +98,20 @@ export default function Menu({ children, data, position = 'bottom' }: Props) {
 							className={`absolute ${getPositionClasses()} z-50 flex min-w-[150px] flex-col rounded-lg border border-gray-200 bg-slate-700 text-white shadow-lg`}
 						>
 							{data.map((ele, index) => (
-								<div
-									key={index}
-									onClick={() => handleClick(ele.action, index)}
-									className="flex cursor-pointer items-center justify-center gap-[10px] rounded-lg px-4 py-2 text-left text-sm first:rounded-t-lg last:rounded-b-lg hover:bg-blue-600"
-								>
-									<p>{ele.title}</p>
-									<div className="text-[130%]">{ele.icon}</div>
-								</div>
+								(ele.accepted ?? true) && (
+									<div
+										key={index}
+										onClick={() => handleClick(ele.action, index)}
+										className="flex cursor-pointer items-center justify-center gap-[10px] rounded-lg px-4 py-2 text-left text-sm first:rounded-t-lg last:rounded-b-lg hover:bg-blue-600"
+									>
+										<p>{ele.title}</p>
+										<div className="text-[130%]">{ele.icon}</div>
+									</div>
+								)
 							))}
+							<div
+								className={`absolute ${getArrowPosition()} z-50 border-[10px] border-solid`}
+							/>
 						</motion.div>
 					</>
 				)}

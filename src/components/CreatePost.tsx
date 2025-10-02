@@ -28,12 +28,6 @@ type CreatePostData = {
 	attachments: AttachmentType[];
 };
 
-type VisibilityMenuType = {
-	title: 'Công khai' | 'Bạn bè' | 'Chỉ mình tôi';
-	icon: React.ReactElement;
-	action: (index: number) => void;
-};
-
 type FileAttachmentType = {
 	source: string;
 	type: string;
@@ -51,21 +45,21 @@ export default function CreatePost({ onClose }: Props) {
 		visibility: 'PUBLIC',
 		attachments: [],
 	});
-	const visibilities: VisibilityMenuType[] = [
+	const visibilities = [
 		{
 			title: 'Công khai',
 			icon: <MdPublic />,
-			action: (index) => updateVisibility(index),
+			action: (index: number) => updateVisibility(index),
 		},
 		{
 			title: 'Bạn bè',
 			icon: <FaUserFriends />,
-			action: (index) => updateVisibility(index),
+			action: (index: number) => updateVisibility(index),
 		},
 		{
 			title: 'Chỉ mình tôi',
 			icon: <SiPrivateinternetaccess />,
-			action: (index) => updateVisibility(index),
+			action: (index: number) => updateVisibility(index),
 		},
 	];
 	function updateVisibility(index: number) {
@@ -139,7 +133,11 @@ export default function CreatePost({ onClose }: Props) {
 			<div className="mx-auto flex w-[400px] flex-col rounded-[7px] bg-blue-500 p-[10px] sm:w-[500px]">
 				<h1 className="text-center text-3xl">Tạo bài đăng</h1>
 				<div className="flex w-full items-center gap-[10px]">
-					<Avatar src={authUser?.avatar || ''} className="h-[50px] w-[50px]" />
+					<Avatar
+						author={authUser?.username || ''}
+						src={authUser?.avatar || ''}
+						className="h-[50px] w-[50px]"
+					/>
 					<div>
 						<p>{authUser?.username}</p>
 						<Menu data={visibilities}>

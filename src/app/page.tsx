@@ -125,8 +125,8 @@ export default function Page() {
 				<div className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-blue-500/5 to-purple-500/5 blur-3xl"></div>
 			</div>
 
-			<div className="z-10 flex min-h-screen flex-col items-center justify-center p-4 transition-all duration-500 dark:bg-gradient-to-br dark:from-black dark:via-gray-900 dark:to-black dark:text-white">
-				<header className="flex w-full max-w-7xl items-center justify-between rounded-2xl bg-slate-500 p-4 backdrop-blur-md sm:p-6 dark:bg-gray-900/80">
+			<div className="z-10 flex min-h-screen flex-col items-center justify-center px-[25px] py-4 transition-all duration-500 dark:bg-gradient-to-br dark:from-black dark:via-gray-900 dark:to-black dark:text-white">
+				<header className="flex w-full max-w-7xl h-[70px] items-center justify-between rounded-2xl bg-slate-500 p-4 backdrop-blur-md sm:p-6 dark:bg-gray-900/80">
 					<motion.div
 						initial={{ opacity: 0, x: -20 }}
 						animate={{ opacity: 1, x: 0 }}
@@ -213,7 +213,7 @@ export default function Page() {
 					>
 						<div className="space-y-6">
 							<motion.h1
-								className="text-4xl leading-tight font-bold sm:text-5xl lg:text-6xl"
+								className="text-2xl leading-tight font-bold sm:text-3xl lg:text-4xl"
 								variants={fadeIn}
 							>
 								Kết nối mọi lúc, <br />
@@ -237,7 +237,7 @@ export default function Page() {
 							</motion.h1>
 
 							<motion.p
-								className="text-xl text-gray-600 dark:text-gray-300"
+								className="text-[90%] text-gray-600 dark:text-gray-400 ml-[10px]"
 								variants={fadeIn}
 								transition={{ delay: 0.2 }}
 							>

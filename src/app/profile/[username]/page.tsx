@@ -10,6 +10,9 @@ import Skeleton from '@/components/Loading/Skeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import Post from '@/components/Post';
 import Link from 'next/link';
+import { formatDateTime } from '@/utils/formatDateTime';
+import Avatar from '@/components/Avatar';
+import CoverPicture from '@/components/CoverPicture';
 
 type ProfileType = {
 	user: UserInfo | null;
@@ -22,7 +25,7 @@ export default function Page({
 	params: Promise<{ username: string }>;
 }) {
 	const { username } = use(params);
-	const { get } = useRequest();
+	const { get, post } = useRequest();
 	const [profile, setProfile] = useState<ProfileType>({
 		user: null,
 		posts: [],
@@ -31,29 +34,35 @@ export default function Page({
 	const [isLoading, setIsLoading] = useState(true);
 	const { authUser } = useAuth();
 
-	useEffect(() => {
-		const getUser = async () => {
-			const data = await get('users/info/', {
-				params: {
-					username: username,
+	async function handleUpdateCover(e: React.ChangeEvent<HTMLInputElement>) {
+		if (e.target.files && e.target.files[0]) {
+			const formData = new FormData();
+			formData.append('coverPicture', e.target.files[0]);
+			const data = await post('users/cover-picture/update/', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
 				},
 			});
-			setIsLoading(false);
-			setProfile((prev) => ({
-				...prev,
-				user: data,
-			}));
-		};
-		if (authUser && authUser.username !== username) {
-			getUser();
-		} else if (authUser && authUser.username === username) {
-			setIsLoading(false);
-			setProfile((prev) => ({
-				...prev,
-				user: authUser,
-			}));
 		}
-	}, [username]);
+	}
+
+	useEffect(() => {
+		const getUser = async () => {
+			const data = await get('users/info/', { params: { username } });
+			setProfile((prev) => ({ ...prev, user: data }));
+			setIsLoading(false);
+		};
+
+		if (authUser) {
+			if (authUser.username === username) {
+				setProfile((prev) => ({ ...prev, user: authUser }));
+				setIsLoading(false);
+			} else {
+				getUser();
+			}
+		}
+	}, [username, authUser]);
+
 
 	useEffect(() => {
 		const getPosts = async () => {
@@ -72,35 +81,23 @@ export default function Page({
 
 	return (
 		<div className="min-h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
-			<div className="relative h-64 w-full overflow-hidden md:h-80">
-				{isLoading ? (
-					<Skeleton height="100%" className="rounded-none" />
-				) : profile.user?.coverPicture ? (
-					<img
-						src={profile.user.coverPicture}
-						alt="Cover"
-						className="h-full w-full object-cover"
-					/>
-				) : (
-					<div className="h-full w-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500"></div>
-				)}
-
-				<button className="group absolute right-4 bottom-4 rounded-full bg-white/80 p-2.5 backdrop-blur-sm transition-all duration-300 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-700">
-					<FiCamera className="text-gray-700 group-hover:text-purple-600 dark:text-gray-300 dark:group-hover:text-purple-400" />
-				</button>
-			</div>
+			<CoverPicture
+				src={profile.user?.coverPicture || ''}
+			/>
 
 			<div className="relative z-10 mx-auto -mt-16 max-w-4xl px-4 sm:px-6 md:-mt-24 lg:px-8">
-				<div className="flex flex-col items-center gap-6 pb-6 md:flex-row md:items-end">
-					<div className="relative">
-						<div className="relative h-32 w-32 overflow-hidden rounded-full bg-white ring-4 ring-white md:h-40 md:w-40 dark:bg-gray-800 dark:ring-gray-900">
+				<div className="flex flex-col items-center gap-6 pb-6 md:flex-row md:items-end relative">
+					<div className="avatar relative">
+						<div className="relative h-32 w-32 md:h-40 md:w-40">
 							{isLoading ? (
 								<Skeleton circle height="100%" className="rounded-full" />
 							) : profile.user?.avatar ? (
-								<img
-									src={profile.user.avatar}
-									alt={profile.user.username}
-									className="h-full w-full object-cover"
+								<Avatar
+									author={profile.user?.username || ''}
+									src={profile.user?.avatar}
+									className="h-full w-full"
+									square
+									controls
 								/>
 							) : (
 								<div className="flex h-full w-full items-center justify-center bg-gradient-to-r from-cyan-400 to-blue-500">
@@ -110,9 +107,10 @@ export default function Page({
 								</div>
 							)}
 						</div>
-						<button className="group absolute right-2 bottom-2 rounded-full bg-white/80 p-2 backdrop-blur-sm transition-all duration-300 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-700">
-							<FiCamera className="text-sm text-gray-700 group-hover:text-purple-600 dark:text-gray-300 dark:group-hover:text-purple-400" />
-						</button>
+
+						<div className="p-2 text-sm text-gray-700 hover:text-purple-900 dark:text-gray-300 dark:hover:text-purple-400 dark:bg-gray-800/80 dark:hover:bg-gray-700 cursor-pointer absolute right-2 bottom-2 rounded-[50%] bg-white/80 backdrop-blur-sm transition-all duration-300 hover:bg-white">
+							<FiCamera />
+						</div>
 					</div>
 
 					<div className="flex-1 text-center md:text-left">
@@ -139,7 +137,6 @@ export default function Page({
 						<div className="mt-4 flex justify-center gap-3 md:justify-start">
 							{authUser?.username === username ? (
 								<button className="flex transform cursor-pointer items-center gap-2 rounded-full bg-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-purple-700 hover:shadow-purple-500/25">
-									<FiEdit size={14} />
 									Chỉnh sửa hồ sơ
 								</button>
 							) : (
@@ -156,6 +153,8 @@ export default function Page({
 							</Link>
 						</div>
 					</div>
+
+					<div className="w-[700px] h-[700px] bg-gradient-to-b from-yellow-400/90 via-yellow-200/40 to-transparent [clip-path:polygon(50%_0%,_25%_100%,_75%_100%)] absolute transform top-[-135%] left-[-32%] rotate-[-25deg] sm:top-[-133%] sm:left-[-32%] sm:rotate-[-50deg] -z-10" />
 				</div>
 
 				<div className="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">
@@ -192,7 +191,7 @@ export default function Page({
 								</div>
 								<div className="flex items-center gap-1.5">
 									<FiCalendar size={16} />
-									<span>Joined April 2023</span>
+									<span>Joined {formatDateTime(profile?.user?.createdAt)}</span>
 								</div>
 							</div>
 
