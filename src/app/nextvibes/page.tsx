@@ -10,7 +10,7 @@ import Post from '@/components/Post';
 
 type Props = {};
 
-export default function Page({ }: Props) {
+export default function Page({}: Props) {
 	const [newsFeeds, setNewsFeeds] = useState<PostType[]>([]);
 	const { get } = useRequest();
 

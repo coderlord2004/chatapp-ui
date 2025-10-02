@@ -58,7 +58,7 @@ export default function Avatar({
 		{
 			accepted: author !== authUser?.username,
 			title: 'Chặn',
-			action: () => { },
+			action: () => {},
 		},
 	];
 
@@ -82,7 +82,7 @@ export default function Avatar({
 	}
 
 	return (
-		<div className={className + ' cursor-pointer rounded-[50%] relative'}>
+		<div className={className + ' relative cursor-pointer rounded-[50%]'}>
 			<input
 				type="file"
 				accept="image/*"
@@ -92,7 +92,7 @@ export default function Avatar({
 			/>
 
 			{loading && (
-				<div className='absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-[50%] bg-black/70'>
+				<div className="absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-[50%] bg-black/70">
 					<Throbber />
 				</div>
 			)}
@@ -100,7 +100,10 @@ export default function Avatar({
 			{controls ? (
 				<Menu data={menuData}>
 					<div
-						className={className + ` flex cursor-pointer items-center justify-center ${square ? 'rounded-[10px] relative' : 'rounded-[50%]'} group`}
+						className={
+							className +
+							` flex cursor-pointer items-center justify-center ${square ? 'relative rounded-[10px]' : 'rounded-[50%]'} group`
+						}
 					>
 						{avatarUrl ? (
 							<>
@@ -108,21 +111,21 @@ export default function Avatar({
 								<img
 									src={avatarUrl}
 									alt=""
-									className={`h-full w-full object-cover ${square ? 'rounded-[10px] relative' : 'rounded-[50%]'}`}
+									className={`h-full w-full object-cover ${square ? 'relative rounded-[10px]' : 'rounded-[50%]'}`}
 									style={{
 										boxShadow: '0 6px 16px rgba(0, 0, 0, 0.25)',
-										filter: 'contrast(1.05) saturate(1.1)'
+										filter: 'contrast(1.05) saturate(1.1)',
 									}}
 								/>
 
 								{square && avatarUrl && (
-									<div className='w-full h-full absolute top-3 left-3 rounded-[10px] -z-1'>
+									<div className="absolute top-3 left-3 -z-1 h-full w-full rounded-[10px]">
 										<img
 											src={avatarUrl}
 											alt=""
-											className={`w-full h-full object-cover rounded-[10px]`}
+											className={`h-full w-full rounded-[10px] object-cover`}
 											style={{
-												filter: 'blur(2px) brightness(0.7)'
+												filter: 'blur(2px) brightness(0.7)',
 											}}
 										/>
 									</div>
@@ -157,7 +160,10 @@ export default function Avatar({
 			)}
 
 			{isViewAvatar && (
-				<div className="fixed inset-0 z-50 flex h-full w-full p-4 bg-black/70" onClick={() => setIsViewAvatar(false)}>
+				<div
+					className="fixed inset-0 z-50 flex h-full w-full bg-black/70 p-4"
+					onClick={() => setIsViewAvatar(false)}
+				>
 					<img
 						src={avatarUrl || ''}
 						alt=""

@@ -15,7 +15,12 @@ type Props = {
 	className?: string;
 };
 
-export default function Menu({ children, data, position = 'bottom', className = "w-full h-full relative" }: Props) {
+export default function Menu({
+	children,
+	data,
+	position = 'bottom',
+	className = 'w-full h-full relative',
+}: Props) {
 	const [open, setOpen] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 
@@ -83,7 +88,10 @@ export default function Menu({ children, data, position = 'bottom', className = 
 
 	return (
 		<div className={className} ref={menuRef}>
-			<div onClick={toggleMenu} className="w-full h-full cursor-pointer select-none">
+			<div
+				onClick={toggleMenu}
+				className="h-full w-full cursor-pointer select-none"
+			>
 				{children}
 			</div>
 
@@ -97,18 +105,19 @@ export default function Menu({ children, data, position = 'bottom', className = 
 							variants={menuVariants}
 							className={`absolute ${getPositionClasses()} z-50 flex min-w-[150px] flex-col rounded-lg border border-gray-200 bg-slate-700 text-white shadow-lg`}
 						>
-							{data.map((ele, index) => (
-								(ele.accepted ?? true) && (
-									<div
-										key={index}
-										onClick={() => handleClick(ele.action, index)}
-										className="flex cursor-pointer items-center justify-center gap-[10px] rounded-lg px-4 py-2 text-left text-sm first:rounded-t-lg last:rounded-b-lg hover:bg-blue-600"
-									>
-										<p>{ele.title}</p>
-										<div className="text-[130%]">{ele.icon}</div>
-									</div>
-								)
-							))}
+							{data.map(
+								(ele, index) =>
+									(ele.accepted ?? true) && (
+										<div
+											key={index}
+											onClick={() => handleClick(ele.action, index)}
+											className="flex cursor-pointer items-center justify-center gap-[10px] rounded-lg px-4 py-2 text-left text-sm first:rounded-t-lg last:rounded-b-lg hover:bg-blue-600"
+										>
+											<p>{ele.title}</p>
+											<div className="text-[130%]">{ele.icon}</div>
+										</div>
+									),
+							)}
 							<div
 								className={`absolute ${getArrowPosition()} z-50 border-[10px] border-solid`}
 							/>

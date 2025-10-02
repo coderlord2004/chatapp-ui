@@ -29,7 +29,8 @@ export const useRequest = () => {
 				console.log('No response received: ', error.request);
 				showNotification({
 					type: 'error',
-					message: 'Không nhận được phản hồi từ máy chủ (có thể do CORS hoặc mất kết nối).',
+					message:
+						'Không nhận được phản hồi từ máy chủ (có thể do CORS hoặc mất kết nối).',
 				});
 			} else {
 				// Lỗi khác (cấu hình, v.v.)

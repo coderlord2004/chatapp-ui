@@ -28,14 +28,11 @@ export default function Invitations({ onUpdateChatRooms }: Props) {
 				id: senderInvitation.chatRoomId,
 				name: null,
 				avatar: senderInvitation.sender.avatar,
-				members: [
-					senderInvitation.sender,
-					senderInvitation.receiver,
-				],
+				members: [senderInvitation.sender, senderInvitation.receiver],
 				type: senderInvitation.chatRoomId ? 'GROUP' : 'DUO',
 				createdOn: Date.now().toString(),
 				latestMessage: null,
-				firstMessagePage: null
+				firstMessagePage: null,
 			};
 
 			onUpdateChatRooms(newChatRoom);

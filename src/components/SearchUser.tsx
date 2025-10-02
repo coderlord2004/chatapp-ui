@@ -93,7 +93,7 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 									</div>
 
 									{user.invitationDto &&
-										user.invitationDto.status === 'PENDING' ? (
+									user.invitationDto.status === 'PENDING' ? (
 										<div className="cursor-pointer">Đã gửi kết bạn.</div>
 									) : (
 										<div

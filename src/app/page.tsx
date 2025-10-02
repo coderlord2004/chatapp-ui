@@ -126,7 +126,7 @@ export default function Page() {
 			</div>
 
 			<div className="z-10 flex min-h-screen flex-col items-center justify-center px-[25px] py-4 transition-all duration-500 dark:bg-gradient-to-br dark:from-black dark:via-gray-900 dark:to-black dark:text-white">
-				<header className="flex w-full max-w-7xl h-[70px] items-center justify-between rounded-2xl bg-slate-500 p-4 backdrop-blur-md sm:p-6 dark:bg-gray-900/80">
+				<header className="flex h-[70px] w-full max-w-7xl items-center justify-between rounded-2xl bg-slate-500 p-4 backdrop-blur-md sm:p-6 dark:bg-gray-900/80">
 					<motion.div
 						initial={{ opacity: 0, x: -20 }}
 						animate={{ opacity: 1, x: 0 }}
@@ -237,7 +237,7 @@ export default function Page() {
 							</motion.h1>
 
 							<motion.p
-								className="text-[90%] text-gray-600 dark:text-gray-400 ml-[10px]"
+								className="ml-[10px] text-[90%] text-gray-600 dark:text-gray-400"
 								variants={fadeIn}
 								transition={{ delay: 0.2 }}
 							>

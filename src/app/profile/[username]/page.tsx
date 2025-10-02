@@ -63,7 +63,6 @@ export default function Page({
 		}
 	}, [username, authUser]);
 
-
 	useEffect(() => {
 		const getPosts = async () => {
 			const data = await get(`posts/get/${username}`, {
@@ -81,12 +80,10 @@ export default function Page({
 
 	return (
 		<div className="min-h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
-			<CoverPicture
-				src={profile.user?.coverPicture || ''}
-			/>
+			<CoverPicture src={profile.user?.coverPicture || ''} />
 
 			<div className="relative z-10 mx-auto -mt-16 max-w-4xl px-4 sm:px-6 md:-mt-24 lg:px-8">
-				<div className="flex flex-col items-center gap-6 pb-6 md:flex-row md:items-end relative">
+				<div className="relative flex flex-col items-center gap-6 pb-6 md:flex-row md:items-end">
 					<div className="avatar relative">
 						<div className="relative h-32 w-32 md:h-40 md:w-40">
 							{isLoading ? (
@@ -108,7 +105,7 @@ export default function Page({
 							)}
 						</div>
 
-						<div className="p-2 text-sm text-gray-700 hover:text-purple-900 dark:text-gray-300 dark:hover:text-purple-400 dark:bg-gray-800/80 dark:hover:bg-gray-700 cursor-pointer absolute right-2 bottom-2 rounded-[50%] bg-white/80 backdrop-blur-sm transition-all duration-300 hover:bg-white">
+						<div className="absolute right-2 bottom-2 cursor-pointer rounded-[50%] bg-white/80 p-2 text-sm text-gray-700 backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-purple-900 dark:bg-gray-800/80 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-purple-400">
 							<FiCamera />
 						</div>
 					</div>
@@ -154,7 +151,7 @@ export default function Page({
 						</div>
 					</div>
 
-					<div className="w-[700px] h-[700px] bg-gradient-to-b from-yellow-400/90 via-yellow-200/40 to-transparent [clip-path:polygon(50%_0%,_25%_100%,_75%_100%)] absolute transform top-[-135%] left-[-32%] rotate-[-25deg] sm:top-[-133%] sm:left-[-32%] sm:rotate-[-50deg] -z-10" />
+					<div className="absolute top-[-135%] left-[-32%] -z-10 h-[700px] w-[700px] rotate-[-25deg] transform bg-gradient-to-b from-yellow-400/90 via-yellow-200/40 to-transparent [clip-path:polygon(50%_0%,_25%_100%,_75%_100%)] sm:top-[-133%] sm:left-[-32%] sm:rotate-[-50deg]" />
 				</div>
 
 				<div className="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">

@@ -123,10 +123,7 @@ export default function Post({ data }: Props) {
 			/>
 
 			{showPostDetail && (
-				<PostDetail
-					data={data}
-					onClose={() => setShowPostDetail(false)}
-				/>
+				<PostDetail data={data} onClose={() => setShowPostDetail(false)} />
 			)}
 		</div>
 	);

@@ -44,7 +44,7 @@ export default function SideBarHeader({ onUpdateChatRoom }: Props) {
 		{
 			title: 'Cài đặt',
 			accepted: true,
-			action: () => { },
+			action: () => {},
 		},
 		{
 			title: 'logout',
