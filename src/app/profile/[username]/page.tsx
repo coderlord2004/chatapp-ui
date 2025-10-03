@@ -150,8 +150,6 @@ export default function Page({
 							</Link>
 						</div>
 					</div>
-
-					<div className="absolute top-[-135%] left-[-32%] -z-10 h-[700px] w-[700px] rotate-[-25deg] transform bg-gradient-to-b from-yellow-400/90 via-yellow-200/40 to-transparent [clip-path:polygon(50%_0%,_25%_100%,_75%_100%)] sm:top-[-133%] sm:left-[-32%] sm:rotate-[-50deg]" />
 				</div>
 
 				<div className="mt-6 rounded-xl border border-gray-100 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800">

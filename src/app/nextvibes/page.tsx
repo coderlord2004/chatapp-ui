@@ -7,10 +7,11 @@ import { motion } from 'framer-motion';
 import { FaRegThumbsUp, FaRegCommentDots, FaShare } from 'react-icons/fa';
 import Header from '@/components/Header';
 import Post from '@/components/Post';
+import FriendSuggesstion from '@/components/FriendSuggesstion';
 
 type Props = {};
 
-export default function Page({}: Props) {
+export default function Page({ }: Props) {
 	const [newsFeeds, setNewsFeeds] = useState<PostType[]>([]);
 	const { get } = useRequest();
 
@@ -23,12 +24,28 @@ export default function Page({}: Props) {
 	}, []);
 
 	return (
-		<div className="relative flex h-screen justify-center bg-gray-900 text-gray-100">
-			<Header className="h-[70px]" />
-			<div className="w-full max-w-2xl space-y-6 overflow-y-auto p-4">
-				{newsFeeds.map((post, index) => (
-					<Post data={post} />
-				))}
+		<div className="relative flex h-screen justify-center bg-gray-900 text-gray-100 overflow-y-auto">
+			<Header
+				className="w-full h-[70px]"
+				onFocusInput={() => { }}
+			/>
+			<div className='flex w-full h-full mt-[70px]'>
+				<div className='fixed top-[70px] left-0 w-[20%] h-full p-4 bg-red-800 text-gray-100 hidden sm:block'>
+
+				</div>
+				<div className="w-[60%] mx-auto flex flex-col items-center justify-start">
+					{newsFeeds.map((post, index) => (
+						<Post
+							key={post.id}
+							data={post}
+						/>
+					))}
+				</div>
+				<div
+					className='fixed top-[70px] right-0 w-[20%] h-full p-4 bg-gray-800 text-gray-100 hidden sm:block'
+				>
+					<FriendSuggesstion />
+				</div>
 			</div>
 		</div>
 	);

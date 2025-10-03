@@ -7,10 +7,11 @@ import PostInteraction from './PostInteraction';
 import { formatDate } from '@/utils/formatDateTime';
 
 type Props = {
+	order?: number;
 	data: PostType;
 };
 
-export default function Post({ data }: Props) {
+export default function Post({ order, data }: Props) {
 	const { get, post } = useRequest();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [showPostDetail, setShowPostDetail] = useState(false);
@@ -41,7 +42,10 @@ export default function Post({ data }: Props) {
 	};
 
 	return (
-		<div className="mb-4 overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-lg">
+		<div
+			className={`w-full min-h-[300px] mb-4 overflow-hidden rounded-xl bg-white text-black shadow-sm transition-all duration-300 hover:shadow-lg animate-fadeInUp`}
+			style={{ animationDelay: `${(order ?? 0) * 0.1}s` }}
+		>
 			<div className="flex items-center justify-between p-4">
 				<div className="flex items-center">
 					<div className="flex w-full items-center gap-[10px]">

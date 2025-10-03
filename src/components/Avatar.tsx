@@ -38,7 +38,6 @@ export default function Avatar({
 
 	const menuData = [
 		{
-			accepted: author !== authUser?.username,
 			title: 'Xem trang cá nhân',
 			action: () => {
 				router.push(`/profile/${author}`);
@@ -58,7 +57,7 @@ export default function Avatar({
 		{
 			accepted: author !== authUser?.username,
 			title: 'Chặn',
-			action: () => {},
+			action: () => { },
 		},
 	];
 

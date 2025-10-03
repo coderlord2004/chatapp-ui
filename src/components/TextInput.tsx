@@ -8,6 +8,7 @@ type Props = {
 	placeHolder?: string;
 	focus?: boolean;
 	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onFocus?: () => void;
 };
 
 export function TextInput({
@@ -18,6 +19,7 @@ export function TextInput({
 	placeHolder,
 	focus,
 	onChange,
+	onFocus
 }: Props) {
 	const internalRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +43,7 @@ export function TextInput({
 				name={name}
 				value={value}
 				onChange={(e) => onChange && onChange(e)}
+				onFocus={() => onFocus && onFocus()}
 				placeholder={placeHolder}
 				className="h-full w-full rounded-lg px-4 py-2 text-gray-100 focus:border-transparent focus:outline-none"
 			/>

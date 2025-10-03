@@ -2,15 +2,27 @@ import { useState } from 'react';
 import CreatePost from './CreatePost';
 import { IoIosAddCircleOutline } from 'react-icons/io';
 
-export default function CreatePostIcon() {
-	const [open, setOpen] = useState(false);
+type Props = {
+	openCreatePost: boolean;
+	onCloseCreatePost: () => void;
+};
+
+export default function CreatePostIcon({ openCreatePost, onCloseCreatePost }: Props) {
+	const [open, setOpen] = useState(openCreatePost);
 
 	return (
-		<div>
-			<div className="text-3xl" onClick={() => setOpen(true)}>
+		<div className=''>
+			<div className="cursor-pointer hover:text-blue-600 text-3xl" onClick={() => setOpen(true)}>
 				<IoIosAddCircleOutline />
 			</div>
-			{open && <CreatePost onClose={() => setOpen(false)} />}
+			{(openCreatePost || open) &&
+				<CreatePost
+					onClose={() => {
+						setOpen(false);
+						onCloseCreatePost();
+					}}
+				/>
+			}
 		</div>
 	);
 }

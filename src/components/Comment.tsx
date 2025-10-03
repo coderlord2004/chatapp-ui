@@ -6,6 +6,9 @@ import { FaReply } from 'react-icons/fa';
 import { formatDate } from '@/utils/formatDateTime';
 import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
 import Menu from './Menu';
+import { MdDelete, MdOutlineReportGmailerrorred, MdBlockFlipped } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
+import { useAuth } from '@/contexts/AuthContext';
 
 type Props = {
 	data: CommentResponse;
@@ -13,6 +16,7 @@ type Props = {
 };
 
 export default function Comment({ data, level }: Props) {
+	const { authUser } = useAuth();
 	const { get, post, remove, patch } = useRequest();
 	const [childComments, setChildComments] = useState<CommentResponse[]>([]);
 	const [showReplyComment, setShowReplyComment] = useState(false);
@@ -22,11 +26,14 @@ export default function Comment({ data, level }: Props) {
 
 	const commentMenuData = [
 		{
+			accepted: authUser?.id !== data.commentData.user.id,
+			icon: <MdOutlineReportGmailerrorred className="" />,
 			title: 'Báo cáo bình luận',
-			action: () => {},
+			action: () => { },
 		},
 		{
 			title: 'Chỉnh sửa bình luận',
+			icon: <CiEdit className="text-green-500" />,
 			action: () => {
 				commentEditRef.current?.focus();
 				setIsEditing(!isEditing);
@@ -34,11 +41,14 @@ export default function Comment({ data, level }: Props) {
 		},
 		{
 			title: 'Xóa bình luận',
+			icon: <MdDelete className="text-red-500" />,
 			action: () => handleDeleteComment(data.commentData.id),
 		},
 		{
+			accepted: authUser?.id !== data.commentData.user.id,
+			icon: <MdBlockFlipped className="text-red-600" />,
 			title: 'Chặn người dùng',
-			action: () => {},
+			action: () => { },
 		},
 	];
 
