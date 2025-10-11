@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { PostType } from '@/types/Post';
 import { useRequest } from '@/hooks/useRequest';
-import { motion } from 'framer-motion';
-import { FaRegThumbsUp, FaRegCommentDots, FaShare } from 'react-icons/fa';
 import Header from '@/components/Header';
 import Post from '@/components/Post';
 import FriendSuggesstion from '@/components/FriendSuggesstion';

@@ -5,14 +5,24 @@ import { useRequest } from '@/hooks/useRequest';
 import PostDetail from './PostDetail';
 import PostInteraction from './PostInteraction';
 import { formatDate } from '@/utils/formatDateTime';
+import AudioCard from './AudioCard';
+import Menu from './Menu';
+import { useNotification } from '@/hooks/useNotification';
+import { useAuth } from '@/contexts/AuthContext';
+import { FaRegEdit } from "react-icons/fa";
+import { MdDelete, MdOutlineReport, MdBlock } from "react-icons/md";
+import { VscInspect } from "react-icons/vsc";
 
 type Props = {
 	order?: number;
 	data: PostType;
+	onRemove?: (id: number) => void;
 };
 
-export default function Post({ order, data }: Props) {
-	const { get, post } = useRequest();
+export default function Post({ order, data, onRemove }: Props) {
+	const { authUser } = useAuth();
+	const { get, post, remove } = useRequest();
+	const { showNotification } = useNotification();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [showPostDetail, setShowPostDetail] = useState(false);
 
@@ -41,9 +51,55 @@ export default function Post({ order, data }: Props) {
 		}
 	};
 
+	async function deletePost() {
+		if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+			const res = await remove(`posts/delete/`, {
+				params: { postId: data.id },
+			});
+			showNotification({
+				type: 'success',
+				message: res,
+			});
+			onRemove && onRemove(data.id);
+		}
+	}
+
+	const postMenuItems = [
+		{
+			accepted: authUser?.username === data.author.username,
+			title: 'Chỉnh sửa bài viết',
+			icon: <FaRegEdit className='text-2xl bg-green-400' />,
+			action: () => { }
+		},
+		{
+			accepted: authUser?.username === data.author.username,
+			title: 'Xóa bài viết',
+			icon: <MdDelete className='text-2xl bg-red-400' />,
+			action: () => deletePost()
+		},
+		{
+			accepted: true,
+			title: 'Xác thực nội dung bài viết',
+			icon: <VscInspect className='text-2xl bg-blue-400' />,
+			action: () => { }
+		},
+		{
+			accepted: true,
+			title: 'Báo cáo bài viết',
+			icon: <MdOutlineReport className='text-2xl bg-yellow-400' />,
+			action: () => { }
+		},
+		{
+			accepted: true,
+			title: 'Chặn người dùng',
+			icon: <MdBlock className='text-2xl bg-red-400' />,
+			action: () => { }
+		}
+	];
+
 	return (
 		<div
-			className={`w-full min-h-[300px] mb-4 overflow-hidden rounded-xl bg-white text-black shadow-sm transition-all duration-300 hover:shadow-lg animate-fadeInUp`}
+			className={`w-full min-h-[300px] mb-4 rounded-xl bg-white text-black shadow-sm transition-all duration-300 hover:shadow-lg`}
 			style={{ animationDelay: `${(order ?? 0) * 0.1}s` }}
 		>
 			<div className="flex items-center justify-between p-4">
@@ -65,9 +121,13 @@ export default function Post({ order, data }: Props) {
 						</div>
 					</div>
 				</div>
-				<button className="flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100">
-					<span className="text-xl">⋮</span>
-				</button>
+				<Menu
+					data={postMenuItems}
+				>
+					<button className="flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100">
+						<span className="text-xl">⋮</span>
+					</button>
+				</Menu>
 			</div>
 
 			<div className="px-4">
@@ -103,11 +163,19 @@ export default function Post({ order, data }: Props) {
 										alt={`Media ${index + 1}`}
 										className="h-auto w-full object-cover"
 									/>
-								) : (
+								) : attachment.type === 'VIDEO' ? (
 									<video controls className="h-auto w-full">
 										<source src={attachment.source} type="video/mp4" />
 										Trình duyệt của bạn không hỗ trợ video.
 									</video>
+								) : attachment.type === 'AUDIO' ? (
+									<AudioCard
+										name={attachment.name}
+										src={attachment.source}
+										description={attachment.description}
+									/>
+								) : (
+									<div></div>
 								)}
 							</div>
 						))}

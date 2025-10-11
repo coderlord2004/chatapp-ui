@@ -6,14 +6,33 @@ import Avatar from "./Avatar";
 type Props = {
 }
 
+type FriendSuggestion = {
+    requested: boolean;
+    user: UserWithAvatar;
+}
+
 export default function FriendSuggesstion({ }: Props) {
-    const { get } = useRequest();
-    const [friendSuggestions, setFriendSuggestions] = useState<UserWithAvatar[]>([]);
+    const { get, post } = useRequest();
+    const [friendSuggestions, setFriendSuggestions] = useState<FriendSuggestion[]>([]);
+
+    async function addFriend(receiverUserName: string) {
+        await post('invitations', { receiverUserName });
+        setFriendSuggestions(prev => prev.map(suggestion => {
+            if (suggestion.user.username === receiverUserName) {
+                return { ...suggestion, requested: true };
+            }
+            return suggestion;
+        }));
+    }
 
     useEffect(() => {
         const fetchSuggestions = async () => {
             const data = await get('users/friend-suggestions/', { params: { page: 1 } });
-            setFriendSuggestions(data);
+            const newData: FriendSuggestion[] = data.map((user: UserWithAvatar) => ({
+                requested: false,
+                user,
+            }));
+            setFriendSuggestions(newData);
         }
         fetchSuggestions();
     }, [])
@@ -23,17 +42,26 @@ export default function FriendSuggesstion({ }: Props) {
             <h1>Gợi ý kết bạn</h1>
 
             <div className="mt-4 flex flex-col gap-2">
-                {friendSuggestions.map((user) => (
-                    <div key={user.id} className="flex items-center space-x-4 mb-4">
+                {friendSuggestions.map((f) => (
+                    <div key={f.user.id} className="flex items-center space-x-4 mb-4">
                         <Avatar
-                            author={user.username}
-                            src={user.avatar}
+                            author={f.user.username}
+                            src={f.user.avatar}
                             className="h-10 w-10"
                         />
-                        <p className="text-sm text-gray-500">{user.username}</p>
-                        <button className="ml-auto px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
-                            Thêm bạn bè
-                        </button>
+                        <p className="text-sm text-gray-500">{f.user.username}</p>
+                        {f.requested ? (
+                            <button disabled className="ml-auto px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed">
+                                Đã gửi lời mời
+                            </button>
+                        ) : (
+                            <button
+                                className="ml-auto px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                onClick={() => addFriend(f.user.username)}
+                            >
+                                Thêm bạn bè
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>

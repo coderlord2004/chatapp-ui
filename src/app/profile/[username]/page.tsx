@@ -34,18 +34,6 @@ export default function Page({
 	const [isLoading, setIsLoading] = useState(true);
 	const { authUser } = useAuth();
 
-	async function handleUpdateCover(e: React.ChangeEvent<HTMLInputElement>) {
-		if (e.target.files && e.target.files[0]) {
-			const formData = new FormData();
-			formData.append('coverPicture', e.target.files[0]);
-			const data = await post('users/cover-picture/update/', formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
-			});
-		}
-	}
-
 	useEffect(() => {
 		const getUser = async () => {
 			const data = await get('users/info/', { params: { username } });
@@ -103,10 +91,6 @@ export default function Page({
 									</span>
 								</div>
 							)}
-						</div>
-
-						<div className="absolute right-2 bottom-2 cursor-pointer rounded-[50%] bg-white/80 p-2 text-sm text-gray-700 backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-purple-900 dark:bg-gray-800/80 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-purple-400">
-							<FiCamera />
 						</div>
 					</div>
 
@@ -236,7 +220,16 @@ export default function Page({
 
 				<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{profile.posts.map((post) => (
-						<Post key={post.id} data={post} />
+						<Post
+							key={post.id}
+							data={post}
+							onRemove={(id) =>
+								setProfile((prev) => ({
+									...prev,
+									posts: prev.posts.filter((p) => p.id !== id),
+								}))
+							}
+						/>
 					))}
 				</div>
 			</div>

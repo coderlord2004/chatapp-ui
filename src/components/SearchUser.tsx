@@ -20,7 +20,7 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 	const searchInput = useRef<HTMLInputElement | null>(null);
 
 	const sendInvitation = async (receiverName: string, roomId = null) => {
-		await post('invitations/', {
+		await post('invitations', {
 			receiverUserName: receiverName,
 			chatGroupId: roomId || chatGroupId,
 		});

@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import CreatePostIcon from './CreatePostIcon';
 import { routes } from '@/lib/routes';
 import { useState } from 'react';
+import NotificationIcon from './NotificationIcon';
 
 type Props = {
 	className: string;
@@ -58,6 +59,8 @@ export default function Header({ className, onFocusInput }: Props) {
 					/>
 				</div>
 			</div>
+
+			<NotificationIcon />
 		</header>
 	);
 }

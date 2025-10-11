@@ -10,7 +10,7 @@ function useInvitations() {
 
 	useEffect(() => {
 		async function fetchInvitations() {
-			const data = await get(`invitations/`);
+			const data = await get(`invitations`);
 			setInvitations(data);
 		}
 		fetchInvitations();
