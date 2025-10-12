@@ -3,14 +3,21 @@ import { useState, useRef } from 'react';
 import { PostType } from '@/types/Post';
 import { useRequest } from '@/hooks/useRequest';
 import { getReactionType } from '@/const/ReactionTypes';
+import PostDetail from './PostDetail';
+import { CommentType } from '@/types/Comment';
+import Comment from './Comment';
+import { useAuth } from '@/contexts/AuthContext';
+import CreatePost from './CreatePost';
 
 type Props = {
 	data: PostType;
-	onShowPostDetail: () => void;
 };
 
-export default function PostInteraction({ data, onShowPostDetail }: Props) {
+export default function PostInteraction({ data }: Props) {
+	const { authUser } = useAuth();
 	const { post } = useRequest();
+	const [showPostDetail, setShowPostDetail] = useState(false);
+	const [showCreatePost, setShowCreatePost] = useState(false);
 	const [numberInteraction, setNumberInteraction] = useState({
 		reactionData: {
 			totalReactions: data.totalReactions,
@@ -20,6 +27,7 @@ export default function PostInteraction({ data, onShowPostDetail }: Props) {
 		totalShares: data.totalShares,
 	});
 	const [showComments, setShowComments] = useState(false);
+	const [commentVirtual, setCommentVirtual] = useState<CommentType | null>(null);
 	const commentTextRef = useRef<HTMLInputElement | null>(null);
 
 	const handleCommentPost = async (targetId: number) => {
@@ -37,14 +45,25 @@ export default function PostInteraction({ data, onShowPostDetail }: Props) {
 			...prev,
 			totalComments: prev.totalComments + 1,
 		}));
+		setCommentVirtual({
+			id: Math.floor(Math.random() * 1000000),
+			user: {
+				id: authUser?.id || 0,
+				username: authUser?.username || '',
+				avatar: authUser?.avatar || '',
+				isOnline: false,
+			},
+			content: content,
+			commentedAt: new Date().toISOString(),
+		});
 	};
-	const handleSharePost = async () => {};
+	const handleSharePost = async () => { };
 
 	return (
 		<div>
 			<div
-				className="flex min-h-[40px] cursor-pointer items-center justify-between border-t border-b border-gray-200 px-4 py-2 text-sm"
-				onClick={onShowPostDetail}
+				className="flex min-h-[40px] cursor-pointer items-center justify-between border-t border-b border-gray-400 px-4 py-2 text-sm"
+				onClick={() => setShowPostDetail(true)}
 			>
 				{numberInteraction.reactionData.totalReactions > 0 && (
 					<div className="flex items-center">
@@ -89,9 +108,9 @@ export default function PostInteraction({ data, onShowPostDetail }: Props) {
 								)
 									? prev.reactionData.topReactionTypes
 									: [...prev.reactionData.topReactionTypes, reactionType].slice(
-											0,
-											3,
-										),
+										0,
+										3,
+									),
 							},
 						}))
 					}
@@ -105,11 +124,24 @@ export default function PostInteraction({ data, onShowPostDetail }: Props) {
 					<span className="font-medium">Bình luận</span>
 				</button>
 
-				<button className="mx-1 flex flex-1 items-center justify-center rounded-lg py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-100">
+				<button
+					className="mx-1 flex flex-1 items-center justify-center rounded-lg py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-100 cursor-pointer"
+					onClick={() => setShowCreatePost(true)}
+				>
 					<span className="mr-2 text-lg">↪️</span>
 					<span className="font-medium">Chia sẻ</span>
 				</button>
 			</div>
+
+			{commentVirtual && (
+				<Comment
+					data={{
+						commentData: commentVirtual,
+						totalChildComments: 0
+					}}
+					level={0}
+				/>
+			)}
 
 			{showComments && (
 				<div className="animate-fadeIn border-t border-gray-100 p-4">
@@ -134,6 +166,17 @@ export default function PostInteraction({ data, onShowPostDetail }: Props) {
 						</button>
 					</form>
 				</div>
+			)}
+
+			{showPostDetail && (
+				<PostDetail data={data} onClose={() => setShowPostDetail(false)} />
+			)}
+
+			{showCreatePost && (
+				<CreatePost
+					sharedPost={data}
+					onClose={() => setShowCreatePost(false)}
+				/>
 			)}
 		</div>
 	);

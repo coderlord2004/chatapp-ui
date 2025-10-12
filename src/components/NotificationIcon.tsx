@@ -28,7 +28,7 @@ export default function NotificationIcon({ }: Props) {
         <div className="relative">
             <div
                 onClick={() => setShowNotifications(true)}
-                className="text-3xl cursor-pointer"
+                className="text-3xl text-white cursor-pointer"
             >
                 <IoIosNotifications />
             </div>

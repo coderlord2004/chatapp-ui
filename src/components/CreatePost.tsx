@@ -10,8 +10,10 @@ import { SiPrivateinternetaccess } from 'react-icons/si';
 import Avatar from './Avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import ThrobberLoader from './Loading/ThrobberLoader';
+import Post from './Post';
 
 type Props = {
+	sharedPost?: PostType;
 	onClose: () => void;
 };
 
@@ -47,7 +49,7 @@ const BACKGROUND_COLORS = [
 	{ id: 8, name: 'Xanh tím', class: 'bg-gradient-to-r from-blue-500 to-purple-600' },
 ];
 
-export default function CreatePost({ onClose }: Props) {
+export default function CreatePost({ sharedPost, onClose }: Props) {
 	const { post } = useRequest();
 	const { showNotification } = useNotification();
 	const { authUser } = useAuth();
@@ -112,21 +114,29 @@ export default function CreatePost({ onClose }: Props) {
 			return;
 		}
 
-		const formData = new FormData();
-		formData.append('caption', createPostData.caption);
-		formData.append('captionBackground', createPostData.captionBackground.toString());
-		formData.append('visibility', createPostData.visibility);
-
-		createPostData.attachments.forEach((att, i) => {
-			if (att.description) {
-				formData.append(`attachments[${i}].description`, att.description);
-			}
-			formData.append(`attachments[${i}].file`, att.file);
-		});
 		setLoading(true);
-		await post('posts/create/', formData, {
-			headers: { 'Content-Type': 'multipart/form-data' },
-		});
+		if (sharedPost) {
+			await post('posts/share/', {
+				caption: createPostData.caption,
+				visibility: createPostData.visibility,
+				sharedPostId: sharedPost.id
+			});
+		} else {
+			const formData = new FormData();
+			formData.append('caption', createPostData.caption);
+			formData.append('visibility', createPostData.visibility);
+			formData.append('captionBackground', createPostData.captionBackground.toString());
+			createPostData.attachments.forEach((att, i) => {
+				if (att.description) {
+					formData.append(`attachments[${i}].description`, att.description);
+				}
+				formData.append(`attachments[${i}].file`, att.file);
+			});
+
+			await post('posts/create/', formData, {
+				headers: { 'Content-Type': 'multipart/form-data' },
+			});
+		}
 		setLoading(false);
 		showNotification({
 			type: 'success',
@@ -176,7 +186,7 @@ export default function CreatePost({ onClose }: Props) {
 			<div className="bg-white rounded-2xl w-full max-w-2xl overflow-y-auto max-h-[90vh] shadow-2xl relative z-10">
 				<div className="flex items-center justify-between p-4 border-b border-gray-200 relative">
 					<div className="m-auto text-xl font-bold text-gray-900 flex items-center gap-2">
-						<h1>Tạo bài đăng</h1>
+						<h1>{sharedPost ? 'Chia sẻ bài đăng' : 'Tạo bài đăng'}</h1>
 						<IoIosCreate className='text-cyan-400 text-2xl' />
 					</div>
 					<button
@@ -208,40 +218,41 @@ export default function CreatePost({ onClose }: Props) {
 					<textarea
 						value={caption}
 						onChange={handleCaptionChange}
-						placeholder={`${authUser?.username} ơi, bạn đang nghĩ gì thế?`}
+						placeholder={`${sharedPost ? 'Hãy nói gì đó về bài đăng này.' : `${authUser?.username} ơi, bạn đang nghĩ gì thế?`}`}
 						className={`w-full min-h-[120px] p-4 rounded-lg text-black placeholder-black/80 resize-none border-[1px] border-solid border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${BACKGROUND_COLORS[selectedBackground].class}`}
 					/>
 
-					<div className="absolute bottom-4 right-4">
-						<button
-							onClick={() => setShowColorPicker(!showColorPicker)}
-							className="p-2 bg-gradient-to-r from-blue-600 to-pink-600 hover:bg-white/30 rounded-full backdrop-blur-sm transition-all duration-200 cursor-pointer"
-						>
-							<MdPalette className="text-xl " />
-						</button>
+					{!sharedPost && (
+						<div className="absolute bottom-4 right-4">
+							<button
+								onClick={() => setShowColorPicker(!showColorPicker)}
+								className="p-2 bg-gradient-to-r from-blue-600 to-pink-600 hover:bg-white/30 rounded-full backdrop-blur-sm transition-all duration-200 cursor-pointer"
+							>
+								<MdPalette className="text-xl " />
+							</button>
 
-						{showColorPicker && (
-							<div className="absolute bottom-12 right-0 bg-white rounded-xl shadow-2xl p-4 w-64 z-10 animate-fadeIn">
-								<h3 className="font-semibold text-gray-900 mb-3">Chọn màu nền</h3>
-								<div className="grid grid-cols-4 gap-2">
-									{BACKGROUND_COLORS.map((color) => (
-										<button
-											key={color.id}
-											onClick={() => handleBackgroundSelect(color.id)}
-											className={`h-12 rounded-lg transition-all duration-200 hover:scale-110 cursor-pointer ${color.class
-												} ${selectedBackground === color.id
-													? 'ring-2 ring-offset-2 ring-blue-500'
-													: ''
-												}`}
-											title={color.name}
-										/>
-									))}
+							{showColorPicker && (
+								<div className="absolute bottom-12 right-0 bg-white rounded-xl shadow-2xl p-4 w-64 z-10 animate-fadeIn">
+									<h3 className="font-semibold text-gray-900 mb-3">Chọn màu nền</h3>
+									<div className="grid grid-cols-4 gap-2">
+										{BACKGROUND_COLORS.map((color) => (
+											<button
+												key={color.id}
+												onClick={() => handleBackgroundSelect(color.id)}
+												className={`h-12 rounded-lg transition-all duration-200 hover:scale-110 cursor-pointer ${color.class
+													} ${selectedBackground === color.id
+														? 'ring-2 ring-offset-2 ring-blue-500'
+														: ''
+													}`}
+												title={color.name}
+											/>
+										))}
+									</div>
 								</div>
-							</div>
-						)}
-					</div>
+							)}
+						</div>
+					)}
 				</div>
-
 				{attachments.length > 0 && (
 					<div className="px-4 pb-4">
 						<div className={`grid gap-2 ${attachments.length === 1 ? 'grid-cols-1' :
@@ -274,20 +285,26 @@ export default function CreatePost({ onClose }: Props) {
 						</div>
 					</div>
 				)}
+				{sharedPost ? (
+					<div className='w-full px-5'>
+						<Post data={sharedPost} />
+					</div>
+				) : (
+					<div className="p-4 border-t border-gray-200">
+						<label className="flex items-center gap-2 cursor-pointer hover:bg-slate-300 p-2 rounded-lg transition-colors">
+							<FaPhotoVideo className="text-2xl text-green-500" />
+							<span className="text-gray-700 font-medium">Thêm ảnh/video</span>
+							<input
+								type="file"
+								className="hidden"
+								multiple
+								accept="image/*,video/*"
+								onChange={handleFileChange}
+							/>
+						</label>
+					</div>
+				)}
 
-				<div className="p-4 border-t border-gray-200">
-					<label className="flex items-center gap-2 cursor-pointer hover:bg-slate-300 p-2 rounded-lg transition-colors">
-						<FaPhotoVideo className="text-2xl text-green-500" />
-						<span className="text-gray-700 font-medium">Thêm ảnh/video</span>
-						<input
-							type="file"
-							className="hidden"
-							multiple
-							accept="image/*,video/*"
-							onChange={handleFileChange}
-						/>
-					</label>
-				</div>
 
 				<div className="p-4 border-t border-gray-200 relative">
 					<button

@@ -38,7 +38,7 @@ export default function FriendSuggesstion({ }: Props) {
     }, [])
 
     return (
-        <div>
+        <div className="text-black dark:text-white">
             <h1>Gợi ý kết bạn</h1>
 
             <div className="mt-4 flex flex-col gap-2">
@@ -49,7 +49,7 @@ export default function FriendSuggesstion({ }: Props) {
                             src={f.user.avatar}
                             className="h-10 w-10"
                         />
-                        <p className="text-sm text-gray-500">{f.user.username}</p>
+                        <p className="text-sm">{f.user.username}</p>
                         {f.requested ? (
                             <button disabled className="ml-auto px-3 py-1 bg-gray-400 text-white rounded cursor-not-allowed">
                                 Đã gửi lời mời

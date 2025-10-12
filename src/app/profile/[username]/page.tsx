@@ -13,6 +13,8 @@ import Link from 'next/link';
 import { formatDateTime } from '@/utils/formatDateTime';
 import Avatar from '@/components/Avatar';
 import CoverPicture from '@/components/CoverPicture';
+import PostComposerTrigger from '@/components/PostComposerTrigger';
+import { routes } from '@/lib/routes';
 
 type ProfileType = {
 	user: UserInfo | null;
@@ -127,10 +129,16 @@ export default function Page({
 								</button>
 							)}
 							<Link
-								href={`/nextchat`}
+								href={routes.nextchat}
 								className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600"
 							>
 								Nhắn tin
+							</Link>
+							<Link
+								href={routes.nextvibes}
+								className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600"
+							>
+								Lướt mạng xã hội
 							</Link>
 						</div>
 					</div>
@@ -204,7 +212,7 @@ export default function Page({
 					)}
 				</div>
 
-				<div className="mt-6 border-b border-gray-200 dark:border-gray-700">
+				<div className="mt-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
 					<nav className="flex space-x-8">
 						<button className="border-b-2 border-purple-500 px-1 py-4 text-sm font-medium text-purple-600 dark:text-purple-400">
 							Posts
@@ -216,9 +224,13 @@ export default function Page({
 							Likes
 						</button>
 					</nav>
+
+					{authUser && authUser.username === username && (
+						<PostComposerTrigger />
+					)}
 				</div>
 
-				<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+				<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
 					{profile.posts.map((post) => (
 						<Post
 							key={post.id}

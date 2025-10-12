@@ -6,6 +6,7 @@ import CreatePostIcon from './CreatePostIcon';
 import { routes } from '@/lib/routes';
 import { useState } from 'react';
 import NotificationIcon from './NotificationIcon';
+import PostComposerTrigger from './PostComposerTrigger';
 
 type Props = {
 	className: string;
@@ -14,7 +15,6 @@ type Props = {
 
 export default function Header({ className, onFocusInput }: Props) {
 	const { authUser } = useAuth();
-	const [openCreatePost, setOpenCreatePost] = useState(false);
 
 	return (
 		<header
@@ -45,18 +45,7 @@ export default function Header({ className, onFocusInput }: Props) {
 						className="h-10 w-10"
 						controls={true}
 					/>
-					<TextInput
-						placeHolder="Bạn đang nghĩ gì?" className=""
-						onFocus={() => {
-							setTimeout(() => {
-								setOpenCreatePost(true);
-							}, 50);
-						}}
-					/>
-					<CreatePostIcon
-						openCreatePost={openCreatePost}
-						onCloseCreatePost={() => setOpenCreatePost(false)}
-					/>
+					<PostComposerTrigger />
 				</div>
 			</div>
 

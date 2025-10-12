@@ -12,7 +12,7 @@ export default function CreatePostIcon({ openCreatePost, onCloseCreatePost }: Pr
 
 	return (
 		<div className=''>
-			<div className="cursor-pointer hover:text-blue-600 text-3xl" onClick={() => setOpen(true)}>
+			<div className="cursor-pointer hover:text-blue-600 text-3xl text-white" onClick={() => setOpen(true)}>
 				<IoIosAddCircleOutline />
 			</div>
 			{(openCreatePost || open) &&

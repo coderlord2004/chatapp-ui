@@ -36,6 +36,14 @@ export default function Avatar({
 	const [loading, setLoading] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+	async function blockUser(userId: number) {
+		await post('users/block/', {
+			params: {
+				userId
+			}
+		})
+	}
+
 	const menuData = [
 		{
 			title: 'Xem trang cá nhân',
@@ -57,7 +65,7 @@ export default function Avatar({
 		{
 			accepted: author !== authUser?.username,
 			title: 'Chặn',
-			action: () => { },
+			action: () => { blockUser(1) },
 		},
 	];
 

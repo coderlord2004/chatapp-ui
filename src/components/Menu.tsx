@@ -103,7 +103,7 @@ export default function Menu({
 							animate="visible"
 							exit="hidden"
 							variants={menuVariants}
-							className={`absolute ${getPositionClasses()} z-50 flex min-w-[150px] flex-col rounded-lg border border-gray-200 bg-slate-700 text-white shadow-lg`}
+							className={`absolute ${getPositionClasses()} z-50 flex min-w-[200px] flex-col rounded-lg border border-gray-200 bg-slate-700 text-white shadow-lg`}
 						>
 							{data.map(
 								(ele, index) =>

@@ -8,6 +8,7 @@ type PostType = {
 	captionBackground: number;
 	visibility: 'PUBLIC' | 'FRIEND' | 'PRIVATE';
 	publishedAt: string;
+	totalViews: number;
 	totalReactions: number;
 	topReactionTypes: string[];
 	totalComments: number;
