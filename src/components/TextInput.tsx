@@ -19,7 +19,7 @@ export function TextInput({
 	placeHolder,
 	focus,
 	onChange,
-	onFocus
+	onFocus,
 }: Props) {
 	const internalRef = useRef<HTMLInputElement>(null);
 

@@ -5,7 +5,7 @@ import { useNotification } from '@/hooks/useNotification';
 import Menu from './Menu';
 import { MdPublic, MdClose, MdPalette } from 'react-icons/md';
 import { FaUserFriends, FaPhotoVideo } from 'react-icons/fa';
-import { IoIosCreate } from "react-icons/io";
+import { IoIosCreate } from 'react-icons/io';
 import { SiPrivateinternetaccess } from 'react-icons/si';
 import Avatar from './Avatar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,14 +39,46 @@ type FileAttachmentType = {
 
 const BACKGROUND_COLORS = [
 	{ id: 0, name: 'Mặc định', class: 'bg-white' },
-	{ id: 1, name: 'Tím hồng', class: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-	{ id: 2, name: 'Xanh dương', class: 'bg-gradient-to-r from-blue-400 to-cyan-400' },
-	{ id: 3, name: 'Xanh lá', class: 'bg-gradient-to-r from-green-400 to-teal-400' },
-	{ id: 4, name: 'Cam đỏ', class: 'bg-gradient-to-r from-orange-400 to-red-500' },
-	{ id: 5, name: 'Vàng cam', class: 'bg-gradient-to-r from-yellow-400 to-orange-400' },
-	{ id: 6, name: 'Hồng tím', class: 'bg-gradient-to-r from-pink-400 to-purple-500' },
-	{ id: 7, name: 'Xanh biển', class: 'bg-gradient-to-r from-blue-500 to-indigo-600' },
-	{ id: 8, name: 'Xanh tím', class: 'bg-gradient-to-r from-blue-500 to-purple-600' },
+	{
+		id: 1,
+		name: 'Tím hồng',
+		class: 'bg-gradient-to-r from-purple-500 to-pink-500',
+	},
+	{
+		id: 2,
+		name: 'Xanh dương',
+		class: 'bg-gradient-to-r from-blue-400 to-cyan-400',
+	},
+	{
+		id: 3,
+		name: 'Xanh lá',
+		class: 'bg-gradient-to-r from-green-400 to-teal-400',
+	},
+	{
+		id: 4,
+		name: 'Cam đỏ',
+		class: 'bg-gradient-to-r from-orange-400 to-red-500',
+	},
+	{
+		id: 5,
+		name: 'Vàng cam',
+		class: 'bg-gradient-to-r from-yellow-400 to-orange-400',
+	},
+	{
+		id: 6,
+		name: 'Hồng tím',
+		class: 'bg-gradient-to-r from-pink-400 to-purple-500',
+	},
+	{
+		id: 7,
+		name: 'Xanh biển',
+		class: 'bg-gradient-to-r from-blue-500 to-indigo-600',
+	},
+	{
+		id: 8,
+		name: 'Xanh tím',
+		class: 'bg-gradient-to-r from-blue-500 to-purple-600',
+	},
 ];
 
 export default function CreatePost({ sharedPost, onClose }: Props) {
@@ -119,13 +151,16 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 			await post('posts/share/', {
 				caption: createPostData.caption,
 				visibility: createPostData.visibility,
-				sharedPostId: sharedPost.id
+				sharedPostId: sharedPost.id,
 			});
 		} else {
 			const formData = new FormData();
 			formData.append('caption', createPostData.caption);
 			formData.append('visibility', createPostData.visibility);
-			formData.append('captionBackground', createPostData.captionBackground.toString());
+			formData.append(
+				'captionBackground',
+				createPostData.captionBackground.toString(),
+			);
 			createPostData.attachments.forEach((att, i) => {
 				if (att.description) {
 					formData.append(`attachments[${i}].description`, att.description);
@@ -165,8 +200,9 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 	}
 
 	function removeAttachment(index: number) {
-		setAttachments(prev => prev.filter((_, i) => i !== index));
-		createPostDataRef.current.attachments = createPostDataRef.current.attachments.filter((_, i) => i !== index);
+		setAttachments((prev) => prev.filter((_, i) => i !== index));
+		createPostDataRef.current.attachments =
+			createPostDataRef.current.attachments.filter((_, i) => i !== index);
 	}
 
 	function handleCaptionChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -177,21 +213,21 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 
 	useEffect(() => {
 		return () => {
-			attachments.forEach(att => URL.revokeObjectURL(att.source));
-		}
-	}, [])
+			attachments.forEach((att) => URL.revokeObjectURL(att.source));
+		};
+	}, []);
 
 	return (
-		<div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50 p-4">
-			<div className="bg-white rounded-2xl w-full max-w-2xl overflow-y-auto max-h-[90vh] shadow-2xl relative z-10">
-				<div className="flex items-center justify-between p-4 border-b border-gray-200 relative">
-					<div className="m-auto text-xl font-bold text-gray-900 flex items-center gap-2">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+			<div className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
+				<div className="relative flex items-center justify-between border-b border-gray-200 p-4">
+					<div className="m-auto flex items-center gap-2 text-xl font-bold text-gray-900">
 						<h1>{sharedPost ? 'Chia sẻ bài đăng' : 'Tạo bài đăng'}</h1>
-						<IoIosCreate className='text-cyan-400 text-2xl' />
+						<IoIosCreate className="text-2xl text-cyan-400" />
 					</div>
 					<button
 						onClick={onClose}
-						className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer absolute top-[50%] right-4 -translate-y-[50%]"
+						className="absolute top-[50%] right-4 -translate-y-[50%] cursor-pointer rounded-full p-2 transition-colors hover:bg-gray-100"
 					>
 						<MdClose className="text-2xl text-gray-600" />
 					</button>
@@ -206,9 +242,11 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 					<div className="flex-1">
 						<p className="font-semibold text-gray-900">{authUser?.username}</p>
 						<Menu data={visibilities}>
-							<button className="flex items-center gap-1 px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+							<button className="flex cursor-pointer items-center gap-1 rounded-lg border border-gray-300 px-3 py-1 transition-colors hover:bg-gray-50">
 								{visibilities[visibility].icon}
-								<span className="text-sm text-gray-700">{visibilities[visibility].title}</span>
+								<span className="text-sm text-gray-700">
+									{visibilities[visibility].title}
+								</span>
 							</button>
 						</Menu>
 					</div>
@@ -219,31 +257,35 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 						value={caption}
 						onChange={handleCaptionChange}
 						placeholder={`${sharedPost ? 'Hãy nói gì đó về bài đăng này.' : `${authUser?.username} ơi, bạn đang nghĩ gì thế?`}`}
-						className={`w-full min-h-[120px] p-4 rounded-lg text-black placeholder-black/80 resize-none border-[1px] border-solid border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${BACKGROUND_COLORS[selectedBackground].class}`}
+						className={`min-h-[120px] w-full resize-none rounded-lg border-[1px] border-solid border-slate-400 p-4 text-black placeholder-black/80 transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:outline-none ${BACKGROUND_COLORS[selectedBackground].class}`}
 					/>
 
 					{!sharedPost && (
-						<div className="absolute bottom-4 right-4">
+						<div className="absolute right-4 bottom-4">
 							<button
 								onClick={() => setShowColorPicker(!showColorPicker)}
-								className="p-2 bg-gradient-to-r from-blue-600 to-pink-600 hover:bg-white/30 rounded-full backdrop-blur-sm transition-all duration-200 cursor-pointer"
+								className="cursor-pointer rounded-full bg-gradient-to-r from-blue-600 to-pink-600 p-2 backdrop-blur-sm transition-all duration-200 hover:bg-white/30"
 							>
-								<MdPalette className="text-xl " />
+								<MdPalette className="text-xl" />
 							</button>
 
 							{showColorPicker && (
-								<div className="absolute bottom-12 right-0 bg-white rounded-xl shadow-2xl p-4 w-64 z-10 animate-fadeIn">
-									<h3 className="font-semibold text-gray-900 mb-3">Chọn màu nền</h3>
+								<div className="animate-fadeIn absolute right-0 bottom-12 z-10 w-64 rounded-xl bg-white p-4 shadow-2xl">
+									<h3 className="mb-3 font-semibold text-gray-900">
+										Chọn màu nền
+									</h3>
 									<div className="grid grid-cols-4 gap-2">
 										{BACKGROUND_COLORS.map((color) => (
 											<button
 												key={color.id}
 												onClick={() => handleBackgroundSelect(color.id)}
-												className={`h-12 rounded-lg transition-all duration-200 hover:scale-110 cursor-pointer ${color.class
-													} ${selectedBackground === color.id
-														? 'ring-2 ring-offset-2 ring-blue-500'
+												className={`h-12 cursor-pointer rounded-lg transition-all duration-200 hover:scale-110 ${
+													color.class
+												} ${
+													selectedBackground === color.id
+														? 'ring-2 ring-blue-500 ring-offset-2'
 														: ''
-													}`}
+												}`}
 												title={color.name}
 											/>
 										))}
@@ -255,28 +297,33 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 				</div>
 				{attachments.length > 0 && (
 					<div className="px-4 pb-4">
-						<div className={`grid gap-2 ${attachments.length === 1 ? 'grid-cols-1' :
-							attachments.length === 2 ? 'grid-cols-2' :
-								'grid-cols-3'
-							}`}>
+						<div
+							className={`grid gap-2 ${
+								attachments.length === 1
+									? 'grid-cols-1'
+									: attachments.length === 2
+										? 'grid-cols-2'
+										: 'grid-cols-3'
+							}`}
+						>
 							{attachments.map((attachment, index) => (
-								<div key={index} className="relative group">
+								<div key={index} className="group relative">
 									{attachment.type.startsWith('image/') ? (
 										<img
 											src={attachment.source}
 											alt=""
-											className="w-full h-[200px] object-cover rounded-lg"
+											className="h-[200px] w-full rounded-lg object-cover"
 										/>
 									) : (
 										<video
 											src={attachment.source}
-											className="w-full h-32 object-cover rounded-lg"
+											className="h-32 w-full rounded-lg object-cover"
 											controls
 										/>
 									)}
 									<button
 										onClick={() => removeAttachment(index)}
-										className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+										className="absolute -top-2 -right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
 									>
 										<MdClose className="text-sm" />
 									</button>
@@ -286,14 +333,14 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 					</div>
 				)}
 				{sharedPost ? (
-					<div className='w-full px-5'>
+					<div className="w-full px-5">
 						<Post data={sharedPost} />
 					</div>
 				) : (
-					<div className="p-4 border-t border-gray-200">
-						<label className="flex items-center gap-2 cursor-pointer hover:bg-slate-300 p-2 rounded-lg transition-colors">
+					<div className="border-t border-gray-200 p-4">
+						<label className="flex cursor-pointer items-center gap-2 rounded-lg p-2 transition-colors hover:bg-slate-300">
 							<FaPhotoVideo className="text-2xl text-green-500" />
-							<span className="text-gray-700 font-medium">Thêm ảnh/video</span>
+							<span className="font-medium text-gray-700">Thêm ảnh/video</span>
 							<input
 								type="file"
 								className="hidden"
@@ -305,31 +352,28 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 					</div>
 				)}
 
-
-				<div className="p-4 border-t border-gray-200 relative">
+				<div className="relative border-t border-gray-200 p-4">
 					<button
 						onClick={handleCreatePost}
 						disabled={!caption.trim()}
-						className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 cursor-pointer ${caption.trim()
-							? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-							: 'bg-gray-300 text-gray-500 cursor-not-allowed'
-							}`}
+						className={`w-full cursor-pointer rounded-lg px-6 py-3 font-semibold transition-all duration-200 ${
+							caption.trim()
+								? 'transform bg-blue-500 text-white shadow-lg hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-xl'
+								: 'cursor-not-allowed bg-gray-300 text-gray-500'
+						}`}
 					>
 						Đăng
 					</button>
 
 					{loading && (
-						<div className="absolute inset-[16px] bg-black/70 flex justify-center items-center rounded-lg">
+						<div className="absolute inset-[16px] flex items-center justify-center rounded-lg bg-black/70">
 							<ThrobberLoader />
 						</div>
 					)}
 				</div>
 			</div>
 
-			<div
-				className='overlay'
-				onClick={onClose}
-			></div>
+			<div className="overlay" onClick={onClose}></div>
 		</div>
 	);
 }

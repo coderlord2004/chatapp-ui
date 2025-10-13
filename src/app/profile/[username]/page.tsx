@@ -212,7 +212,7 @@ export default function Page({
 					)}
 				</div>
 
-				<div className="mt-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<div className="mt-6 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
 					<nav className="flex space-x-8">
 						<button className="border-b-2 border-purple-500 px-1 py-4 text-sm font-medium text-purple-600 dark:text-purple-400">
 							Posts

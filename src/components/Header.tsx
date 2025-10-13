@@ -20,25 +20,22 @@ export default function Header({ className, onFocusInput }: Props) {
 		<header
 			className={
 				className +
-				' fixed top-0 right-0 left-0 flex items-center rounded-b-[10px] bg-black py-[5px] px-[10px] z-50'
+				' fixed top-0 right-0 left-0 z-50 flex items-center rounded-b-[10px] bg-black px-[10px] py-[5px]'
 			}
 		>
-			<Link
-				href={routes.nextvibes}
-				className='ml-[5%] cursor-pointer'
-			>
+			<Link href={routes.nextvibes} className="ml-[5%] cursor-pointer">
 				<img
 					src="./logo.jpeg"
 					alt=""
-					className="w-[50px] h-[50px] rounded-[50%] border-[1px] border-solid border-white"
+					className="h-[50px] w-[50px] rounded-[50%] border-[1px] border-solid border-white"
 				/>
 			</Link>
-			<div className="mx-auto flex w-[50%] h-full items-center justify-evenly">
+			<div className="mx-auto flex h-full w-[50%] items-center justify-evenly">
 				<Link href="/" className="group relative cursor-pointer text-white">
 					Home
 					<span className="absolute bottom-[-2px] left-0 h-[2px] w-0 bg-blue-600 transition-all duration-100 group-hover:w-full"></span>
 				</Link>
-				<div className="h-full flex items-center justify-center gap-[10px]">
+				<div className="flex h-full items-center justify-center gap-[10px]">
 					<Avatar
 						author={authUser?.username || ''}
 						src={authUser?.avatar || ''}

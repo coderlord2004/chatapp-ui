@@ -27,7 +27,9 @@ export default function PostInteraction({ data }: Props) {
 		totalShares: data.totalShares,
 	});
 	const [showComments, setShowComments] = useState(false);
-	const [commentVirtual, setCommentVirtual] = useState<CommentType | null>(null);
+	const [commentVirtual, setCommentVirtual] = useState<CommentType | null>(
+		null,
+	);
 	const commentTextRef = useRef<HTMLInputElement | null>(null);
 
 	const handleCommentPost = async (targetId: number) => {
@@ -57,7 +59,7 @@ export default function PostInteraction({ data }: Props) {
 			commentedAt: new Date().toISOString(),
 		});
 	};
-	const handleSharePost = async () => { };
+	const handleSharePost = async () => {};
 
 	return (
 		<div>
@@ -108,9 +110,9 @@ export default function PostInteraction({ data }: Props) {
 								)
 									? prev.reactionData.topReactionTypes
 									: [...prev.reactionData.topReactionTypes, reactionType].slice(
-										0,
-										3,
-									),
+											0,
+											3,
+										),
 							},
 						}))
 					}
@@ -125,7 +127,7 @@ export default function PostInteraction({ data }: Props) {
 				</button>
 
 				<button
-					className="mx-1 flex flex-1 items-center justify-center rounded-lg py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-100 cursor-pointer"
+					className="mx-1 flex flex-1 cursor-pointer items-center justify-center rounded-lg py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-100"
 					onClick={() => setShowCreatePost(true)}
 				>
 					<span className="mr-2 text-lg">↪️</span>
@@ -137,7 +139,7 @@ export default function PostInteraction({ data }: Props) {
 				<Comment
 					data={{
 						commentData: commentVirtual,
-						totalChildComments: 0
+						totalChildComments: 0,
 					}}
 					level={0}
 				/>

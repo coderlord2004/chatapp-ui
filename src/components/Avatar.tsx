@@ -39,9 +39,9 @@ export default function Avatar({
 	async function blockUser(userId: number) {
 		await post('users/block/', {
 			params: {
-				userId
-			}
-		})
+				userId,
+			},
+		});
 	}
 
 	const menuData = [
@@ -65,7 +65,9 @@ export default function Avatar({
 		{
 			accepted: author !== authUser?.username,
 			title: 'Chặn',
-			action: () => { blockUser(1) },
+			action: () => {
+				blockUser(1);
+			},
 		},
 	];
 

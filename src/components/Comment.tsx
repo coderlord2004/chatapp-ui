@@ -6,8 +6,12 @@ import { FaReply } from 'react-icons/fa';
 import { formatDate } from '@/utils/formatDateTime';
 import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
 import Menu from './Menu';
-import { MdDelete, MdOutlineReportGmailerrorred, MdBlockFlipped } from "react-icons/md";
-import { CiEdit } from "react-icons/ci";
+import {
+	MdDelete,
+	MdOutlineReportGmailerrorred,
+	MdBlockFlipped,
+} from 'react-icons/md';
+import { CiEdit } from 'react-icons/ci';
 import { useAuth } from '@/contexts/AuthContext';
 
 type Props = {
@@ -29,7 +33,7 @@ export default function Comment({ data, level }: Props) {
 			accepted: authUser?.id !== data.commentData.user.id,
 			icon: <MdOutlineReportGmailerrorred className="" />,
 			title: 'Báo cáo bình luận',
-			action: () => { },
+			action: () => {},
 		},
 		{
 			title: 'Chỉnh sửa bình luận',
@@ -48,7 +52,7 @@ export default function Comment({ data, level }: Props) {
 			accepted: authUser?.id !== data.commentData.user.id,
 			icon: <MdBlockFlipped className="text-red-600" />,
 			title: 'Chặn người dùng',
-			action: () => { },
+			action: () => {},
 		},
 	];
 

@@ -35,15 +35,15 @@ export default function CoverPicture({ src }: Props) {
 			)}
 
 			<label
-				htmlFor='update-cover-picture'
+				htmlFor="update-cover-picture"
 				className="group absolute right-4 bottom-4 flex cursor-pointer items-center justify-center rounded-full bg-white/80 p-2.5 backdrop-blur-sm transition-all duration-300 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-700"
 			>
 				<FiCamera className="text-gray-700 group-hover:text-purple-600 dark:text-gray-300 dark:group-hover:text-purple-400" />
 			</label>
 			<input
-				id='update-cover-picture'
+				id="update-cover-picture"
 				type="file"
-				className='hidden'
+				className="hidden"
 				onChange={handleUpdateCover}
 			/>
 		</div>

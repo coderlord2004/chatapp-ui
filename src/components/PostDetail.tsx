@@ -34,16 +34,16 @@ export default function PostDetail({ data, onClose }: Props) {
 
 	useEffect(() => {
 		async function increaseView() {
-			await post(`posts/view/increase/?postId=${data.id}`)
+			await post(`posts/view/increase/?postId=${data.id}`);
 		}
 		const id = setTimeout(() => {
-			increaseView()
-		}, 60000)
+			increaseView();
+		}, 60000);
 
 		return () => {
-			clearTimeout(id)
-		}
-	}, [])
+			clearTimeout(id);
+		};
+	}, []);
 
 	return (
 		<div className="fixed inset-0 z-50 flex h-full w-full bg-black/70 p-4">

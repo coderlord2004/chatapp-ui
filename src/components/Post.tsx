@@ -10,12 +10,12 @@ import Menu from './Menu';
 import { useNotification } from '@/hooks/useNotification';
 import { useAuth } from '@/contexts/AuthContext';
 
-import { FaRegEdit } from "react-icons/fa";
-import { MdDelete, MdOutlineReport, MdBlock } from "react-icons/md";
-import { VscInspect } from "react-icons/vsc";
+import { FaRegEdit } from 'react-icons/fa';
+import { MdDelete, MdOutlineReport, MdBlock } from 'react-icons/md';
+import { VscInspect } from 'react-icons/vsc';
 import { MdPublic, MdClose, MdPalette } from 'react-icons/md';
 import { FaUserFriends, FaPhotoVideo } from 'react-icons/fa';
-import { IoIosCreate } from "react-icons/io";
+import { IoIosCreate } from 'react-icons/io';
 import { SiPrivateinternetaccess } from 'react-icons/si';
 
 type Props = {
@@ -45,11 +45,11 @@ export default function Post({ order, data, onRemove }: Props) {
 	const getVisibilityIcon = (visibility: string) => {
 		switch (visibility) {
 			case 'PUBLIC':
-				return <MdPublic className='text-blue-500' />;
+				return <MdPublic className="text-blue-500" />;
 			case 'FRIEND':
-				return <FaUserFriends className='text-green-500' />;
+				return <FaUserFriends className="text-green-500" />;
 			case 'PRIVATE':
-				return <SiPrivateinternetaccess className='text-amber-500' />;
+				return <SiPrivateinternetaccess className="text-amber-500" />;
 			default:
 				return <MdPublic />;
 		}
@@ -71,49 +71,51 @@ export default function Post({ order, data, onRemove }: Props) {
 	async function blockUser(userId: number) {
 		await post('users/block/', {
 			params: {
-				userId
-			}
-		})
+				userId,
+			},
+		});
 	}
 
 	const postMenuItems = [
 		{
 			accepted: authUser?.username === data.author.username,
 			title: 'Chỉnh sửa bài viết',
-			icon: <FaRegEdit className='text-2xl text-green-400' />,
-			action: () => { }
+			icon: <FaRegEdit className="text-2xl text-green-400" />,
+			action: () => {},
 		},
 		{
 			accepted: authUser?.username === data.author.username,
 			title: 'Xóa bài viết',
-			icon: <MdDelete className='text-2xl text-red-400' />,
-			action: () => deletePost()
+			icon: <MdDelete className="text-2xl text-red-400" />,
+			action: () => deletePost(),
 		},
 		{
 			accepted: true,
 			title: 'Xác thực nội dung bài viết',
-			icon: <VscInspect className='text-2xl text-blue-400' />,
-			action: () => { }
+			icon: <VscInspect className="text-2xl text-blue-400" />,
+			action: () => {},
 		},
 		{
 			accepted: authUser?.username !== data.author.username,
 			title: 'Báo cáo bài viết',
-			icon: <MdOutlineReport className='text-2xl text-yellow-400' />,
-			action: () => { }
+			icon: <MdOutlineReport className="text-2xl text-yellow-400" />,
+			action: () => {},
 		},
 		{
 			accepted: authUser?.username !== data.author.username,
 			title: 'Chặn người dùng',
-			icon: <MdBlock className='text-2xl text-red-400' />,
-			action: () => { blockUser(data.author.id) }
-		}
+			icon: <MdBlock className="text-2xl text-red-400" />,
+			action: () => {
+				blockUser(data.author.id);
+			},
+		},
 	];
 
 	return (
 		<div
-			className={`w-full mb-4 rounded-xl bg-slate-200 text-black shadow-sm transition-all duration-300 hover:shadow-lg`}
+			className={`mb-4 w-full rounded-xl bg-slate-200 text-black shadow-sm transition-all duration-300 hover:shadow-lg`}
 		>
-			<div className="flex items-center justify-between p-4 relative">
+			<div className="relative flex items-center justify-between p-4">
 				<div className="flex items-center">
 					<div className="flex w-full items-center gap-[10px]">
 						<Avatar
@@ -134,10 +136,10 @@ export default function Post({ order, data, onRemove }: Props) {
 				</div>
 				<Menu
 					data={postMenuItems}
-					className='absolute top-4 right-4'
-					position='left'
+					className="absolute top-4 right-4"
+					position="left"
 				>
-					<button className="flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100 cursor-pointer">
+					<button className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-100">
 						<span className="text-xl">⋮</span>
 					</button>
 				</Menu>
@@ -202,9 +204,7 @@ export default function Post({ order, data, onRemove }: Props) {
 				)}
 			</div>
 
-			<PostInteraction
-				data={data}
-			/>
+			<PostInteraction data={data} />
 		</div>
 	);
 }

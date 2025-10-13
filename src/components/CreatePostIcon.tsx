@@ -7,22 +7,28 @@ type Props = {
 	onCloseCreatePost: () => void;
 };
 
-export default function CreatePostIcon({ openCreatePost, onCloseCreatePost }: Props) {
+export default function CreatePostIcon({
+	openCreatePost,
+	onCloseCreatePost,
+}: Props) {
 	const [open, setOpen] = useState(openCreatePost);
 
 	return (
-		<div className=''>
-			<div className="cursor-pointer hover:text-blue-600 text-3xl text-white" onClick={() => setOpen(true)}>
+		<div className="">
+			<div
+				className="cursor-pointer text-3xl text-white hover:text-blue-600"
+				onClick={() => setOpen(true)}
+			>
 				<IoIosAddCircleOutline />
 			</div>
-			{(openCreatePost || open) &&
+			{(openCreatePost || open) && (
 				<CreatePost
 					onClose={() => {
 						setOpen(false);
 						onCloseCreatePost();
 					}}
 				/>
-			}
+			)}
 		</div>
 	);
 }
