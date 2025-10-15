@@ -95,6 +95,8 @@ request.interceptors.request.use(
 request.interceptors.response.use(
 	(response) => {
 		response.data = camelcaseKeys(response.data, { deep: true });
+		console.log('response:', response.data);
+
 		return response;
 	},
 	async (error) => {
