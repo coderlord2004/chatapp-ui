@@ -68,15 +68,15 @@ let config: CreateAxiosDefaults = {
 	baseURL: process.env.NEXT_PUBLIC_WEBCHAT_BASE_URL,
 };
 
-// if (process.env.NODE_ENV === 'production') {
-// 	config = {
-// 		headers: { Accept: MSGPACK_CONTENT_TYPE },
-// 		transformResponse: [decodeResponse],
-// 		transformRequest: [encodeRequest],
-// 		responseType: 'arraybuffer',
-// 		...config,
-// 	};
-// }
+if (process.env.NODE_ENV === 'production') {
+	config = {
+		headers: { Accept: MSGPACK_CONTENT_TYPE },
+		transformResponse: [decodeResponse],
+		transformRequest: [encodeRequest],
+		responseType: 'arraybuffer',
+		...config,
+	};
+}
 
 const request = axios.create(config);
 export const normalRequest = axios.create(config);
