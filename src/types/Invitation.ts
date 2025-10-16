@@ -8,6 +8,7 @@ type Invitation = {
 	chatRoomId: number | null;
 	chatRoomDto: ChatRoomInfo;
 	status: 'PENDING' | 'REJECTED' | 'ACCEPTED';
+	restriction: 'BLOCKED' | 'MUTED' | null;
 };
 type CallInvitation = {
 	channelId: number;

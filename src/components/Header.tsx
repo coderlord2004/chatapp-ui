@@ -39,7 +39,7 @@ export default function Header({ className, onFocusInput }: Props) {
 					<Avatar
 						author={authUser?.username || ''}
 						src={authUser?.avatar || ''}
-						className="h-10 w-10"
+						className="h-10 w-10 text-white"
 						controls={true}
 					/>
 					<PostComposerTrigger />

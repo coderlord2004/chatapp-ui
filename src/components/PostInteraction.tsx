@@ -8,6 +8,7 @@ import { CommentType } from '@/types/Comment';
 import Comment from './Comment';
 import { useAuth } from '@/contexts/AuthContext';
 import CreatePost from './CreatePost';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type Props = {
 	data: PostType;
@@ -27,28 +28,21 @@ export default function PostInteraction({ data }: Props) {
 		totalShares: data.totalShares,
 	});
 	const [showComments, setShowComments] = useState(false);
-	const [commentVirtual, setCommentVirtual] = useState<CommentType | null>(
+	const [virtualComment, setVirtualComment] = useState<CommentType[] | null>(
 		null,
 	);
 	const commentTextRef = useRef<HTMLInputElement | null>(null);
+	console.log('comment vituarl', virtualComment);
 
 	const handleCommentPost = async (targetId: number) => {
 		if (!commentTextRef.current) return;
+
 		const content = commentTextRef.current.value;
 		if (content.trim() === '') return;
 
-		await post('comment/create/', {
-			targetId: targetId,
-			targetType: 'POST',
-			content: content,
-		});
-		commentTextRef.current.value = '';
-		setNumberInteraction((prev) => ({
-			...prev,
-			totalComments: prev.totalComments + 1,
-		}));
-		setCommentVirtual({
-			id: Math.floor(Math.random() * 1000000),
+		const virtualCommentId = Math.floor(Math.random() * 1000000);
+		const newComment = {
+			id: virtualCommentId,
 			user: {
 				id: authUser?.id || 0,
 				username: authUser?.username || '',
@@ -57,9 +51,29 @@ export default function PostInteraction({ data }: Props) {
 			},
 			content: content,
 			commentedAt: new Date().toISOString(),
+		};
+		setVirtualComment((prev) => (prev ? [...prev, newComment] : [newComment]));
+		setNumberInteraction((prev) => ({
+			...prev,
+			totalComments: prev.totalComments + 1,
+		}));
+		commentTextRef.current.value = '';
+
+		const createdComment = await post('comment/create/', {
+			targetId: targetId,
+			targetType: 'POST',
+			content: content,
 		});
+
+		setVirtualComment(
+			(prev) =>
+				prev?.map((comment) => {
+					if (comment.id === virtualCommentId) {
+						return createdComment;
+					} else return comment;
+				}) ?? [],
+		);
 	};
-	const handleSharePost = async () => {};
 
 	return (
 		<div>
@@ -135,15 +149,21 @@ export default function PostInteraction({ data }: Props) {
 				</button>
 			</div>
 
-			{commentVirtual && (
-				<Comment
-					data={{
-						commentData: commentVirtual,
-						totalChildComments: 0,
-					}}
-					level={0}
-				/>
-			)}
+			{virtualComment &&
+				virtualComment.map((comment) => (
+					<AnimatePresence>
+						<motion.div initial={{}}>
+							<Comment
+								key={comment.id}
+								data={{
+									commentData: comment,
+									totalChildComments: 0,
+								}}
+								level={0}
+							/>
+						</motion.div>
+					</AnimatePresence>
+				))}
 
 			{showComments && (
 				<div className="animate-fadeIn border-t border-gray-100 p-4">

@@ -13,6 +13,7 @@ import {
 } from 'react-icons/md';
 import { CiEdit } from 'react-icons/ci';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotification } from '@/hooks/useNotification';
 
 type Props = {
 	data: CommentResponse;
@@ -22,11 +23,14 @@ type Props = {
 export default function Comment({ data, level }: Props) {
 	const { authUser } = useAuth();
 	const { get, post, remove, patch } = useRequest();
+	const [commentData, setCommentData] = useState<CommentType>(data.commentData);
 	const [childComments, setChildComments] = useState<CommentResponse[]>([]);
 	const [showReplyComment, setShowReplyComment] = useState(false);
 	const commentReplyRef = useRef<HTMLTextAreaElement | null>(null);
 	const commentEditRef = useRef<HTMLTextAreaElement | null>(null);
 	const [isEditing, setIsEditing] = useState<boolean>(false);
+
+	const { showNotification } = useNotification();
 
 	const commentMenuData = [
 		{
@@ -67,9 +71,17 @@ export default function Comment({ data, level }: Props) {
 	}
 
 	async function handleUpdateComment(commentId: number, content: string) {
+		setCommentData({
+			...commentData,
+			content,
+		});
 		await patch('comment/update/', {
 			commentId: commentId,
 			content: content,
+		});
+		showNotification({
+			type: 'success',
+			message: 'Thành công!',
 		});
 	}
 
@@ -97,12 +109,12 @@ export default function Comment({ data, level }: Props) {
 				<div className="flex flex-col gap-2">
 					<div className="flex items-start">
 						<Avatar
-							author={data.commentData.user.username}
-							src={data.commentData.user.avatar}
+							author={commentData.user.username}
+							src={commentData.user.avatar}
 							className="h-10 w-10 rounded-full"
 						/>
 						<div className="ml-4 flex flex-col gap-2">
-							<strong>{data.commentData.user.username}</strong>
+							<strong>{commentData.user.username}</strong>
 							<div className="mt-2 flex gap-2 text-gray-800">
 								{isEditing ? (
 									<div className="">
@@ -111,7 +123,7 @@ export default function Comment({ data, level }: Props) {
 											id="edit-comment"
 											className="w-full rounded-lg border border-gray-300 p-2 focus:border-purple-600 focus:outline-none"
 											rows={2}
-											defaultValue={data.commentData.content}
+											defaultValue={commentData.content}
 										></textarea>
 
 										<button
@@ -120,7 +132,7 @@ export default function Comment({ data, level }: Props) {
 											onClick={() => {
 												if (commentEditRef.current) {
 													const newContent = commentEditRef.current.value;
-													handleUpdateComment(data.commentData.id, newContent);
+													handleUpdateComment(commentData.id, newContent);
 													setIsEditing(false);
 												}
 											}}
@@ -129,10 +141,10 @@ export default function Comment({ data, level }: Props) {
 										</button>
 									</div>
 								) : (
-									<p>{data.commentData.content}</p>
+									<p>{commentData.content}</p>
 								)}
 								<div className="text-gray-500">
-									{formatDate(data.commentData.commentedAt)}
+									{formatDate(commentData.commentedAt)}
 								</div>
 							</div>
 						</div>
@@ -151,12 +163,12 @@ export default function Comment({ data, level }: Props) {
 							className="flex items-start justify-center gap-1"
 							onSubmit={(e) => {
 								e.preventDefault();
-								handleReplyComment(data.commentData.id);
+								handleReplyComment(commentData.id);
 							}}
 						>
 							<textarea
 								ref={commentReplyRef}
-								id={'reply-' + data.commentData.id}
+								id={'reply-' + commentData.id}
 								className="w-full rounded-lg border border-gray-300 p-2 focus:border-purple-600 focus:outline-none"
 								rows={2}
 								placeholder="Viết phản hồi..."
@@ -174,7 +186,7 @@ export default function Comment({ data, level }: Props) {
 				{data.totalChildComments > 0 && childComments.length == 0 && (
 					<div
 						className="text-right text-sm text-gray-500 italic"
-						onClick={() => handleGetChildComments(data.commentData.id)}
+						onClick={() => handleGetChildComments(commentData.id)}
 					>
 						Xem thêm {data.totalChildComments} phản hồi
 					</div>

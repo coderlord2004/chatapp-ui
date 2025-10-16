@@ -53,15 +53,19 @@ function encodeRequest(data: unknown, headers: AxiosRequestHeaders) {
 let textEncoder: TextDecoder | undefined;
 
 function decodeResponse(data: ArrayBuffer, headers: AxiosResponseHeaders) {
-	if (headers['content-type'] === MSGPACK_CONTENT_TYPE) {
-		return decode(data);
-	}
+	try {
+		if (headers['content-type'] === MSGPACK_CONTENT_TYPE) {
+			return decode(data);
+		}
 
-	if (textEncoder === undefined) {
-		textEncoder = new TextDecoder('utf-8');
-	}
+		if (textEncoder === undefined) {
+			textEncoder = new TextDecoder('utf-8');
+		}
 
-	return JSON.parse(textEncoder.decode(data));
+		return JSON.parse(textEncoder.decode(data));
+	} catch (e) {
+		console.log('lỗi decode');
+	}
 }
 
 let config: CreateAxiosDefaults = {

@@ -121,7 +121,7 @@ export default function Post({ order, data, onRemove }: Props) {
 						<Avatar
 							author={data.author.username}
 							src={data.author.avatar}
-							className="h-[50px] w-[50px]"
+							className="h-[50px] w-[50px] text-slate-700"
 						/>
 						<div>
 							<p>{data.author.username}</p>

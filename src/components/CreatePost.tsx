@@ -151,8 +151,10 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 			await post('posts/share/', {
 				caption: createPostData.caption,
 				visibility: createPostData.visibility,
-				sharedPostId: sharedPost.id,
+				type: 'POST',
+				postId: sharedPost.id,
 			});
+			setLoading(false);
 		} else {
 			const formData = new FormData();
 			formData.append('caption', createPostData.caption);
@@ -171,8 +173,8 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 			await post('posts/create/', formData, {
 				headers: { 'Content-Type': 'multipart/form-data' },
 			});
+			setLoading(false);
 		}
-		setLoading(false);
 		showNotification({
 			type: 'success',
 			message: 'Bài đăng đã được đăng thành công!',
@@ -218,7 +220,7 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 	}, []);
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+		<div className="fixed inset-0 z-50 flex h-[100vh] w-[100vw] items-center justify-center bg-black/70 p-4">
 			<div className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
 				<div className="relative flex items-center justify-between border-b border-gray-200 p-4">
 					<div className="m-auto flex items-center gap-2 text-xl font-bold text-gray-900">

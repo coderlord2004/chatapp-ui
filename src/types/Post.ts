@@ -9,7 +9,7 @@ type SharedAttachment = {
 	visibility: 'PUBLIC' | 'FRIEND' | 'PRIVATE';
 	publishedAt: string;
 	attachment: AttachmentType;
-}
+};
 
 type PostType = {
 	id: number;

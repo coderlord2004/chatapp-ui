@@ -4,6 +4,7 @@ import { MdPersonAddAlt1 } from 'react-icons/md';
 import { useRequest } from '@/hooks/useRequest';
 import { UserSearchResult } from '@/types/User';
 import Avatar from './Avatar';
+import { useAuth } from '@/contexts/AuthContext';
 
 type Props = {
 	chatGroupId: number | null;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function SearchUser({ chatGroupId, onClose }: Props) {
+	const { authUser } = useAuth();
 	const { get, post } = useRequest();
 	const [userSearchResults, setUserSearchResults] = useState<
 		UserSearchResult[] | null
@@ -20,6 +22,7 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 	const searchInput = useRef<HTMLInputElement | null>(null);
 
 	const sendInvitation = async (receiverName: string, roomId = null) => {
+		if (!receiverName) return;
 		await post('invitations', {
 			receiverUserName: receiverName,
 			chatGroupId: roomId || chatGroupId,
@@ -78,27 +81,42 @@ export default function SearchUser({ chatGroupId, onClose }: Props) {
 						) : userSearchResults.length !== 0 ? (
 							userSearchResults.map((user) => (
 								<div
-									key={user.userDto.id}
+									key={user.userData.id}
 									className="flex w-full items-center justify-between rounded-[8px] bg-slate-700 px-[10px] py-[7px]"
 								>
 									<div className="flex items-center justify-center gap-[10px]">
 										<Avatar
-											author={user.userDto.username}
-											src={user.userDto.avatar}
+											author={user.userData.username}
+											src={user.userData?.avatar || ''}
 											className="h-[40px] w-[40px]"
 											controls
 											onClose={onClose}
 										/>
-										<p>{user.userDto.username}</p>
+										<p>{user.userData.username}</p>
 									</div>
 
-									{user.invitationDto &&
-									user.invitationDto.status === 'PENDING' ? (
-										<div className="cursor-pointer">Đã gửi kết bạn.</div>
+									{user.invitation ? (
+										user.invitation?.restriction ? (
+											<div>
+												{user.invitation.sender.id === authUser?.id
+													? 'Bạn đã chặn người này'
+													: 'Người này đã chặn bạn'}
+											</div>
+										) : user.invitation?.status === 'PENDING' ? (
+											<div className="cursor-pointer">Đã gửi kết bạn</div>
+										) : user.invitation.status === 'ACCEPTED' ? (
+											<div className="cursor-pointer">Bạn bè</div>
+										) : (
+											<div className="cursor-pointer">
+												{user.invitation.sender.id === authUser?.id
+													? 'Bạn đã từ chối kết bạn với người này'
+													: 'Người này đã từ chối kết bạn'}
+											</div>
+										)
 									) : (
 										<div
 											className="cursor-pointer"
-											onClick={() => sendInvitation(user.userDto.username)}
+											onClick={() => sendInvitation(user.userData.username)}
 										>
 											<MdPersonAddAlt1 />
 										</div>

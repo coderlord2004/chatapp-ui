@@ -10,6 +10,7 @@ type UserInfo = {
 	totalFollowing: number;
 	totalPosts: number;
 	createdAt: string;
+	isOnline: boolean;
 };
 type UserWithAvatar = {
 	id: number;
@@ -18,8 +19,8 @@ type UserWithAvatar = {
 	isOnline: boolean;
 };
 type UserSearchResult = {
-	userDto: UserWithAvatar;
-	invitationDto: Invitation | null;
+	userData: UserInfo;
+	invitation: Invitation | null;
 };
 
 export type { UserInfo, UserWithAvatar, UserSearchResult };

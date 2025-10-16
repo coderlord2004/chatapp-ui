@@ -16,7 +16,6 @@ export const useRequest = () => {
 			}
 
 			if (error.response) {
-				// Server trả về lỗi (4xx, 5xx)
 				console.log('Response error: ', error.response);
 				const message =
 					error.response.data?.message ||
