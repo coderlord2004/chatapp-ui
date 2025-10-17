@@ -1,27 +1,46 @@
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import TextInput from './TextInput';
 import CreatePostIcon from './CreatePostIcon';
-import { useAuth } from '@/contexts/AuthContext';
+import { PostType } from '@/types/Post';
+import React from 'react';
 
-type Props = {};
+type PostComposerTrigger = {
+	onCreatePost: (data: PostType) => void;
+};
 
-export default function PostComposerTrigger({}: Props) {
+const PostComposerTriggerContext = createContext<PostComposerTrigger | null>(
+	null,
+);
+
+export const useTrigger = () => {
+	const context = useContext(PostComposerTriggerContext);
+	if (!context) {
+		throw new Error('PostComposerTriggerContext can not use outside Provider!');
+	}
+	return context;
+};
+
+export default function PostComposerTrigger({
+	onCreatePost,
+}: PostComposerTrigger) {
 	const [openCreatePost, setOpenCreatePost] = useState(false);
 	return (
-		<div className="flex h-full items-center justify-center gap-[10px]">
-			<TextInput
-				placeHolder="Bạn đang nghĩ gì?"
-				className=""
-				onFocus={() => {
-					setTimeout(() => {
-						setOpenCreatePost(true);
-					}, 50);
-				}}
-			/>
-			<CreatePostIcon
-				openCreatePost={openCreatePost}
-				onCloseCreatePost={() => setOpenCreatePost(false)}
-			/>
-		</div>
+		<PostComposerTriggerContext.Provider value={{ onCreatePost }}>
+			<div className="flex h-full items-center justify-center gap-[10px]">
+				<TextInput
+					placeHolder="Bạn đang nghĩ gì?"
+					className=""
+					onFocus={() => {
+						setTimeout(() => {
+							setOpenCreatePost(true);
+						}, 50);
+					}}
+				/>
+				<CreatePostIcon
+					openCreatePost={openCreatePost}
+					onCloseCreatePost={() => setOpenCreatePost(false)}
+				/>
+			</div>
+		</PostComposerTriggerContext.Provider>
 	);
 }

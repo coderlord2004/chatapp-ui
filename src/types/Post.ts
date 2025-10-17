@@ -25,7 +25,7 @@ type PostType = {
 	attachments: AttachmentType[];
 	sharedPost: PostType | null;
 	sharedAttachment: SharedAttachment | null;
-	postAttachmentType: 'MEDIA' | 'POST';
+	postAttachmentType: 'MEDIA' | 'POST' | 'ATTACHMENT';
 	author: UserInfo;
 	reacted: ReactionType | null;
 };

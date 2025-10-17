@@ -18,9 +18,10 @@ import { useNotification } from '@/hooks/useNotification';
 type Props = {
 	data: CommentResponse;
 	level: number;
+	onDelete: (commentId: number) => void;
 };
 
-export default function Comment({ data, level }: Props) {
+export default function Comment({ data, level, onDelete }: Props) {
 	const { authUser } = useAuth();
 	const { get, post, remove, patch } = useRequest();
 	const [commentData, setCommentData] = useState<CommentType>(data.commentData);
@@ -86,7 +87,12 @@ export default function Comment({ data, level }: Props) {
 	}
 
 	async function handleDeleteComment(commentId: number) {
-		await remove(`comment/delete/?commentId=${commentId}`);
+		onDelete(commentId);
+		const res = await remove(`comment/delete/?commentId=${commentId}`);
+		showNotification({
+			type: 'success',
+			message: res,
+		});
 	}
 
 	async function handleReplyComment(parentCommentId: number) {
@@ -209,6 +215,7 @@ export default function Comment({ data, level }: Props) {
 						key={childComment.commentData.id}
 						level={level + 1}
 						data={childComment}
+						onDelete={() => {}}
 					/>
 				))}
 		</div>

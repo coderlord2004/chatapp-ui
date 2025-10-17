@@ -113,10 +113,8 @@ export default function ChatRoom({
 		<div
 			className={`chatroom relative z-[5] flex h-screen w-full flex-col bg-gray-900`}
 		>
-			{/* Chat Header */}
 			<div className="header flex max-h-[60px] items-center justify-between border-b border-gray-800 bg-gray-800/50 px-4 py-3 sm:px-4 sm:py-3">
 				<div className="flex items-center">
-					{/* Back button for mobile */}
 					<button
 						className="mr-2 block cursor-pointer text-2xl hover:text-green-400 sm:hidden"
 						onClick={onOpenSidebar}
@@ -125,7 +123,6 @@ export default function ChatRoom({
 						<IoIosArrowBack />
 					</button>
 
-					{/* Chat info */}
 					<div
 						className="flex cursor-pointer items-center"
 						onClick={() => setIsShowChatRoomInfo(true)}
@@ -154,7 +151,6 @@ export default function ChatRoom({
 					</div>
 				</div>
 
-				{/* Action buttons */}
 				<div className="flex items-center gap-2 sm:gap-3">
 					<button
 						className="cursor-pointer hover:text-yellow-400"
@@ -197,7 +193,6 @@ export default function ChatRoom({
 				</div>
 			</div>
 
-			{/* Messages Container */}
 			<div
 				ref={messageContainerRef}
 				className="message-container flex flex-1 flex-col gap-[5px] overflow-y-auto bg-gray-900/50 p-[10px] transition-all duration-200"
@@ -279,11 +274,9 @@ export default function ChatRoom({
 							/>
 						))}
 
-				{/* Empty div for auto-scrolling */}
 				<div ref={messagesEndRef} />
 			</div>
 
-			{/* chat room info */}
 			{isShowChatRoomInfo && (
 				<div className="animate-fade-in-to-left absolute top-0 right-0 z-50 flex h-full w-[50%] flex-col items-center justify-start bg-gray-900 px-[10px] py-[20px] shadow-lg">
 					<h2>Danh sách thành viên</h2>
@@ -311,7 +304,6 @@ export default function ChatRoom({
 				</div>
 			)}
 
-			{/* scroll button */}
 			<div
 				className="absolute bottom-[80px] left-1/2 translate-x-[-50%] transform cursor-pointer rounded-[50%] bg-black/80 p-[5px] text-[20px]"
 				onClick={scrollToBottom}
@@ -320,7 +312,6 @@ export default function ChatRoom({
 				<FaArrowDown />
 			</div>
 
-			{/* Message Input */}
 			<ChatInput
 				authUsername={
 					typeof decodedJwt?.sub === 'string' ? decodedJwt.sub : undefined

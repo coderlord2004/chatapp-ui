@@ -32,7 +32,6 @@ export default function PostInteraction({ data }: Props) {
 		null,
 	);
 	const commentTextRef = useRef<HTMLInputElement | null>(null);
-	console.log('comment vituarl', virtualComment);
 
 	const handleCommentPost = async (targetId: number) => {
 		if (!commentTextRef.current) return;
@@ -133,7 +132,7 @@ export default function PostInteraction({ data }: Props) {
 				/>
 
 				<button
-					className="mx-1 flex flex-1 items-center justify-center rounded-lg py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-100"
+					className="mx-1 flex flex-1 cursor-pointer items-center justify-center rounded-lg py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-100"
 					onClick={() => setShowComments(!showComments)}
 				>
 					<span className="mr-2 text-lg">💬</span>
@@ -152,7 +151,12 @@ export default function PostInteraction({ data }: Props) {
 			{virtualComment &&
 				virtualComment.map((comment) => (
 					<AnimatePresence>
-						<motion.div initial={{}}>
+						<motion.div
+							initial={{ opacity: 0, y: 15 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, height: 0 }}
+							transition={{ duration: 0.5 }}
+						>
 							<Comment
 								key={comment.id}
 								data={{
@@ -160,6 +164,13 @@ export default function PostInteraction({ data }: Props) {
 									totalChildComments: 0,
 								}}
 								level={0}
+								onDelete={(commentId) =>
+									setVirtualComment((prev) =>
+										prev
+											? prev.filter((comment) => comment.id != commentId)
+											: [],
+									)
+								}
 							/>
 						</motion.div>
 					</AnimatePresence>
@@ -198,6 +209,7 @@ export default function PostInteraction({ data }: Props) {
 				<CreatePost
 					sharedPost={data}
 					onClose={() => setShowCreatePost(false)}
+					onCreate={() => {}}
 				/>
 			)}
 		</div>

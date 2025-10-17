@@ -76,6 +76,7 @@ export default function PostDetail({ data, onClose }: Props) {
 									key={rootComment.commentData.id}
 									level={0}
 									data={rootComment}
+									onDelete={() => {}}
 								/>
 							))}
 						</div>

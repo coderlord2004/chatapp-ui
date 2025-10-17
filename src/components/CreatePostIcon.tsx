@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import CreatePost from './CreatePost';
 import { IoIosAddCircleOutline } from 'react-icons/io';
+import { PostType } from '@/types/Post';
 
 type Props = {
 	openCreatePost: boolean;

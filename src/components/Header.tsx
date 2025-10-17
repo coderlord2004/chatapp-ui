@@ -7,13 +7,15 @@ import { routes } from '@/lib/routes';
 import { useState } from 'react';
 import NotificationIcon from './NotificationIcon';
 import PostComposerTrigger from './PostComposerTrigger';
+import SearchInput from './SearchInput';
 
 type Props = {
 	className: string;
+	onSearch?: (keyword: string) => void;
 	onFocusInput?: () => void;
 };
 
-export default function Header({ className, onFocusInput }: Props) {
+export default function Header({ className, onSearch, onFocusInput }: Props) {
 	const { authUser } = useAuth();
 
 	return (
@@ -30,6 +32,11 @@ export default function Header({ className, onFocusInput }: Props) {
 					className="h-[50px] w-[50px] rounded-[50%] border-[1px] border-solid border-white"
 				/>
 			</Link>
+			<SearchInput
+				onSearch={(keyword) => onSearch && onSearch(keyword)}
+				placeholder="Tìm kiếm bài viết..."
+				className="ml-2 h-[50%]"
+			/>
 			<div className="mx-auto flex h-full w-[50%] items-center justify-evenly">
 				<Link href="/" className="group relative cursor-pointer text-white">
 					Home
@@ -42,7 +49,7 @@ export default function Header({ className, onFocusInput }: Props) {
 						className="h-10 w-10 text-white"
 						controls={true}
 					/>
-					<PostComposerTrigger />
+					<PostComposerTrigger onCreatePost={() => {}} />
 				</div>
 			</div>
 

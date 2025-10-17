@@ -10,7 +10,7 @@ type FriendSuggestion = {
 	user: UserWithAvatar;
 };
 
-export default function FriendSuggesstion({}: Props) {
+export default function FriendSuggestion({}: Props) {
 	const { get, post } = useRequest();
 	const [friendSuggestions, setFriendSuggestions] = useState<
 		FriendSuggestion[]

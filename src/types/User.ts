@@ -23,4 +23,9 @@ type UserSearchResult = {
 	invitation: Invitation | null;
 };
 
-export type { UserInfo, UserWithAvatar, UserSearchResult };
+type UserWithInvitation = {
+	invitation: Invitation | null;
+	userWithInformation: UserInfo;
+};
+
+export type { UserInfo, UserWithAvatar, UserSearchResult, UserWithInvitation };

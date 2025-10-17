@@ -12,7 +12,7 @@ export default function useMessages(roomId: number | null) {
 	const webSocketPath = `/user/queue/chat/${roomId}`;
 
 	async function getChatRoomMessage(page: number) {
-		const data = await get(`messages/`, {
+		const data = await get(`messages`, {
 			params: { page, room: roomId },
 		});
 		return data;

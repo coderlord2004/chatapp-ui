@@ -4,5 +4,6 @@ export const routes = {
 	register: '/signup',
 	profile: (username: string) => `/profile/${username}`,
 	nextchat: '/nextchat',
+	message: (username: string) => `/nextchat?username=${username}`,
 	nextvibes: '/nextvibes',
 };

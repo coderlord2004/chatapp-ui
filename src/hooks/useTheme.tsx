@@ -15,7 +15,13 @@ export const ThemeContext = createContext({
 	toggleTheme: () => {},
 });
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => {
+	const context = useContext(ThemeContext);
+	if (!context) {
+		throw new Error('Theme context can not use outside ThemeProvider.');
+	}
+	return context;
+};
 
 function ThemeProvider({ children }: PropsWithChildren) {
 	const { theme } = useTheme();

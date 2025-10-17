@@ -109,7 +109,7 @@ export default function ChatInput({
 		setAttachments(null);
 
 		try {
-			await post(`messages/`, formData, {
+			await post(`messages`, formData, {
 				params: {
 					room: roomId,
 				},

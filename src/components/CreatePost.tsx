@@ -11,6 +11,8 @@ import Avatar from './Avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import ThrobberLoader from './Loading/ThrobberLoader';
 import Post from './Post';
+import { useTrigger } from './PostComposerTrigger';
+import { CAPTION_BACKGROUND_COLORS } from '@/const/Post';
 
 type Props = {
 	sharedPost?: PostType;
@@ -37,52 +39,9 @@ type FileAttachmentType = {
 	file: File;
 };
 
-const BACKGROUND_COLORS = [
-	{ id: 0, name: 'Mặc định', class: 'bg-white' },
-	{
-		id: 1,
-		name: 'Tím hồng',
-		class: 'bg-gradient-to-r from-purple-500 to-pink-500',
-	},
-	{
-		id: 2,
-		name: 'Xanh dương',
-		class: 'bg-gradient-to-r from-blue-400 to-cyan-400',
-	},
-	{
-		id: 3,
-		name: 'Xanh lá',
-		class: 'bg-gradient-to-r from-green-400 to-teal-400',
-	},
-	{
-		id: 4,
-		name: 'Cam đỏ',
-		class: 'bg-gradient-to-r from-orange-400 to-red-500',
-	},
-	{
-		id: 5,
-		name: 'Vàng cam',
-		class: 'bg-gradient-to-r from-yellow-400 to-orange-400',
-	},
-	{
-		id: 6,
-		name: 'Hồng tím',
-		class: 'bg-gradient-to-r from-pink-400 to-purple-500',
-	},
-	{
-		id: 7,
-		name: 'Xanh biển',
-		class: 'bg-gradient-to-r from-blue-500 to-indigo-600',
-	},
-	{
-		id: 8,
-		name: 'Xanh tím',
-		class: 'bg-gradient-to-r from-blue-500 to-purple-600',
-	},
-];
-
 export default function CreatePost({ sharedPost, onClose }: Props) {
 	const { post } = useRequest();
+	const { onCreatePost } = useTrigger();
 	const { showNotification } = useNotification();
 	const { authUser } = useAuth();
 	const [visibility, setVisibility] = useState<number>(0);
@@ -137,7 +96,6 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 
 		const createPostData = createPostDataRef.current;
 
-		// Validate
 		if (!createPostData.caption.trim()) {
 			showNotification({
 				type: 'error',
@@ -170,9 +128,10 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 				formData.append(`attachments[${i}].file`, att.file);
 			});
 
-			await post('posts/create/', formData, {
+			const res = await post('posts/create/', formData, {
 				headers: { 'Content-Type': 'multipart/form-data' },
 			});
+			onCreatePost(res);
 			setLoading(false);
 		}
 		showNotification({
@@ -259,7 +218,7 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 						value={caption}
 						onChange={handleCaptionChange}
 						placeholder={`${sharedPost ? 'Hãy nói gì đó về bài đăng này.' : `${authUser?.username} ơi, bạn đang nghĩ gì thế?`}`}
-						className={`min-h-[120px] w-full resize-none rounded-lg border-[1px] border-solid border-slate-400 p-4 text-black placeholder-black/80 transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:outline-none ${BACKGROUND_COLORS[selectedBackground].class}`}
+						className={`min-h-[120px] w-full resize-none rounded-lg border-[1px] border-solid border-slate-400 p-4 text-black placeholder-black/80 transition-all duration-300 focus:ring-2 focus:ring-blue-500 focus:outline-none ${CAPTION_BACKGROUND_COLORS[selectedBackground].class}`}
 					/>
 
 					{!sharedPost && (
@@ -277,7 +236,7 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 										Chọn màu nền
 									</h3>
 									<div className="grid grid-cols-4 gap-2">
-										{BACKGROUND_COLORS.map((color) => (
+										{CAPTION_BACKGROUND_COLORS.map((color) => (
 											<button
 												key={color.id}
 												onClick={() => handleBackgroundSelect(color.id)}
