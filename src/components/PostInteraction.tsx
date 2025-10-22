@@ -47,6 +47,7 @@ export default function PostInteraction({ data }: Props) {
 				username: authUser?.username || '',
 				avatar: authUser?.avatar || '',
 				isOnline: false,
+				lastOnline: new Date().toISOString()
 			},
 			content: content,
 			commentedAt: new Date().toISOString(),
@@ -123,9 +124,9 @@ export default function PostInteraction({ data }: Props) {
 								)
 									? prev.reactionData.topReactionTypes
 									: [...prev.reactionData.topReactionTypes, reactionType].slice(
-											0,
-											3,
-										),
+										0,
+										3,
+									),
 							},
 						}))
 					}
@@ -209,7 +210,6 @@ export default function PostInteraction({ data }: Props) {
 				<CreatePost
 					sharedPost={data}
 					onClose={() => setShowCreatePost(false)}
-					onCreate={() => {}}
 				/>
 			)}
 		</div>
