@@ -2,11 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { decodeJwt } from 'jose';
 import useMessages from '@/hooks/useMessages';
 import { ChatRoomInfo } from '@/types/ChatRoom';
 import ChatInput from './ChatInput';
-import Avatar from './Avatar';
 
 import { FaPhoneAlt, FaUserCircle, FaArrowDown } from 'react-icons/fa';
 import { MdPersonAddAlt } from 'react-icons/md';
@@ -17,6 +15,8 @@ import { formatDateTime } from '@/utils/formatDateTime';
 import { useSearchUser } from '@/hooks/useSearchUser';
 import Message from '@/components/Message';
 import CallModal from '@/components/CallModal';
+import { AnimatePresence, motion } from 'framer-motion';
+import ChatRoomDetail from './ChatRoomDetail';
 
 type ChatRoomProps = {
 	chatRoomInfo: ChatRoomInfo;
@@ -49,8 +49,7 @@ export default function ChatRoom({
 		isLoading,
 	} = useMessages(roomId);
 	const messagePage = useRef<number>(1);
-	const { authUser, accessToken } = useAuth();
-	const decodedJwt = accessToken && decodeJwt(accessToken);
+	const { authUser } = useAuth();
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const scrollToBottomButton = useRef<HTMLDivElement>(null);
 	const { setSearchUserModal } = useSearchUser();
@@ -251,58 +250,39 @@ export default function ChatRoom({
 
 				{isLoading === messagePage.current && isLoading === 1
 					? Array.from({ length: 5 }, (_, idx) => (
-							<div
-								key={idx}
-								className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
-							>
-								<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
-									<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
-									<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
-									<div className="h-[10px] w-[40%] bg-gray-700"></div>
-								</div>
+						<div
+							key={idx}
+							className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+						>
+							<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
+								<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
+								<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
+								<div className="h-[10px] w-[40%] bg-gray-700"></div>
 							</div>
-						))
+						</div>
+					))
 					: messages.map((msg, idx) => (
-							<Message
-								key={msg.id}
-								index={idx}
-								message={msg}
-								totalMessages={messages.length}
-								uploadProgress={uploadProgress}
-								updateMessage={updateMessage}
-								deleteMessage={deleteMessage}
-							/>
-						))}
+						<Message
+							key={msg.id}
+							index={idx}
+							message={msg}
+							totalMessages={messages.length}
+							uploadProgress={uploadProgress}
+							updateMessage={updateMessage}
+							deleteMessage={deleteMessage}
+						/>
+					))}
 
 				<div ref={messagesEndRef} />
 			</div>
-
-			{isShowChatRoomInfo && (
-				<div className="animate-fade-in-to-left absolute top-0 right-0 z-50 flex h-full w-[50%] flex-col items-center justify-start bg-gray-900 px-[10px] py-[20px] shadow-lg">
-					<h2>Danh sách thành viên</h2>
-					<button
-						className="absolute top-2 right-2 cursor-pointer text-[200%] text-white hover:text-red-500"
-						aria-label="Close chat room info"
-						onClick={() => setIsShowChatRoomInfo(false)}
-					>
-						&times;
-					</button>
-
-					{chatRoomInfo.members.map((user) => (
-						<div
-							key={user.id}
-							className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 text-left transition-colors duration-200 hover:bg-gray-800"
-						>
-							<Avatar
-								author={user.username}
-								src={user.avatar}
-								className="h-10 w-10"
-							/>
-							<p>{user.username}</p>
-						</div>
-					))}
-				</div>
-			)}
+			<AnimatePresence>
+				{isShowChatRoomInfo && (
+					<ChatRoomDetail
+						chatRoom={chatRoomInfo}
+						onClose={() => setIsShowChatRoomInfo(false)}
+					/>
+				)}
+			</AnimatePresence>
 
 			<div
 				className="absolute bottom-[80px] left-1/2 translate-x-[-50%] transform cursor-pointer rounded-[50%] bg-black/80 p-[5px] text-[20px]"
@@ -313,10 +293,8 @@ export default function ChatRoom({
 			</div>
 
 			<ChatInput
-				authUsername={
-					typeof decodedJwt?.sub === 'string' ? decodedJwt.sub : undefined
-				}
 				roomId={roomId}
+				allow={chatRoomInfo.leaderOnlySend ? (chatRoomInfo.leader?.id) : -1}
 				onSendOptimistic={insertFakeMessage}
 				onSetUploadProgress={setUploadProgress}
 			/>

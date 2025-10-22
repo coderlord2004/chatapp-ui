@@ -3,6 +3,7 @@
 import { PropsWithChildren } from 'react';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { WebSocketContextProvider } from '@/hooks/useWebSocket';
+import { SearchUserProvider } from '@/hooks/useSearchUser';
 import dynamic from 'next/dynamic';
 
 const AgoraProvider = dynamic(() => import('@/contexts/AgoraRTCProvider'), {
@@ -11,7 +12,7 @@ const AgoraProvider = dynamic(() => import('@/contexts/AgoraRTCProvider'), {
 
 function WebSocketProvider({ children }: PropsWithChildren) {
 	const { accessToken } = useAuth();
-	if (!accessToken) return null;
+	if (!accessToken) return <div className='min-h-screen fixed inset-0 flex justify-center items-center gradientColor bg-slate-800'></div>;
 
 	return (
 		<WebSocketContextProvider token={accessToken}>
@@ -23,7 +24,9 @@ function WebSocketProvider({ children }: PropsWithChildren) {
 export default function AuthLayout({ children }: PropsWithChildren) {
 	return (
 		<AuthProvider>
-			<WebSocketProvider>{children}</WebSocketProvider>
+			<SearchUserProvider>
+				<WebSocketProvider>{children}</WebSocketProvider>
+			</SearchUserProvider>
 		</AuthProvider>
 	);
 }

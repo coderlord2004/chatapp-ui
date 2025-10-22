@@ -3,7 +3,6 @@
 import type { PropsWithChildren } from 'react';
 import { ThemeContextProvider } from '@/hooks/useTheme';
 import { NotificationProvider } from '@/hooks/useNotification';
-import { SearchUserProvider } from '@/hooks/useSearchUser';
 import RouteProgress from '@/components/RouteProgress';
 
 import '@fontsource-variable/roboto';
@@ -16,10 +15,8 @@ function ContextProviders({ children }: PropsWithChildren) {
 	return (
 		<NotificationProvider>
 			<ThemeContextProvider>
-				<SearchUserProvider>
-					<RouteProgress />
-					{children}
-				</SearchUserProvider>
+				<RouteProgress />
+				{children}
 			</ThemeContextProvider>
 		</NotificationProvider>
 	);

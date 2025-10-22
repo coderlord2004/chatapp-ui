@@ -31,16 +31,22 @@ export default function Invitations({ onUpdateChatRooms }: Props) {
 				members: [senderInvitation.sender, senderInvitation.receiver],
 				type: senderInvitation.chatRoomId ? 'GROUP' : 'DUO',
 				createdOn: Date.now().toString(),
+				leader: null,
+				leaderOnlySend: false,
+				isWaitingRoom: false,
 				latestMessage: null,
 				firstMessagePage: null,
 			};
+			console.log('new chat room:', newChatRoom);
 
 			onUpdateChatRooms(newChatRoom);
 		}
 
-		await patch(`invitations/${invitationId}`, {
+		const data = await patch(`invitations/${invitationId}`, {
 			accept: isAccept,
 		});
+
+		onUpdateChatRooms(data.newChatRoom)
 	};
 	const getTotalNewInvitations = () => {
 		return invitations.filter((i) => i.status === 'PENDING').length;

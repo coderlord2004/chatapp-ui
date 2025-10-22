@@ -130,7 +130,7 @@ export default function Signup() {
 				</form>
 
 				{loading && (
-					<div className="absolute inset-0 flex cursor-progress rounded-[10px] bg-black/70">
+					<div className="absolute inset-0 flex cursor-progress rounded-[10px] bg-black/80">
 						<BinaryMatrixLoader
 							className="mx-auto my-auto h-[140px] w-[120px]"
 							title="Đang đăng ký..."

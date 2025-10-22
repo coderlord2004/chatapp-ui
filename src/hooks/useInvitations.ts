@@ -2,6 +2,7 @@ import { useRequest } from '@/hooks/useRequest';
 import { useState, useEffect } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { Invitation } from '@/types/Invitation';
+import { ChatRoomInfo } from '@/types/ChatRoom';
 
 function useInvitations() {
 	const [invitations, setInvitations] = useState<Invitation[]>([]);

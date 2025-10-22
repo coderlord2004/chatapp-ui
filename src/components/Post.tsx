@@ -69,11 +69,7 @@ export default function Post({ order, data, onRemove }: Props) {
 	}
 
 	async function blockUser(userId: number) {
-		await post('users/block/', {
-			params: {
-				userId,
-			},
-		});
+		await post(`users/block/?userId=${userId}`);
 	}
 
 	const postMenuItems = [
@@ -81,7 +77,7 @@ export default function Post({ order, data, onRemove }: Props) {
 			accepted: authUser?.username === data.author.username,
 			title: 'Chỉnh sửa bài viết',
 			icon: <FaRegEdit className="text-2xl text-green-400" />,
-			action: () => {},
+			action: () => { },
 		},
 		{
 			accepted: authUser?.username === data.author.username,
@@ -93,13 +89,13 @@ export default function Post({ order, data, onRemove }: Props) {
 			accepted: true,
 			title: 'Xác thực nội dung bài viết',
 			icon: <VscInspect className="text-2xl text-blue-400" />,
-			action: () => {},
+			action: () => { },
 		},
 		{
 			accepted: authUser?.username !== data.author.username,
 			title: 'Báo cáo bài viết',
 			icon: <MdOutlineReport className="text-2xl text-yellow-400" />,
-			action: () => {},
+			action: () => { },
 		},
 		{
 			accepted: authUser?.username !== data.author.username,

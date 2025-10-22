@@ -68,7 +68,7 @@ export default function Page({
 				});
 				setProfile((prev) => ({ ...prev, posts: data }));
 			} else {
-				const data = await get('users/medias/', {
+				const data = await get('users/media/', {
 					params: { userId: userData.id, page: activeTab.page },
 				});
 				setProfile((prev) => ({ ...prev, media: data }));

@@ -28,7 +28,7 @@ export default function Avatar({
 	onClose,
 }: Props) {
 	const [avatarUrl, setAvatarUrl] = useState<string | null>(src);
-	const { authUser } = useAuth();
+	const { authUser, logout } = useAuth();
 	const { post } = useRequest();
 	const router = useRouter();
 	const { showNotification } = useNotification();
@@ -69,6 +69,11 @@ export default function Avatar({
 				blockUser(1);
 			},
 		},
+		{
+			accepted: author === authUser?.username,
+			title: 'Đăng xuất',
+			action: () => logout()
+		}
 	];
 
 	async function handleUpdateAvatar(e: React.ChangeEvent<HTMLInputElement>) {

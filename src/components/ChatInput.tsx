@@ -8,6 +8,7 @@ import { IoIosMic, IoIosCloseCircleOutline } from 'react-icons/io';
 import { FaPaperPlane, FaMicrophone, FaStopCircle } from 'react-icons/fa';
 import { useNotification } from '@/hooks/useNotification';
 import TextInput from './TextInput';
+import { useAuth } from '@/contexts/AuthContext';
 
 declare global {
 	interface Window {
@@ -17,7 +18,7 @@ declare global {
 }
 
 declare const SpeechRecognition: {
-	new (): typeof SpeechRecognition;
+	new(): typeof SpeechRecognition;
 	prototype: typeof SpeechRecognition;
 };
 
@@ -27,8 +28,8 @@ type UploadProgressType = {
 };
 
 type ChatRoomProps = {
-	authUsername: string | undefined;
 	roomId: number | null;
+	allow: number | undefined;
 	onSendOptimistic: (msg: MessageResponseType) => void;
 	onSetUploadProgress: (uploadProgress: UploadProgressType) => void;
 };
@@ -46,11 +47,12 @@ const voiceMenuValues: VoiceMenu[] = [
 ];
 
 export default function ChatInput({
-	authUsername,
 	roomId,
+	allow,
 	onSendOptimistic,
 	onSetUploadProgress,
 }: ChatRoomProps) {
+	const { authUser } = useAuth()
 	const { post } = useRequest();
 	const { showNotification } = useNotification();
 	const [message, setMessage] = useState('');
@@ -92,7 +94,7 @@ export default function ChatInput({
 		onSendOptimistic({
 			id: -Date.now(),
 			message: text ? text : null,
-			sender: authUsername || 'you',
+			sender: authUser?.username || 'you',
 			sentOn: new Date().toISOString(),
 			attachments:
 				attachments?.map((a) => ({
@@ -115,15 +117,15 @@ export default function ChatInput({
 				},
 				onUploadProgress: templeAttachments.current
 					? (progressEvent) => {
-							const percent = Math.round(
-								(progressEvent.loaded * 100) / (progressEvent.total || 1),
-							);
-							onSetUploadProgress({
-								id: fakeId,
-								percent: percent,
-							});
-						}
-					: () => {},
+						const percent = Math.round(
+							(progressEvent.loaded * 100) / (progressEvent.total || 1),
+						);
+						onSetUploadProgress({
+							id: fakeId,
+							percent: percent,
+						});
+					}
+					: () => { },
 			});
 		} catch (err) {
 			console.error('Send failed:', err);
@@ -237,6 +239,12 @@ export default function ChatInput({
 		mediaRecorderRef.current?.stop();
 		setIsRecording(false);
 	};
+
+	if (allow !== -1 && allow !== authUser?.id) {
+		return (
+			<div className="relative flex flex-col gap-[15px] border-t border-gray-800 bg-gray-800/50 p-4 items-center justify-center">Chỉ trưởng nhóm mới có thể gửi tin nhắn</div>
+		)
+	}
 
 	return (
 		<div className="relative flex flex-col gap-[15px] border-t border-gray-800 bg-gray-800/50 p-4">
@@ -412,8 +420,8 @@ export default function ChatInput({
 								style={
 									voiceMenu === value
 										? {
-												backgroundColor: 'blue',
-											}
+											backgroundColor: 'blue',
+										}
 										: {}
 								}
 								onClick={() => setVoiceMenu(value)}

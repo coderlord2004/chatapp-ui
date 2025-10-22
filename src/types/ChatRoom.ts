@@ -9,6 +9,9 @@ type ChatRoomInfo = {
 	members: UserWithAvatar[];
 	type: 'GROUP' | 'DUO';
 	createdOn: string;
+	leader: UserWithAvatar | null;
+	leaderOnlySend: boolean;
+	isWaitingRoom: boolean;
 	latestMessage: MessageResponseType | null;
 	firstMessagePage: MessageResponseType[] | null;
 };

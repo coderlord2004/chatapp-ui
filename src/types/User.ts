@@ -17,6 +17,7 @@ type UserWithAvatar = {
 	username: string;
 	avatar: string | null;
 	isOnline: boolean;
+	lastOnline: string;
 };
 type UserSearchResult = {
 	userData: UserInfo;
