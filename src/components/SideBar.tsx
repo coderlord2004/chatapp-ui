@@ -78,11 +78,19 @@ export function SideBar(props: SideBarProps) {
 		return intervalId;
 	}
 
-	function updateLatestChatRoom(chatRoom: ChatRoomInfo) {
+	function createLatestChatRoom(chatRoom: ChatRoomInfo) {
 		setChatRooms((prev) => [chatRoom, ...prev]);
 	}
 
-	// Fetch chat rooms
+	function updateChatRoom(id: number, chatRoom: ChatRoomInfo) {
+		setChatRooms((prev) =>
+			prev.map((c) => {
+				if (c.id === id) return chatRoom;
+				else return c;
+			}),
+		);
+	}
+
 	const fetchChatRooms = async () => {
 		setIsLoading(true);
 		try {
@@ -114,7 +122,7 @@ export function SideBar(props: SideBarProps) {
 				type: 'info',
 				message: `${createChatRoomInvitation.sender} đã gửi cho bạn lời mời vào nhóm.`,
 			});
-			updateLatestChatRoom(createChatRoomInvitation.chatRoom);
+			createLatestChatRoom(createChatRoomInvitation.chatRoom);
 		}
 	}, [createChatRoomInvitation]);
 
@@ -173,10 +181,10 @@ export function SideBar(props: SideBarProps) {
 
 	const ChatRoomSkeleton = () => (
 		<div className="mx-2 my-1 flex items-center rounded-xl p-3">
-			<div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-600 animate-pulse"></div>
+			<div className="h-12 w-12 animate-pulse rounded-2xl bg-gradient-to-br from-gray-700 to-gray-600"></div>
 			<div className="ml-3 flex-1 space-y-2">
-				<div className="h-4 w-32 rounded bg-gradient-to-r from-gray-700 to-gray-600 animate-pulse"></div>
-				<div className="h-3 w-24 rounded bg-gradient-to-r from-gray-700 to-gray-600 animate-pulse"></div>
+				<div className="h-4 w-32 animate-pulse rounded bg-gradient-to-r from-gray-700 to-gray-600"></div>
+				<div className="h-3 w-24 animate-pulse rounded bg-gradient-to-r from-gray-700 to-gray-600"></div>
 			</div>
 		</div>
 	);
@@ -193,17 +201,27 @@ export function SideBar(props: SideBarProps) {
 				<motion.div
 					initial={{ opacity: 0, scale: 0.9 }}
 					animate={{ opacity: 1, scale: 1 }}
-					className="flex flex-col items-center justify-center py-12 px-6 text-center"
+					className="flex flex-col items-center justify-center px-6 py-12 text-center"
 				>
-					<div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-4">
-						<svg className="w-12 h-12 text-purple-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+					<div className="mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+						<svg
+							className="h-12 w-12 text-purple-400/60"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={1.5}
+								d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+							/>
 						</svg>
 					</div>
-					<h3 className="text-lg font-semibold text-white mb-2">
+					<h3 className="mb-2 text-lg font-semibold text-white">
 						Chưa có cuộc trò chuyện nào
 					</h3>
-					<p className="text-purple-200/60 text-sm">
+					<p className="text-sm text-purple-200/60">
 						Bắt đầu trò chuyện với bạn bè ngay bây giờ!
 					</p>
 				</motion.div>
@@ -217,49 +235,63 @@ export function SideBar(props: SideBarProps) {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: index * 0.1 }}
 				onClick={() => handleChatRoomClick(chatRoom)}
-				className={`group relative mx-2 my-1 flex cursor-pointer items-center rounded-2xl p-3 transition-all duration-300 ${chatRoom.id === props.chatRoomActive?.id
-					? 'bg-gradient-to-r from-purple-600/80 to-pink-600/80 shadow-lg shadow-purple-500/30 border border-white/20'
-					: 'bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10'
-					}`}
+				className={`group relative mx-2 my-1 flex cursor-pointer items-center rounded-2xl p-3 transition-all duration-300 ${
+					chatRoom.id === props.chatRoomActive?.id
+						? 'border border-white/20 bg-gradient-to-r from-purple-600/80 to-pink-600/80 shadow-lg shadow-purple-500/30'
+						: 'border border-transparent bg-white/5 hover:border-white/10 hover:bg-white/10'
+				}`}
 			>
 				<Avatar
 					author={getChatRoomName(chatRoom)}
 					src={chatRoom.avatar}
-					className={`h-12 w-12 ring-2 transition-all duration-300 ${chatRoom.id === props.chatRoomActive?.id
-						? 'ring-white/50'
-						: 'ring-purple-500/30 group-hover:ring-purple-500/50'
-						}`}
+					className={`h-12 w-12 ring-2 transition-all duration-300 ${
+						chatRoom.id === props.chatRoomActive?.id
+							? 'ring-white/50'
+							: 'ring-purple-500/30 group-hover:ring-purple-500/50'
+					}`}
 					isGroupAvatar={chatRoom.type === 'GROUP'}
 				/>
 
 				<div className="ml-3 flex-1 overflow-hidden">
 					<div className="flex items-center justify-between">
-						<p className={`font-semibold truncate transition-colors ${chatRoom.id === props.chatRoomActive?.id
-							? 'text-white'
-							: 'text-white group-hover:text-purple-100'
-							}`}>
+						<p
+							className={`truncate font-semibold transition-colors ${
+								chatRoom.id === props.chatRoomActive?.id
+									? 'text-white'
+									: 'text-white group-hover:text-purple-100'
+							}`}
+						>
 							{getChatRoomName(chatRoom)}
 						</p>
 						{chatRoom.latestMessage && (
-							<span className={`text-xs ml-2 flex-shrink-0 ${chatRoom.id === props.chatRoomActive?.id
-								? 'text-white/80'
-								: 'text-purple-200/60'
-								}`}>
+							<span
+								className={`ml-2 flex-shrink-0 text-xs ${
+									chatRoom.id === props.chatRoomActive?.id
+										? 'text-white/80'
+										: 'text-purple-200/60'
+								}`}
+							>
 								{formatDateTime(chatRoom.latestMessage.sentOn)}
 							</span>
 						)}
 					</div>
 
 					{chatRoom.latestMessage && (
-						<div className="flex items-center justify-between mt-1">
-							<p className={`text-sm truncate flex-1 ${chatRoom.id === props.chatRoomActive?.id
-								? 'text-white/90'
-								: 'text-purple-200/70'
-								}`}>
-								<span className={`font-medium ${chatRoom.id === props.chatRoomActive?.id
-									? 'text-white'
-									: 'text-purple-300'
-									}`}>
+						<div className="mt-1 flex items-center justify-between">
+							<p
+								className={`flex-1 truncate text-sm ${
+									chatRoom.id === props.chatRoomActive?.id
+										? 'text-white/90'
+										: 'text-purple-200/70'
+								}`}
+							>
+								<span
+									className={`font-medium ${
+										chatRoom.id === props.chatRoomActive?.id
+											? 'text-white'
+											: 'text-purple-300'
+									}`}
+								>
 									{authUser?.username === chatRoom.latestMessage.sender
 										? 'Bạn: '
 										: `${chatRoom.latestMessage.sender}: `}
@@ -269,38 +301,37 @@ export function SideBar(props: SideBarProps) {
 									: chatRoom.latestMessage.message}
 							</p>
 							{chatRoom.id !== props.chatRoomActive?.id && (
-								<div className="w-2 h-2 bg-purple-500 rounded-full ml-2 flex-shrink-0"></div>
+								<div className="ml-2 h-2 w-2 flex-shrink-0 rounded-full bg-purple-500"></div>
 							)}
 						</div>
 					)}
 
 					{chatRoom.type === 'GROUP' && (
-						<div className="flex items-center mt-1">
-							<div className="flex -space-x-2 mr-2">
+						<div className="mt-1 flex items-center">
+							<div className="mr-2 flex -space-x-2">
 								{chatRoom.members.slice(0, 3).map((member, idx) => (
 									<div
 										key={idx}
-										className={`w-4 h-4 rounded-full border ${chatRoom.id === props.chatRoomActive?.id
-											? 'bg-white/30 border-white/40'
-											: 'bg-purple-400 border-white/20'
-											}`}
+										className={`h-4 w-4 rounded-full border ${
+											chatRoom.id === props.chatRoomActive?.id
+												? 'border-white/40 bg-white/30'
+												: 'border-white/20 bg-purple-400'
+										}`}
 									></div>
 								))}
 							</div>
-							<p className={`text-xs ${chatRoom.id === props.chatRoomActive?.id
-								? 'text-white/80'
-								: 'text-purple-300/60'
-								}`}>
+							<p
+								className={`text-xs ${
+									chatRoom.id === props.chatRoomActive?.id
+										? 'text-white/80'
+										: 'text-purple-300/60'
+								}`}
+							>
 								{chatRoom.members.length} thành viên
 							</p>
 						</div>
 					)}
 				</div>
-
-				{/* Active state glow effect */}
-				{chatRoom.id === props.chatRoomActive?.id && (
-					<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-600/80 to-pink-600/80 opacity-100 shadow-lg"></div>
-				)}
 			</motion.div>
 		));
 	};
@@ -317,17 +348,27 @@ export function SideBar(props: SideBarProps) {
 				<motion.div
 					initial={{ opacity: 0, scale: 0.9 }}
 					animate={{ opacity: 1, scale: 1 }}
-					className="flex flex-col items-center justify-center py-12 px-6 text-center"
+					className="flex flex-col items-center justify-center px-6 py-12 text-center"
 				>
-					<div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center mb-4">
-						<svg className="w-12 h-12 text-amber-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+					<div className="mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/20">
+						<svg
+							className="h-12 w-12 text-amber-400/60"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={1.5}
+								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
 						</svg>
 					</div>
-					<h3 className="text-lg font-semibold text-white mb-2">
+					<h3 className="mb-2 text-lg font-semibold text-white">
 						Không có tin nhắn chờ
 					</h3>
-					<p className="text-amber-200/60 text-sm">
+					<p className="text-sm text-amber-200/60">
 						Tất cả lời mời đã được xử lý
 					</p>
 				</motion.div>
@@ -341,38 +382,46 @@ export function SideBar(props: SideBarProps) {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ delay: index * 0.1 }}
 				onClick={() => handleChatRoomClick(chatRoom)}
-				className="group relative mx-2 my-1 flex cursor-pointer items-center rounded-2xl p-3 transition-all duration-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 hover:border-amber-500/30"
+				className="group relative mx-2 my-1 flex cursor-pointer items-center rounded-2xl border border-amber-500/20 bg-amber-500/10 p-3 transition-all duration-300 hover:border-amber-500/30 hover:bg-amber-500/20"
 			>
 				<div className="relative">
 					<Avatar
 						author={getChatRoomName(chatRoom)}
 						src={chatRoom.avatar}
-						className="h-12 w-12 ring-2 ring-amber-500/30 group-hover:ring-amber-500/50 transition-all duration-300"
+						className="h-12 w-12 ring-2 ring-amber-500/30 transition-all duration-300 group-hover:ring-amber-500/50"
 						isGroupAvatar={chatRoom.type === 'GROUP'}
 					/>
-					<div className="absolute -top-1 -right-1 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
-						<svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-							<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+					<div className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-amber-500">
+						<svg
+							className="h-3 w-3 text-white"
+							fill="currentColor"
+							viewBox="0 0 20 20"
+						>
+							<path
+								fillRule="evenodd"
+								d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+								clipRule="evenodd"
+							/>
 						</svg>
 					</div>
 				</div>
 
 				<div className="ml-3 flex-1 overflow-hidden">
 					<div className="flex items-center justify-between">
-						<p className="font-semibold text-white truncate group-hover:text-amber-100 transition-colors">
+						<p className="truncate font-semibold text-white transition-colors group-hover:text-amber-100">
 							{getChatRoomName(chatRoom)}
 						</p>
-						<span className="text-xs text-amber-200/60 ml-2 flex-shrink-0">
+						<span className="ml-2 flex-shrink-0 text-xs text-amber-200/60">
 							Chờ xác nhận
 						</span>
 					</div>
 
-					<p className="text-sm text-amber-200/70 truncate mt-1">
+					<p className="mt-1 truncate text-sm text-amber-200/70">
 						Lời mời tham gia nhóm chat
 					</p>
 
 					{chatRoom.type === 'GROUP' && (
-						<div className="flex items-center mt-1">
+						<div className="mt-1 flex items-center">
 							<p className="text-xs text-amber-300/60">
 								{chatRoom.members.length} thành viên
 							</p>
@@ -384,51 +433,50 @@ export function SideBar(props: SideBarProps) {
 	};
 
 	return (
-		<ChatRoomsContext.Provider value={{ chatRooms, updateLatestChatRoom }}>
+		<ChatRoomsContext.Provider
+			value={{ chatRooms, createLatestChatRoom, updateChatRoom }}
+		>
 			<motion.div
 				ref={sideBarRef}
-				className={`relative flex h-full flex-col bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900 sm:max-w-[320px] sm:min-w-[280px] border-r border-white/10 backdrop-blur-sm ${props.isOpenSidebar ? 'w-full sm:w-auto' : 'w-0 overflow-hidden'}`}
+				className={`relative flex h-full flex-col border-r border-white/10 bg-gradient-to-b from-slate-900 via-purple-900/20 to-slate-900 backdrop-blur-sm sm:max-w-[320px] sm:min-w-[280px] ${props.isOpenSidebar ? 'w-full sm:w-auto' : 'w-0 overflow-hidden'}`}
 			>
-				{/* Header */}
-				<SideBarHeader
-					onUpdateChatRoom={(newChatRoom) =>
-						setChatRooms((prev) => [newChatRoom, ...prev])
-					}
-				/>
+				<SideBarHeader />
 
 				{/* Tabs */}
-				<div className="flex border-b border-white/10 mx-4">
+				<div className="mx-4 flex border-b border-white/10">
 					<button
 						onClick={() => setActiveTab('rooms')}
-						className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-300 relative ${activeTab === 'rooms'
-							? 'text-white'
-							: 'text-purple-200/60 hover:text-purple-100'
-							}`}
+						className={`relative flex-1 px-4 py-3 text-sm font-medium transition-all duration-300 ${
+							activeTab === 'rooms'
+								? 'text-white'
+								: 'text-purple-200/60 hover:text-purple-100'
+						}`}
 					>
 						Danh sách phòng
 						{activeTab === 'rooms' && (
 							<motion.div
 								layoutId="activeTab"
-								className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"
+								className="absolute right-0 bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500"
 							/>
 						)}
 					</button>
 					<button
 						onClick={() => setActiveTab('pending')}
-						className={`flex-1 py-3 px-4 text-sm font-medium transition-all duration-300 relative ${activeTab === 'pending'
-							? 'text-white'
-							: 'text-amber-200/60 hover:text-amber-100'
-							}`}
+						className={`relative flex-1 px-4 py-3 text-sm font-medium transition-all duration-300 ${
+							activeTab === 'pending'
+								? 'text-white'
+								: 'text-amber-200/60 hover:text-amber-100'
+						}`}
 					>
 						Tin nhắn chờ
 						{activeTab === 'pending' && (
 							<motion.div
 								layoutId="activeTab"
-								className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 to-orange-500"
+								className="absolute right-0 bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-500 to-orange-500"
 							/>
 						)}
 						{pendingRooms.length > 0 && (
-							<span className="absolute top-2 right-2 w-2 h-2 bg-amber-500 rounded-full"></span>
+							<span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-500"></span>
 						)}
 					</button>
 				</div>
@@ -436,41 +484,51 @@ export function SideBar(props: SideBarProps) {
 				{/* Search Bar */}
 				<div className="p-4">
 					<div className="relative">
-						<div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-							<svg className="w-5 h-5 text-purple-300/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+							<svg
+								className="h-5 w-5 text-purple-300/60"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+								/>
 							</svg>
 						</div>
 						<input
 							type="text"
 							placeholder={`Tìm kiếm ${activeTab === 'rooms' ? 'phòng chat' : 'tin nhắn chờ'}...`}
-							className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-purple-200/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent backdrop-blur-sm transition-all duration-300"
+							className="w-full rounded-2xl border border-white/10 bg-white/5 py-3 pr-4 pl-10 text-white placeholder-purple-200/40 backdrop-blur-sm transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-purple-500/50 focus:outline-none"
 						/>
 					</div>
 				</div>
 
 				{/* Content */}
-				<div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent px-2">
+				<div className="scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent flex-1 overflow-y-auto px-2">
 					{activeTab === 'rooms' ? renderChatRooms() : renderPendingRooms()}
 				</div>
 
 				{/* User Profile Footer */}
-				<div className="p-4 border-t border-white/10 bg-gradient-to-r from-purple-600/10 to-pink-600/10 backdrop-blur-sm">
-					<div className="flex items-center space-x-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-all duration-300 cursor-pointer">
+				<div className="border-t border-white/10 bg-gradient-to-r from-purple-600/10 to-pink-600/10 p-4 backdrop-blur-sm">
+					<div className="flex cursor-pointer items-center space-x-3 rounded-2xl bg-white/5 p-3 transition-all duration-300 hover:bg-white/10">
 						<Avatar
 							author={authUser?.username || 'User'}
 							src={authUser?.avatar || ''}
 							className="h-10 w-10 ring-2 ring-purple-500/40"
 						/>
-						<div className="flex-1 min-w-0">
-							<p className="font-semibold text-white truncate">
+						<div className="min-w-0 flex-1">
+							<p className="truncate font-semibold text-white">
 								{authUser?.username}
 							</p>
-							<p className="text-xs text-purple-300/60 truncate">
+							<p className="truncate text-xs text-purple-300/60">
 								Đang hoạt động
 							</p>
 						</div>
-						<div className="w-2 h-2 bg-green-400 rounded-full"></div>
+						<div className="h-2 w-2 rounded-full bg-green-400"></div>
 					</div>
 				</div>
 			</motion.div>

@@ -16,11 +16,9 @@ import { routes } from '@/lib/routes';
 import { FaPowerOff } from 'react-icons/fa';
 import { IoMdSettings, IoIosAddCircleOutline } from 'react-icons/io';
 
-type Props = {
-	onUpdateChatRoom: (newChatRoom: ChatRoomInfo) => void;
-};
+type Props = {};
 
-export default function SideBarHeader({ onUpdateChatRoom }: Props) {
+export default function SideBarHeader({}: Props) {
 	const { setSearchUserModal } = useSearchUser();
 	const { authUser, logout } = useAuth();
 	const router = useRouter();
@@ -62,7 +60,7 @@ export default function SideBarHeader({ onUpdateChatRoom }: Props) {
 				NextChat
 			</Link>
 			<div className="flex items-center justify-center gap-[14px]">
-				<Invitations onUpdateChatRooms={onUpdateChatRoom} />
+				<Invitations />
 
 				<div
 					className="transition-all duration-200 hover:scale-[1.05] hover:transform hover:text-yellow-400"
@@ -84,7 +82,7 @@ export default function SideBarHeader({ onUpdateChatRoom }: Props) {
 				<CreateChatRoomIcon />
 
 				<div className="relative flex items-center justify-center">
-					<Menu data={settingMenu} position="right">
+					<Menu data={settingMenu} position="left">
 						<div>
 							<IoMdSettings className="cursor-pointer text-[120%] hover:transform hover:text-yellow-400" />
 						</div>

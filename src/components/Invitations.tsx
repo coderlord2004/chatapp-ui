@@ -2,22 +2,23 @@ import React, { useState } from 'react';
 import { useInvitations } from '@/hooks/useInvitations';
 import { useRequest } from '@/hooks/useRequest';
 import { ChatRoomInfo } from '@/types/ChatRoom';
+import { useChatRooms } from '@/hooks/useChatRooms';
 
 import { TiTick } from 'react-icons/ti';
 import { IoClose } from 'react-icons/io5';
 import { FaUserFriends, FaUserCircle } from 'react-icons/fa';
 
-type Props = {
-	onUpdateChatRooms: (c: ChatRoomInfo) => void;
-};
+type Props = {};
 
-export default function Invitations({ onUpdateChatRooms }: Props) {
+export default function Invitations({}: Props) {
 	const { patch } = useRequest();
 	const { invitations, updateInvitationStatus } = useInvitations();
 	const [isShowInvitations, setShowInvitations] = useState<boolean>(false);
+	const { createLatestChatRoom, updateChatRoom } = useChatRooms();
 	const handleInvitation = async (invitationId: number, isAccept: boolean) => {
 		updateInvitationStatus(invitationId, isAccept ? 'ACCEPTED' : 'REJECTED');
 
+		const fakeRoomId = Date.now();
 		if (isAccept) {
 			const senderInvitation = invitations.find(
 				(invitation) => invitation.id === invitationId,
@@ -25,7 +26,7 @@ export default function Invitations({ onUpdateChatRooms }: Props) {
 			if (!senderInvitation) return;
 
 			const newChatRoom: ChatRoomInfo = {
-				id: senderInvitation.chatRoomId,
+				id: senderInvitation.chatRoomId || fakeRoomId,
 				name: null,
 				avatar: senderInvitation.sender.avatar,
 				members: [senderInvitation.sender, senderInvitation.receiver],
@@ -39,14 +40,14 @@ export default function Invitations({ onUpdateChatRooms }: Props) {
 			};
 			console.log('new chat room:', newChatRoom);
 
-			onUpdateChatRooms(newChatRoom);
+			createLatestChatRoom(newChatRoom);
 		}
 
 		const data = await patch(`invitations/${invitationId}`, {
 			accept: isAccept,
 		});
 
-		onUpdateChatRooms(data.newChatRoom)
+		updateChatRoom(fakeRoomId, data.newChatRoom);
 	};
 	const getTotalNewInvitations = () => {
 		return invitations.filter((i) => i.status === 'PENDING').length;

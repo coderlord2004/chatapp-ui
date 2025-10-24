@@ -18,7 +18,7 @@ declare global {
 }
 
 declare const SpeechRecognition: {
-	new(): typeof SpeechRecognition;
+	new (): typeof SpeechRecognition;
 	prototype: typeof SpeechRecognition;
 };
 
@@ -52,7 +52,7 @@ export default function ChatInput({
 	onSendOptimistic,
 	onSetUploadProgress,
 }: ChatRoomProps) {
-	const { authUser } = useAuth()
+	const { authUser } = useAuth();
 	const { post } = useRequest();
 	const { showNotification } = useNotification();
 	const [message, setMessage] = useState('');
@@ -117,15 +117,15 @@ export default function ChatInput({
 				},
 				onUploadProgress: templeAttachments.current
 					? (progressEvent) => {
-						const percent = Math.round(
-							(progressEvent.loaded * 100) / (progressEvent.total || 1),
-						);
-						onSetUploadProgress({
-							id: fakeId,
-							percent: percent,
-						});
-					}
-					: () => { },
+							const percent = Math.round(
+								(progressEvent.loaded * 100) / (progressEvent.total || 1),
+							);
+							onSetUploadProgress({
+								id: fakeId,
+								percent: percent,
+							});
+						}
+					: () => {},
 			});
 		} catch (err) {
 			console.error('Send failed:', err);
@@ -242,8 +242,10 @@ export default function ChatInput({
 
 	if (allow !== -1 && allow !== authUser?.id) {
 		return (
-			<div className="relative flex flex-col gap-[15px] border-t border-gray-800 bg-gray-800/50 p-4 items-center justify-center">Chỉ trưởng nhóm mới có thể gửi tin nhắn</div>
-		)
+			<div className="relative flex flex-col items-center justify-center gap-[15px] border-t border-gray-800 bg-gray-800/50 p-4">
+				Chỉ trưởng nhóm mới có thể gửi tin nhắn
+			</div>
+		);
 	}
 
 	return (
@@ -420,8 +422,8 @@ export default function ChatInput({
 								style={
 									voiceMenu === value
 										? {
-											backgroundColor: 'blue',
-										}
+												backgroundColor: 'blue',
+											}
 										: {}
 								}
 								onClick={() => setVoiceMenu(value)}

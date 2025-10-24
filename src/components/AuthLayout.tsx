@@ -12,7 +12,10 @@ const AgoraProvider = dynamic(() => import('@/contexts/AgoraRTCProvider'), {
 
 function WebSocketProvider({ children }: PropsWithChildren) {
 	const { accessToken } = useAuth();
-	if (!accessToken) return <div className='min-h-screen fixed inset-0 flex justify-center items-center gradientColor bg-slate-800'></div>;
+	if (!accessToken)
+		return (
+			<div className="gradientColor fixed inset-0 flex min-h-screen items-center justify-center bg-slate-800"></div>
+		);
 
 	return (
 		<WebSocketContextProvider token={accessToken}>

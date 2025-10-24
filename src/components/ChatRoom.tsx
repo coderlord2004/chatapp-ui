@@ -225,7 +225,7 @@ export default function ChatRoom({
 						alt=""
 						className="h-auto w-full rounded-[8px] object-cover"
 					/>
-					<div className="flex items-center justify-center gap-x-[10px]">
+					<div className="flex w-full items-center justify-start gap-x-[10px]">
 						{chatRoomInfo.avatar ? (
 							<img
 								src={chatRoomInfo.avatar}
@@ -238,7 +238,9 @@ export default function ChatRoom({
 						<div>
 							<p>{getChatRoomName(chatRoomInfo)}</p>
 							<p className="text-[80%] text-gray-400">
-								Bạn với người này đã trở thành bạn bè. Chat ngay thôi!
+								{chatRoomInfo.type === 'DUO'
+									? 'Bạn với người này đã trở thành bạn bè. Chat ngay thôi!'
+									: 'Đã tạo nhóm. Chat ngay thôi!'}
 							</p>
 						</div>
 					</div>
@@ -250,28 +252,28 @@ export default function ChatRoom({
 
 				{isLoading === messagePage.current && isLoading === 1
 					? Array.from({ length: 5 }, (_, idx) => (
-						<div
-							key={idx}
-							className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
-						>
-							<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
-								<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
-								<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
-								<div className="h-[10px] w-[40%] bg-gray-700"></div>
+							<div
+								key={idx}
+								className={`flex w-full animate-pulse ${idx % 2 === 0 ? 'justify-end' : 'justify-start'}`}
+							>
+								<div className="group relative w-[200px] max-w-[80%] rounded-lg bg-gray-800 p-[8px] text-gray-100">
+									<div className="mb-2 h-[20px] w-[80%] bg-gray-700"></div>
+									<div className="mb-1 h-[15px] w-[60%] bg-gray-700"></div>
+									<div className="h-[10px] w-[40%] bg-gray-700"></div>
+								</div>
 							</div>
-						</div>
-					))
+						))
 					: messages.map((msg, idx) => (
-						<Message
-							key={msg.id}
-							index={idx}
-							message={msg}
-							totalMessages={messages.length}
-							uploadProgress={uploadProgress}
-							updateMessage={updateMessage}
-							deleteMessage={deleteMessage}
-						/>
-					))}
+							<Message
+								key={msg.id}
+								index={idx}
+								message={msg}
+								totalMessages={messages.length}
+								uploadProgress={uploadProgress}
+								updateMessage={updateMessage}
+								deleteMessage={deleteMessage}
+							/>
+						))}
 
 				<div ref={messagesEndRef} />
 			</div>
@@ -294,7 +296,7 @@ export default function ChatRoom({
 
 			<ChatInput
 				roomId={roomId}
-				allow={chatRoomInfo.leaderOnlySend ? (chatRoomInfo.leader?.id) : -1}
+				allow={chatRoomInfo.leaderOnlySend ? chatRoomInfo.leader?.id : -1}
 				onSendOptimistic={insertFakeMessage}
 				onSetUploadProgress={setUploadProgress}
 			/>

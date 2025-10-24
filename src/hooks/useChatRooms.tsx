@@ -3,7 +3,8 @@ import { ChatRoomInfo } from '@/types/ChatRoom';
 
 type ChatRoomContextType = {
 	chatRooms: ChatRoomInfo[];
-	updateLatestChatRoom: (c: ChatRoomInfo) => void;
+	createLatestChatRoom: (c: ChatRoomInfo) => void;
+	updateChatRoom: (id: number, c: ChatRoomInfo) => void;
 };
 
 export const ChatRoomsContext = createContext<ChatRoomContextType | null>(null);

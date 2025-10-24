@@ -2,26 +2,26 @@ function formatDateTime(isoString: string | undefined) {
 	if (!isoString) return;
 	const date = new Date(isoString);
 	const currentDate = new Date();
-	const formattedCurrentDate = currentDate.toLocaleDateString('en-GB', {
+	const formattedCurrentDate = currentDate.toLocaleDateString('vi-VN', {
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric',
 		timeZone: 'UTC',
 	});
 
-	const weekday = date.toLocaleDateString('en-US', {
+	const weekday = date.toLocaleDateString('vi-VN', {
 		weekday: 'long',
 		timeZone: 'UTC',
 	});
 
-	const formattedDate = date.toLocaleDateString('en-GB', {
+	const formattedDate = date.toLocaleDateString('vi-VN', {
 		day: '2-digit',
 		month: '2-digit',
 		year: 'numeric',
 		timeZone: 'UTC',
 	});
 
-	const formattedTime = date.toLocaleTimeString('en-GB', {
+	const formattedTime = date.toLocaleTimeString('vi-VN', {
 		hour: '2-digit',
 		minute: '2-digit',
 		second: '2-digit',
@@ -38,7 +38,7 @@ function formatTime(isoString: string) {
 	if (!isoString) return;
 	const date = new Date(isoString);
 
-	return date.toLocaleTimeString('en-GB', {
+	return date.toLocaleTimeString('vi-VN', {
 		hour: '2-digit',
 		minute: '2-digit',
 		second: '2-digit',

@@ -26,7 +26,11 @@ export const useTheme = () => {
 function ThemeProvider({ children }: PropsWithChildren) {
 	const { theme } = useTheme();
 	const className = theme === 'dark' ? theme : '';
-	return <div className={className}>{children}</div>;
+	return (
+		<div id="theme" className={className}>
+			{children}
+		</div>
+	);
 }
 
 export const ThemeContextProvider = ({ children }: PropsWithChildren) => {

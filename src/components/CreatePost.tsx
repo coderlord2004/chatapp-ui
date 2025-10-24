@@ -13,6 +13,7 @@ import ThrobberLoader from './Loading/ThrobberLoader';
 import Post from './Post';
 import { useTrigger } from './PostComposerTrigger';
 import { CAPTION_BACKGROUND_COLORS } from '@/const/Post';
+import { createPortal } from 'react-dom';
 
 type Props = {
 	sharedPost?: PostType;
@@ -178,7 +179,7 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 		};
 	}, []);
 
-	return (
+	return createPortal(
 		<div className="fixed inset-0 z-50 flex h-[100vh] w-[100vw] items-center justify-center bg-black/70 p-4">
 			<div className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
 				<div className="relative flex items-center justify-between border-b border-gray-200 p-4">
@@ -335,6 +336,7 @@ export default function CreatePost({ sharedPost, onClose }: Props) {
 			</div>
 
 			<div className="overlay" onClick={onClose}></div>
-		</div>
+		</div>,
+		document.getElementById('theme') || document.body,
 	);
 }

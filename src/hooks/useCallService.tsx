@@ -26,21 +26,31 @@ function useIncomingCallInvitation() {
 }
 
 function useCallInvitationRefused() {
-	const [callModal, setCallModal] = useState<CallModal | null>(null);
+	const [refuser, setRefuser] = useState<string | null>(null);
 	const callInvitationPath = '/user/queue/refuse_call_invitation';
 
 	useWebSocket(callInvitationPath, (message) => {
 		console.log('call invitation refused: ', message);
-		setCallModal({
-			isOpen: true,
-			data: message as CallInvitation,
-		});
+		setRefuser((message as Record<string, string>).sender);
 	});
 
-	return {
-		callModal: callModal,
-		onClose: () => setCallModal(null),
-	};
+	return refuser;
 }
 
-export { useIncomingCallInvitation, useCallInvitationRefused };
+function useCancelCallInvitation() {
+	const [sender, setSender] = useState<string | null>(null);
+	const callInvitationPath = '/user/queue/cancel_call_invitation';
+
+	useWebSocket(callInvitationPath, (message) => {
+		console.log('cancel call invitation: ', message);
+		setSender((message as Record<string, string>).sender);
+	});
+
+	return sender;
+}
+
+export {
+	useIncomingCallInvitation,
+	useCallInvitationRefused,
+	useCancelCallInvitation,
+};

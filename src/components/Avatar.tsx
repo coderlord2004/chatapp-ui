@@ -72,8 +72,8 @@ export default function Avatar({
 		{
 			accepted: author === authUser?.username,
 			title: 'Đăng xuất',
-			action: () => logout()
-		}
+			action: () => logout(),
+		},
 	];
 
 	async function handleUpdateAvatar(e: React.ChangeEvent<HTMLInputElement>) {
@@ -96,7 +96,12 @@ export default function Avatar({
 	}
 
 	return (
-		<div className={className + ' relative cursor-pointer rounded-[50%]'}>
+		<div
+			className={
+				className +
+				' relative cursor-pointer rounded-[50%] text-black dark:text-white'
+			}
+		>
 			<input
 				type="file"
 				accept="image/*"

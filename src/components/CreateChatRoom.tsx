@@ -12,6 +12,7 @@ import { ChatRoomInfo } from '@/types/ChatRoom';
 import { UserWithAvatar } from '@/types/User';
 import { MdClear, MdGroupAdd, MdPersonAdd } from 'react-icons/md';
 import { IoSearchCircleOutline, IoClose } from 'react-icons/io5';
+import { createPortal } from 'react-dom';
 
 type Props = {
 	onClose: () => void;
@@ -32,7 +33,7 @@ export default function CreateChatRoom({ onClose }: Props) {
 	const [searchVisible, setSearchVisible] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 	const { post, get } = useRequest();
-	const { updateLatestChatRoom } = useChatRooms();
+	const { createLatestChatRoom } = useChatRooms();
 	const { showNotification } = useNotification();
 
 	const handleCreateChatRoom = async () => {
@@ -63,7 +64,7 @@ export default function CreateChatRoom({ onClose }: Props) {
 			message: 'Tạo phòng thành công!',
 		});
 		onClose();
-		updateLatestChatRoom(res);
+		createLatestChatRoom(res);
 	};
 
 	useEffect(() => {
@@ -80,7 +81,7 @@ export default function CreateChatRoom({ onClose }: Props) {
 			friend.username.toLowerCase().includes(searchQuery.toLowerCase()),
 		) || [];
 
-	return (
+	return createPortal(
 		<motion.div
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
@@ -212,6 +213,7 @@ export default function CreateChatRoom({ onClose }: Props) {
 					</button>
 				</div>
 			</motion.div>
-		</motion.div>
+		</motion.div>,
+		document.getElementById('theme') || document.body,
 	);
 }

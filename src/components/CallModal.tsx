@@ -67,6 +67,59 @@ export default function CallModal({
 	const { localCameraTrack } = useLocalCameraTrack(cameraOn);
 	usePublish([localMicrophoneTrack, localCameraTrack]);
 
+	// keep actual tracks enabled/disabled in sync with state
+	useEffect(() => {
+		try {
+			if (localMicrophoneTrack) {
+				// Agora local audio track API: setEnabled(true|false)
+				(localMicrophoneTrack as any).setEnabled?.(micOn);
+			}
+		} catch (err) {
+			console.warn('Failed to set microphone state', err);
+		}
+	}, [localMicrophoneTrack, micOn]);
+
+	useEffect(() => {
+		try {
+			if (localCameraTrack) {
+				// Agora local video track API: setEnabled(true|false)
+				(localCameraTrack as any).setEnabled?.(cameraOn);
+				if (cameraOn) {
+					// ensure preview is playing if there's a local container
+					// LocalUser component handles playback, so generally not necessary here
+				}
+			}
+		} catch (err) {
+			console.warn('Failed to set camera state', err);
+		}
+	}, [localCameraTrack, cameraOn]);
+
+	// keyboard shortcuts: M -> toggle mic, C -> toggle camera
+	useEffect(() => {
+		const handler = (e: KeyboardEvent) => {
+			// ignore when typing in inputs or textareas or contenteditable
+			const target = e.target as HTMLElement | null;
+			if (
+				target &&
+				(target.tagName === 'INPUT' ||
+					target.tagName === 'TEXTAREA' ||
+					target.isContentEditable)
+			)
+				return;
+			if (e.key === 'm' || e.key === 'M') {
+				e.preventDefault();
+				setMic((p) => !p);
+			}
+			if (e.key === 'c' || e.key === 'C') {
+				e.preventDefault();
+				setCamera((p) => !p);
+			}
+		};
+
+		document.addEventListener('keydown', handler);
+		return () => document.removeEventListener('keydown', handler);
+	}, []);
+
 	const remoteUsers = useRemoteUsers();
 	console.log('remote user:', remoteUsers);
 
@@ -86,6 +139,15 @@ export default function CallModal({
 		};
 	}
 
+	async function handleCancelCall() {
+		if (!roomId) return;
+
+		onClose();
+		await post('call/invitation/cancel/', {
+			channelId: roomId,
+		});
+	}
+
 	useEffect(() => {
 		if (!callInvitation && calling) {
 			async function sendInvitationToChannel() {
@@ -103,6 +165,18 @@ export default function CallModal({
 
 	return (
 		<div className="fixed inset-0 flex flex-col items-center justify-center gap-[10px] p-[10px]">
+			{/* connection status */}
+			<div className="absolute top-6 left-1/2 z-40 w-full max-w-[640px] -translate-x-1/2 text-center">
+				<span
+					className={`inline-block rounded-md px-3 py-1 text-sm ${isConnected ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'}`}
+				>
+					{isConnected
+						? 'Connected'
+						: calling
+							? 'Connecting...'
+							: 'Disconnected'}
+				</span>
+			</div>
 			{isConnected ? (
 				<div className="flex flex-1 flex-wrap justify-center gap-5 p-4 pt-4 md:p-10">
 					<div className="animate-fade-in relative aspect-[4/3] w-full transform overflow-hidden rounded-xl border border-gray-600 bg-black shadow-md transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl sm:w-[288px]">
@@ -168,9 +242,27 @@ export default function CallModal({
 					</button>
 				)}
 
+				{/* mic toggle */}
+				<button
+					aria-label={micOn ? 'Turn off microphone' : 'Turn on microphone'}
+					onClick={() => setMic((p) => !p)}
+					className={`cursor-pointer rounded-[8px] p-2 ${micOn ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200'}`}
+				>
+					{micOn ? <IoMdMic /> : <IoMdMicOff />}
+				</button>
+
+				{/* camera toggle */}
+				<button
+					aria-label={cameraOn ? 'Turn off camera' : 'Turn on camera'}
+					onClick={() => setCamera((p) => !p)}
+					className={`cursor-pointer rounded-[8px] p-2 ${cameraOn ? 'bg-green-600 text-white' : 'bg-gray-600 text-gray-200'}`}
+				>
+					{cameraOn ? <LuCamera /> : <LuCameraOff />}
+				</button>
+
 				<button
 					className="cursor-pointer rounded-[8px] bg-red-500"
-					onClick={onClose}
+					onClick={() => handleCancelCall()}
 				>
 					<MdClear />
 				</button>
@@ -180,221 +272,3 @@ export default function CallModal({
 		</div>
 	);
 }
-
-// 'use client';
-
-// import { useRef, useState, useCallback } from 'react';
-// import { useWebRTCSignaling } from '@/hooks/useWebRTCSignaling';
-// import { SignalMessage } from '@/types/types';
-// import { useNotification } from '@/hooks/useNotification';
-// import { MdCallEnd } from 'react-icons/md';
-// import { IoMdClose } from 'react-icons/io';
-
-// const iceConfig = {
-// 	iceServers: [
-// 		{ urls: 'stun:stun.l.google.com:19302' },
-// 		{
-// 			urls: 'turn:relay1.expressturn.com:3480',
-// 			username: '000000002066046148',
-// 			credential: 's0j+DngvJr3dBUO30zdh9AqQLi4=',
-// 		},
-// 	],
-// };
-
-// interface CallModalProps {
-// 	isMounted: boolean;
-// 	onMounted: () => void;
-// 	selfId: string | undefined;
-// 	targetId: string;
-// 	onClose: () => void;
-// }
-
-// export default function CallModal({
-// 	isMounted,
-// 	onMounted,
-// 	selfId,
-// 	targetId,
-// 	onClose,
-// }: CallModalProps) {
-// 	const localVideoRef = useRef<HTMLVideoElement>(null);
-// 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
-// 	const pcRef = useRef<RTCPeerConnection | null>(null);
-// 	const { showNotification } = useNotification();
-// 	const [isStartCall, setIsStartCall] = useState<boolean>(false);
-// 	const [isShowMe, setIsShowMe] = useState<boolean>(true);
-
-// 	const { sendSignal } = useWebRTCSignaling({
-// 		selfId,
-// 		targetId,
-// 		onSignal: async (msg) => {
-// 			if (msg.type === 'offer') {
-// 				await handleReceiveOffer(msg);
-// 			} else if (msg.type === 'answer') {
-// 				await pcRef.current?.setRemoteDescription(
-// 					new RTCSessionDescription(msg.sdp!),
-// 				);
-// 			} else if (msg.type === 'candidate') {
-// 				const candidate = new RTCIceCandidate(msg.candidate!);
-// 				await pcRef.current?.addIceCandidate(candidate);
-// 			}
-// 		},
-// 	});
-
-// 	const checkMediaDevicesSupport = useCallback(() => {
-// 		if (
-// 			typeof navigator.mediaDevices === 'undefined' ||
-// 			typeof navigator.mediaDevices.getUserMedia === 'undefined'
-// 		) {
-// 			showNotification({
-// 				type: 'error',
-// 				message: 'Media devices not supported in this browser.',
-// 			});
-// 			return false;
-// 		}
-// 		return true;
-// 	}, [showNotification]);
-
-// 	const handleReceiveOffer = async (msg: SignalMessage) => {
-// 		if (!checkMediaDevicesSupport()) return;
-
-// 		const stream = await navigator.mediaDevices.getUserMedia({
-// 			video: false,
-// 			audio: true,
-// 		});
-// 		if (localVideoRef.current) {
-// 			localVideoRef.current.srcObject = stream;
-// 		}
-
-// 		const pc = new RTCPeerConnection(iceConfig);
-
-// 		pcRef.current = pc;
-
-// 		pc.onicecandidate = (e) => {
-// 			if (e.candidate) {
-// 				sendSignal({
-// 					type: 'candidate',
-// 					target: msg.caller,
-// 					candidate: e.candidate,
-// 				});
-// 			}
-// 		};
-
-// 		pc.ontrack = (e) => {
-// 			if (remoteVideoRef.current) {
-// 				remoteVideoRef.current.srcObject = e.streams[0];
-// 			}
-// 		};
-
-// 		stream.getTracks().forEach((track) => {
-// 			console.log('track: ', track);
-// 			pc.addTrack(track, stream);
-// 		});
-
-// 		await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp!));
-// 		const answer = await pc.createAnswer();
-// 		await pc.setLocalDescription(answer);
-
-// 		sendSignal({
-// 			type: 'answer',
-// 			target: msg.caller,
-// 			sdp: answer,
-// 		});
-// 	};
-
-// 	const startCall = async () => {
-// 		if (!checkMediaDevicesSupport()) return;
-
-// 		const stream = await navigator.mediaDevices.getUserMedia({
-// 			video: false,
-// 			audio: true,
-// 		});
-// 		if (localVideoRef.current) {
-// 			localVideoRef.current.srcObject = stream;
-// 		}
-
-// 		const pc = new RTCPeerConnection(iceConfig);
-// 		console.log('pc: ', pc)
-// 		pcRef.current = pc;
-
-// 		pc.onicecandidate = (e) => {
-// 			if (e.candidate) {
-// 				sendSignal({
-// 					type: 'candidate',
-// 					target: targetId,
-// 					candidate: e.candidate,
-// 				});
-// 			}
-// 		};
-
-// 		pc.ontrack = (e) => {
-// 			if (remoteVideoRef.current) {
-// 				remoteVideoRef.current.srcObject = e.streams[0];
-// 			}
-// 		};
-
-// 		stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-
-// 		const offer = await pc.createOffer();
-// 		await pc.setLocalDescription(offer);
-
-// 		sendSignal({
-// 			type: 'offer',
-// 			target: targetId,
-// 			sdp: offer,
-// 		});
-// 	};
-
-// 	return (
-// 		<div className={`fixed inset-0 ${isMounted ? '' : 'hidden'}`}>
-// 			<div
-// 				className="overlay absolute inset-0 cursor-pointer bg-black/70"
-// 				onClick={onClose}
-// 			></div>
-
-// 			<div className="absolute top-1/2 left-1/2 flex h-[90%] w-[90%] -translate-x-1/2 -translate-y-1/2 transform flex-col items-center justify-center gap-[10px] p-4 sm:h-[80%] sm:w-[80%]">
-// 				<div className="relative flex w-full flex-1 gap-4 rounded-2xl">
-// 					{isShowMe && (
-// 						<div className="absolute top-4 right-4 w-[40%] rounded bg-slate-900 shadow sm:relative sm:top-0 sm:right-0 sm:w-[calc(100%/2-8px)] sm:bg-slate-800 sm:shadow-[0_0_3px_3px_gray]">
-// 							<video
-// 								ref={localVideoRef}
-// 								autoPlay
-// 								playsInline
-// 								muted
-// 								className=""
-// 							/>
-// 							<div
-// 								className="absolute top-2 right-2 flex cursor-pointer text-[20px] hover:text-red-500 sm:hidden"
-// 								onClick={() => setIsShowMe(!isShowMe)}
-// 							>
-// 								<IoMdClose />
-// 							</div>
-// 						</div>
-// 					)}
-// 					<div className="w-full rounded bg-slate-800 shadow-[0_0_3px_3px_gray] sm:w-[calc(100%/2-8px)]">
-// 						<video ref={remoteVideoRef} autoPlay playsInline className="" />
-// 					</div>
-// 				</div>
-
-// 				<div className="flex gap-[10px]">
-// 					{!isStartCall && (
-// 						<div
-// 							className="box-border flex cursor-pointer items-center justify-center rounded-[8px] bg-blue-500 p-[5px]"
-// 							onClick={() => {
-// 								setIsStartCall(!isStartCall);
-// 								startCall();
-// 							}}
-// 						>
-// 							Call now!
-// 						</div>
-// 					)}
-// 					<div
-// 						className="flex w-[60px] cursor-pointer items-center justify-center rounded-[10px] bg-red-500 text-[30px] text-white"
-// 						onClick={onMounted}
-// 					>
-// 						<MdCallEnd />
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</div>
-// 	);
-// }
